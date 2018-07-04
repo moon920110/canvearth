@@ -1,9 +1,9 @@
 package com.canvearth.canvearth.pixel;
 
 public class Pixel {
-    public Long x;
-    public Long y;
-    public Long level;
+    public int x;
+    public int y;
+    public int zoom;
 
     //TODO image member variable needed
 
@@ -11,13 +11,13 @@ public class Pixel {
         // Default constructor required for Firebase db
     }
 
-    public Pixel(int x, int y, int level) {
-        this.x = (long)x;
-        this.y = (long)y;
-        this.level = (long)level;
+    public Pixel(int x, int y, int zoom) {
+        this.x = x;
+        this.y = y;
+        this.zoom = zoom;
     }
 
     public String getPixelId() {
-        return x.toString() + "," + y.toString() + "," +level.toString();
+        return Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(zoom);
     }
 }
