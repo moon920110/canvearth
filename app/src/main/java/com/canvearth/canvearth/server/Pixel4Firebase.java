@@ -9,6 +9,7 @@ public class Pixel4Firebase {
     Long y;
 
     public Color color;
+    public Color futureColor;
 
     public Pixel4Firebase() {
         // Default constructor required for Firebase
@@ -16,6 +17,7 @@ public class Pixel4Firebase {
 
     public Pixel4Firebase(Color color) {
         this.color = color;
+        this.futureColor = color;
     }
 
     public String getFirebaseId() {

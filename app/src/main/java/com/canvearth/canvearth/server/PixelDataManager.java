@@ -76,10 +76,14 @@ public class PixelDataManager {
             LeafPixel4Firebase newPixel = new LeafPixel4Firebase(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
             database.child(newPixel.getFirebaseId()).setValue(newPixel); // TODO transaction based on time / push uid
-            //TODO update parent pixels
+            updateParent(newPixel);
         } catch (TimeoutException e) {
             Log.e(TAG, e.getMessage());
         }
         return true;
+    }
+
+    private void updateParent(Pixel4Firebase childPixel) {
+
     }
 }
