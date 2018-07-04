@@ -18,7 +18,6 @@ public class Pixel {
     }
 
     public String getPixelId() {
-        //TODO
-        return "pixel-id";
+        return x.toString() + "," + y.toString() + "," +level.toString();
     }
 }
