@@ -1,8 +1,8 @@
 package com.canvearth.canvearth.pixel;
 
 public class BoundingBox {
-    public double north;
-    public double south;
-    public double east;
-    public double west;
+    public double north; // latitude
+    public double south; // latitude
+    public double east; // longtitude
+    public double west; // longtitude
 }

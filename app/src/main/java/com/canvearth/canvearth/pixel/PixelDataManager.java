@@ -4,8 +4,6 @@ import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,16 +20,16 @@ public class PixelDataManager {
     private PixelDataManager() {
     }
 
-    public Pixel readPixel(LatLng latLng, int zoomLevel) {
+    public PixelCoord readPixel(LatLng latLng, int zoomLevel) {
         //TODO
-        return new Pixel();
+        return new PixelCoord();
     }
 
     public boolean writePixel(int x, int y, Color color) {
         UserInformation userInformation = UserInformation.getInstance();
         try {
             String userToken = userInformation.getToken();
-            LeafPixel newPixel = new LeafPixel(x, y, userToken, new Date(), color); // TODO consider when timezone differs, or abusing current datetime
+            LeafPixelCoord newPixel = new LeafPixelCoord(x, y, userToken, new Date(), color); // TODO consider when timezone differs, or abusing current datetime
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
             database.child(newPixel.getPixelId()).setValue(newPixel);
         } catch (TimeoutException e) {

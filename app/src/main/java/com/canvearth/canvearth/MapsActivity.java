@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.canvearth.canvearth.pixel.PixelCoord;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
@@ -108,10 +109,10 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMyLocationClick(@NonNull Location location) {
         double lat = location.getLatitude();
         double lng = location.getLongitude();
-        int[] pixelCoords = PixelUtils.latlng2pix(lat, lng, DRAW_GRID_ZOOM_LEVEL);
+        PixelCoord pixelCoord = PixelUtils.latlng2pix(lat, lng, DRAW_GRID_ZOOM_LEVEL);
         Toast.makeText(this, "Lat: " + location.getLatitude() + "\n" +
                         "Lng: " + location.getLongitude() + "\n" +
-                        "Pix: " + pixelCoords[0] + ", " + pixelCoords[1] + "\n"
+                        "Pix: " + pixelCoord.x + ", " + pixelCoord.y + "\n"
                 , Toast.LENGTH_LONG).show();
     }
 

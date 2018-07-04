@@ -1,17 +1,17 @@
 package com.canvearth.canvearth.pixel;
 
-public class Pixel {
+public class PixelCoord {
     public int x;
     public int y;
     public int zoom;
 
     //TODO image member variable needed
 
-    public Pixel() {
+    public PixelCoord() {
         // Default constructor required for Firebase db
     }
 
-    public Pixel(int x, int y, int zoom) {
+    public PixelCoord(int x, int y, int zoom) {
         this.x = x;
         this.y = y;
         this.zoom = zoom;
