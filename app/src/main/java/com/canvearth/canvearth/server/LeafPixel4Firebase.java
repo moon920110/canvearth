@@ -1,6 +1,6 @@
-package com.canvearth.canvearth.pixel;
+package com.canvearth.canvearth.server;
 
-import com.canvearth.canvearth.utils.Constants;
+import com.canvearth.canvearth.pixel.Color;
 
 import java.util.Date;
 

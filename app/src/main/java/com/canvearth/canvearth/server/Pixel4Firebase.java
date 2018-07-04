@@ -1,4 +1,4 @@
-package com.canvearth.canvearth.pixel;
+package com.canvearth.canvearth.server;
 
 // This class is for Firebase.
 public class Pixel4Firebase {
