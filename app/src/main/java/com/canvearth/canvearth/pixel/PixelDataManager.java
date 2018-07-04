@@ -20,22 +20,23 @@ public class PixelDataManager {
     private PixelDataManager() {
     }
 
-    public PixelCoord readPixel(LatLng latLng, int zoomLevel) {
+    public PixelCoord readPixel(PixelCoord pixelCoord, int zoomLevel) {
         //TODO
         return new PixelCoord();
     }
 
-    public boolean writePixel(int x, int y, Color color) {
+    public boolean writePixel(PixelCoord pixelCoord, Color color) {
+        assert(pixelCoord.isLeaf());
         UserInformation userInformation = UserInformation.getInstance();
         try {
             String userToken = userInformation.getToken();
-            LeafPixelCoord newPixel = new LeafPixelCoord(x, y, userToken, new Date(), color); // TODO consider when timezone differs, or abusing current datetime
+            LeafPixel4Firebase newPixel = new LeafPixel4Firebase(userToken, new Date(), color); // TODO consider when timezone differs, or abusing current datetime
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-            database.child(newPixel.getPixelId()).setValue(newPixel);
+            database.child(newPixel.getFirebaseId()).setValue(newPixel); // TODO transaction based on time / push uid
+            //TODO update parent pixels
         } catch (TimeoutException e) {
             Log.e(TAG, e.getMessage());
         }
-        //TODO update parent pixels
         return true;
     }
 }
