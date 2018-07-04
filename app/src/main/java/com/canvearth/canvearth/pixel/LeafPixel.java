@@ -1,5 +1,6 @@
 package com.canvearth.canvearth.pixel;
 
+import com.canvearth.canvearth.utils.Constants;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
@@ -14,8 +15,8 @@ public class LeafPixel extends Pixel {
         // Default constructor required for Firebase db
     }
 
-    public LeafPixel(LatLng latLng, String userToken, Date now, Color color) {
-        super(latLng, 0);
+    public LeafPixel(int x, int y, String userToken, Date now, Color color) {
+        super(x, y, Constants.LEAF_PIXEL_LEVEL);
 
         this.modifiedUserToken = userToken;
         this.modifiedTime = now.toString();

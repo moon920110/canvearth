@@ -27,11 +27,11 @@ public class PixelDataManager {
         return new Pixel();
     }
 
-    public boolean writePixel(LatLng latLng, Color color) {
+    public boolean writePixel(int x, int y, Color color) {
         UserInformation userInformation = UserInformation.getInstance();
         try {
             String userToken = userInformation.getToken();
-            LeafPixel newPixel = new LeafPixel(latLng, userToken, new Date(), color); // TODO consider when timezone differs, or abusing current datetime
+            LeafPixel newPixel = new LeafPixel(x, y, userToken, new Date(), color); // TODO consider when timezone differs, or abusing current datetime
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
             database.child(newPixel.getPixelId()).setValue(newPixel);
         } catch (TimeoutException e) {
