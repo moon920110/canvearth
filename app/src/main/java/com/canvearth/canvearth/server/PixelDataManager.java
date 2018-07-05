@@ -12,12 +12,14 @@ import com.canvearth.canvearth.pixel.PixelCoord;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
+import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,23 +77,39 @@ public class PixelDataManager {
         return watchingPixels.get(firebaseId).getPixel4Firebase();
     }
 
-    public boolean writePixel(PixelCoord pixelCoord, Color color) {
-        assert(pixelCoord.isLeaf());
-        String firebaseId = pixelCoord.getFirebaseId();
-        // You have to watch pixel before you write it.
-        assert(watchingPixels.containsKey(firebaseId));
-        Pixel4Firebase originalPixel = watchingPixels.get(firebaseId).getPixel4Firebase();
-        UserInformation userInformation = UserInformation.getInstance();
+    public boolean writePixel(PixelCoord pixelCoord, Color color, @Nullable Runnable callback) {
         try {
+            if (!pixelCoord.isLeaf()) {
+                throw new Exception("Pixel is not leaf");
+            }
+            String firebaseId = pixelCoord.getFirebaseId();
+            // You have to watch pixel before you write it.
+            if (!watchingPixels.containsKey(firebaseId)) {
+                throw new Exception("Try to write pixel which is not watched");
+            }
+            Pixel4Firebase originalPixel = watchingPixels.get(firebaseId).getPixel4Firebase();
+            UserInformation userInformation = UserInformation.getInstance();
             String userToken = userInformation.getToken();
             LeafPixel4Firebase newPixel = new LeafPixel4Firebase(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+            final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
             DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    Log.d(TAG, "Write completed");
+                    Log.d(TAG, "setValue finished");
+                    latchForAllFinish.countDown();
                 }
             }); // TODO transaction based on time / push uid
-            updateParent(originalPixel, newPixel, pixelCoord);
+            updateParent(originalPixel, newPixel, pixelCoord, latchForAllFinish);
+            new Thread(()->{
+                try {
+                    latchForAllFinish.await();
+                    if (callback != null) {
+                        callback.run();
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }).start();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
@@ -111,7 +129,8 @@ public class PixelDataManager {
         }
     }
 
-    private void updateParent(Pixel4Firebase childOriginPixel, Pixel4Firebase childNewPixel, PixelCoord childPixelCoord) {
+    private void updateParent(Pixel4Firebase childOriginPixel, Pixel4Firebase childNewPixel,
+                              PixelCoord childPixelCoord, final CountUpDownLatch latchForAllFinish) {
         if (childPixelCoord.isRoot()) {
             return;
         }
@@ -128,8 +147,14 @@ public class PixelDataManager {
             newParentPixel.futureColor.replaceColorPortion(childOriginPixel.color, childNewPixel.color, 0.25);
             if (Color.areDifferent(newParentPixel.color, newParentPixel.futureColor)) {
                 newParentPixel.color = newParentPixel.futureColor.clone();
-                DatabaseUtils.getPixelReference(parentId).setValue(newParentPixel);
-                updateParent(newParentPixel, parentPixel, parentPixelCoord);
+                latchForAllFinish.countUp();
+                DatabaseUtils.getPixelReference(parentId).setValue(newParentPixel, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        latchForAllFinish.countDown();
+                    }
+                });
+                updateParent(newParentPixel, parentPixel, parentPixelCoord, latchForAllFinish);
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());

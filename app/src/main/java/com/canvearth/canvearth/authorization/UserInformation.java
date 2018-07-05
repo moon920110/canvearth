@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.canvearth.canvearth.utils.Configs;
 import com.facebook.AccessToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -62,7 +63,9 @@ public class UserInformation {
     }
 
     public String getToken() throws TimeoutException, InterruptedException {
-        int requestCount = 0;
+        if (Configs.TESTING) {
+            return "TEST_USER_TOKEN";
+        }
         tokenApplyLatch.await();
         return mGetTokenResult.getToken();
     }

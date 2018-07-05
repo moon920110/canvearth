@@ -8,8 +8,10 @@ import com.canvearth.canvearth.pixel.Color;
 import com.canvearth.canvearth.pixel.PixelCoord;
 import com.canvearth.canvearth.server.Pixel4Firebase;
 import com.canvearth.canvearth.server.PixelDataManager;
+import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,6 +32,11 @@ public class ServerInterfaceTest {
             }
         }
         return pixelCoords;
+    }
+
+    @Before
+    public void setup() {
+        Configs.TESTING = true;
     }
 
     @Test
