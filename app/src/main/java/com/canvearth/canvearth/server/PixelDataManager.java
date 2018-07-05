@@ -1,6 +1,7 @@
 package com.canvearth.canvearth.server;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
 public class PixelDataManager {
@@ -83,9 +85,14 @@ public class PixelDataManager {
         try {
             String userToken = userInformation.getToken();
             LeafPixel4Firebase newPixel = new LeafPixel4Firebase(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
-            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel); // TODO transaction based on time / push uid
+            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    Log.d(TAG, "Write completed");
+                }
+            }); // TODO transaction based on time / push uid
             updateParent(originalPixel, newPixel, pixelCoord);
-        } catch (TimeoutException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
         return true;
