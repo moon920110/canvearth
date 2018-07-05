@@ -6,3 +6,5 @@
 /captures
 .externalNativeBuild
 google_maps_api.xml
+.idea
+google-services.json
