@@ -19,9 +19,25 @@ public class Color {
         this.a = 255L;
     }
 
+    public Color clone() throws CloneNotSupportedException {
+        Color color = (Color) super.clone();
+        color.r = this.r.longValue();
+        color.g = this.g.longValue();
+        color.b = this.b.longValue();
+        color.a = this.a.longValue();
+        return color;
+    }
+
     public boolean isTransparent() {
         return (this.a < Constants.COLOR_TRANSPARENT_BOUND) ;
 
+    }
+
+    public void replaceColorPortion(Color originColor, Color newColor, double portion) {
+        this.r = this.r + (long) ((newColor.r - originColor.r) * portion);
+        this.g = this.g + (long) ((newColor.r - originColor.r) * portion);
+        this.b = this.b + (long) ((newColor.r - originColor.r) * portion);
+        this.a = this.a + (long) ((newColor.r - originColor.r) * portion);
     }
 
     public static Color colorCompose(Color color1, Color color2) {
