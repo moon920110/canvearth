@@ -3,6 +3,7 @@ package com.canvearth.canvearth;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import com.canvearth.canvearth.pixel.Color;
 import com.canvearth.canvearth.pixel.PixelCoord;
@@ -70,7 +71,9 @@ public class ServerInterfaceTest {
         // Write black color to the random pixel
         Random random = new Random();
         PixelCoord randomPixelCoord = samePixelCoords.get(random.nextInt(20 * 20));
-        pixelDataManager.writePixel(randomPixelCoord, new Color(0L, 0L, 0L));
+        pixelDataManager.writePixel(randomPixelCoord, new Color(0L, 0L, 0L),()->{
+            Log.d("leafPixelWriteTest", "Succeed");
+        });
         // You have to unwatch pixel
         for (PixelCoord pixelCoord : samePixelCoords) {
             pixelDataManager.unwatchPixel(pixelCoord);
@@ -90,7 +93,9 @@ public class ServerInterfaceTest {
         Random random = new Random();
         PixelCoord randomPixelCoord = samePixelCoords.get(random.nextInt(20 * 20));
         Color black = new Color(0L, 0L, 0L);
-        pixelDataManager.writePixel(randomPixelCoord, black);
+        pixelDataManager.writePixel(randomPixelCoord, black,()->{
+            Log.d("leafPixelWriteTest", "Succeed");
+        });
         // Read same pixel
         Pixel4Firebase pixelInfo = pixelDataManager.readPixel(randomPixelCoord);
         assert(pixelInfo.color.equals(black));

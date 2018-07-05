@@ -92,12 +92,8 @@ public class PixelDataManager {
             String userToken = userInformation.getToken();
             LeafPixel4Firebase newPixel = new LeafPixel4Firebase(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
             final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
-            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    Log.d(TAG, "setValue finished");
-                    latchForAllFinish.countDown();
-                }
+            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference)->{
+                latchForAllFinish.countDown();
             }); // TODO transaction based on time / push uid
             updateParent(originalPixel, newPixel, pixelCoord, latchForAllFinish);
             new Thread(()->{
