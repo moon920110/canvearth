@@ -23,6 +23,10 @@ public class PixelCoord {
         return zoom == Constants.LEAF_PIXEL_LEVEL;
     }
 
+    public boolean isRoot() {
+        return zoom == 0;
+    }
+
     public String getFirebaseId() { // This method have to be synchronized with Pixel4Firebase.getFirebaseId().
         return Integer.toString(zoom) + "," + Integer.toString(x) + "," + Integer.toString(y);
     }
