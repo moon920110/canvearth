@@ -68,6 +68,11 @@ public class PixelDataManager {
         watchingPixels.remove(firebaseId);
     }
 
+    public Pixel4Firebase readPixel(PixelCoord pixelCoord) {
+        String firebaseId = pixelCoord.getFirebaseId();
+        return watchingPixels.get(firebaseId).getPixel4Firebase();
+    }
+
     public boolean writePixel(PixelCoord pixelCoord, Color color) {
         assert(pixelCoord.isLeaf());
         String firebaseId = pixelCoord.getFirebaseId();
