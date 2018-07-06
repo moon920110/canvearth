@@ -68,6 +68,8 @@ public class MapsActivity extends AppCompatActivity implements
         LatLng center = new LatLng(41.385064, 2.173403);
         scaleView = findViewById(R.id.scaleView);
 
+        // TODO: Enable tilt gesture when performance issue is resolved
+        mMap.getUiSettings().setTiltGesturesEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnCameraIdleListener(this);
