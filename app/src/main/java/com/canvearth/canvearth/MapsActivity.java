@@ -103,7 +103,7 @@ public class MapsActivity extends AppCompatActivity implements
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
 
         PixelManager.cleanup();
-        if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL) {
+        if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_ZOOM_LEVEL) {
             PixelManager.draw(mMap, Math.round(cameraPosition.zoom));
         }
     }
