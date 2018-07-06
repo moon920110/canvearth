@@ -4,6 +4,8 @@ import com.canvearth.canvearth.pixel.BoundingBox;
 import com.canvearth.canvearth.pixel.PixelCoord;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+
 public class PixelUtils {
 
     public static PixelCoord latlng2pix(double lat, double lng, final int zoom) {
@@ -52,16 +54,19 @@ public class PixelUtils {
         return new PixelCoord(x, y, zoom);
     }
 
-    public static PixelCoord[] getChildrenPixelCoord(PixelCoord pixelCoord) throws Exception {
-        if (pixelCoord.zoom == Constants.LEAF_PIXEL_LEVEL) {
+    public static ArrayList<PixelCoord> getChildrenPixelCoord(PixelCoord pixelCoord, int level) throws Exception {
+        if (pixelCoord.zoom + level > Constants.LEAF_PIXEL_LEVEL) {
             throw new Exception("Cannot get children of leaf pixel");
         }
-        PixelCoord[] childrenPixelCoords = new PixelCoord[4];
-        int zoom = pixelCoord.zoom + 1;
-        childrenPixelCoords[0] = new PixelCoord(pixelCoord.x * 2, pixelCoord.y * 2, zoom);
-        childrenPixelCoords[1] = new PixelCoord(pixelCoord.x * 2 + 1, pixelCoord.y * 2, zoom);
-        childrenPixelCoords[2] = new PixelCoord(pixelCoord.x * 2, pixelCoord.y * 2 + 1, zoom);
-        childrenPixelCoords[3] = new PixelCoord(pixelCoord.x * 2 + 1, pixelCoord.y * 2 + 1, zoom);
+        int numChildrenWidth = MathUtils.intPow(2, level);
+        ArrayList<PixelCoord> childrenPixelCoords = new ArrayList<>(numChildrenWidth * numChildrenWidth);
+        int zoom = pixelCoord.zoom + level;
+        for (int y = 0; y < numChildrenWidth; y++) {
+            for(int x = 0; x < numChildrenWidth; x++) {
+                childrenPixelCoords.set(y * numChildrenWidth + x,
+                        new PixelCoord(pixelCoord.x * numChildrenWidth + x, pixelCoord.y * numChildrenWidth + y, zoom));
+            }
+        }
         return childrenPixelCoords;
     }
 }

@@ -1,5 +1,6 @@
 package com.canvearth.canvearth.server;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,6 +11,7 @@ import com.canvearth.canvearth.pixel.Color;
 import com.canvearth.canvearth.pixel.PixelCoord;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
+import com.canvearth.canvearth.utils.MathUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
 import com.google.firebase.database.DataSnapshot;
@@ -17,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +76,7 @@ public class PixelDataManager {
     }
 
     // You can read unwatching pixel by this method
-    private Pixel4Firebase readPixelInstantly(PixelCoord pixelCoord) throws InterruptedException {
+    public Pixel4Firebase readPixelInstantly(PixelCoord pixelCoord) throws InterruptedException {
         String firebaseId = pixelCoord.getFirebaseId();
         final Pixel4Firebase pixel4Firebase = Pixel4Firebase.emptyPixel();
         final CountDownLatch latchForFinish = new CountDownLatch(1);
@@ -97,6 +100,26 @@ public class PixelDataManager {
         });
         latchForFinish.await();
         return pixel4Firebase;
+    }
+
+    // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
+    // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
+    // TODO cache this when there is performance issue
+    // Do you need Async version of this?
+    public Bitmap getBitmapSync(PixelCoord pixelCoord, int resolutionFactor) {
+        try {
+            int resolution = MathUtils.intPow(2, resolutionFactor);
+            Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
+            int hierarchy = Math.min(Constants.LEAF_PIXEL_LEVEL - pixelCoord.zoom, resolutionFactor);
+            int chargeForOnePixel = MathUtils.intPow(2, resolutionFactor - hierarchy);
+            ArrayList<PixelCoord> childrenPixelCoord = PixelUtils.getChildrenPixelCoord(pixelCoord, hierarchy);
+            for (PixelCoord childPixelCoord: childrenPixelCoord) {
+                
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+
     }
 
     public boolean writePixel(PixelCoord pixelCoord, Color color, @Nullable Runnable callback) {
@@ -134,8 +157,6 @@ public class PixelDataManager {
         }
         return true;
     }
-
-
 
     private void updateParent(Pixel4Firebase childOriginPixel, Pixel4Firebase childNewPixel,
                               PixelCoord childPixelCoord, final CountUpDownLatch latchForAllFinish) {
