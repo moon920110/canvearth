@@ -3,12 +3,14 @@ package com.canvearth.canvearth.server;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
 import com.canvearth.canvearth.pixel.Color;
 import com.canvearth.canvearth.pixel.PixelCoord;
+import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.MathUtils;
@@ -105,21 +107,51 @@ public class PixelDataManager {
     // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
     // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
     // TODO cache this when there is performance issue
-    // Do you need Async version of this?
+    // Do we need Async version of this?
     public Bitmap getBitmapSync(PixelCoord pixelCoord, int resolutionFactor) {
+        int resolution = MathUtils.intPow(2, resolutionFactor);
+        final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
         try {
-            int resolution = MathUtils.intPow(2, resolutionFactor);
-            Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
             int hierarchy = Math.min(Constants.LEAF_PIXEL_LEVEL - pixelCoord.zoom, resolutionFactor);
             int chargeForOnePixel = MathUtils.intPow(2, resolutionFactor - hierarchy);
             ArrayList<PixelCoord> childrenPixelCoord = PixelUtils.getChildrenPixelCoord(pixelCoord, hierarchy);
+            int childrenStartX = childrenPixelCoord.get(0).x;
+            int childrenStartY = childrenPixelCoord.get(0).y;
+            CountDownLatch latchForFinish = new CountDownLatch(childrenPixelCoord.size());
             for (PixelCoord childPixelCoord: childrenPixelCoord) {
-                
+                String firebaseId = childPixelCoord.getFirebaseId();
+                DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //TODO
+                        Pixel4Firebase ServerPixel4Firebase = dataSnapshot.getValue(Pixel4Firebase.class);
+                        if (ServerPixel4Firebase == null) {
+                            ServerPixel4Firebase = Pixel4Firebase.emptyPixel();
+                        }
+                        int color = BitmapUtils.intColor(ServerPixel4Firebase.color);
+                        int relativeCoordX = childPixelCoord.x - childrenStartX;
+                        int relativeCoordY = childPixelCoord.y - childrenStartY;
+                        for (int y = 0; y < chargeForOnePixel; y++) {
+                            for (int x = 0; x < chargeForOnePixel; x++) {
+                                bitmap.setPixel(relativeCoordX * chargeForOnePixel + x,
+                                        relativeCoordY * chargeForOnePixel + y, color);
+                            }
+                        }
+                        latchForFinish.countDown();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.w(TAG, "load pixel data:onCancelled", databaseError.toException());
+                        latchForFinish.countDown();
+                    }
+                });
             }
+            latchForFinish.await();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-
+        return bitmap;
     }
 
     public boolean writePixel(PixelCoord pixelCoord, Color color, @Nullable Runnable callback) {

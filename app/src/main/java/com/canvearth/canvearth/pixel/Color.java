@@ -43,19 +43,22 @@ public class Color implements Cloneable {
         return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
     }
 
+    // TODO consider this one more time
     public void replaceColorPortion(Color originColor, Color newColor, double portion) {
-        this.r = this.r + (long) ((newColor.r - originColor.r) * portion);
-        this.g = this.g + (long) ((newColor.g - originColor.g) * portion);
-        this.b = this.b + (long) ((newColor.b - originColor.b) * portion);
-        this.a = this.a + (long) ((newColor.a - originColor.a) * portion);
+        long newA = this.a + (long)(portion * (newColor.a - originColor.a));
+        this.r = (this.r * this.a + (long)(portion * (newColor.a * newColor.r - originColor.a * originColor.r))) / newA;
+        this.g = (this.g * this.a + (long)(portion * (newColor.a * newColor.g - originColor.a * originColor.g))) / newA;
+        this.b = (this.b * this.a + (long)(portion * (newColor.a * newColor.b - originColor.a * originColor.b))) / newA;
+        this.a = newA;
     }
 
     public static Color colorCompose(Color color1, Color color2) {
         // Can cause issue -- to be changed [0, 255] to [0., 1.] later sometime.
         Color newColor = new Color();
-        newColor.r = (color1.r + color2.r) / 2;
-        newColor.g = (color1.g + color2.g) / 2;
-        newColor.b = (color1.b + color2.b) / 2;
+        double portion = color1.a / (color1.a + color2.a);
+        newColor.r = (long)(color1.r * portion + color2.r * (1 - portion));
+        newColor.g = (long)(color1.g * portion + color2.g * (1 - portion));
+        newColor.b = (long)(color1.b * portion + color2.b * (1 - portion));
         newColor.a = (color1.a + color2.a) / 2;
         return newColor;
     }
