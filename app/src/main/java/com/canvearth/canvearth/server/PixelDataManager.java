@@ -3,7 +3,6 @@ package com.canvearth.canvearth.server;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.Pair;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
@@ -13,21 +12,15 @@ import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
-import com.canvearth.canvearth.utils.concurrency.Success;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.security.spec.ECField;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeoutException;
 
 public class PixelDataManager {
     private static final PixelDataManager ourInstance = new PixelDataManager();
