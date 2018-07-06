@@ -1,12 +1,12 @@
 package com.canvearth.canvearth.utils;
 
 import com.canvearth.canvearth.pixel.BoundingBox;
-import com.canvearth.canvearth.pixel.PixelCoord;
+import com.canvearth.canvearth.pixel.Pixel;
 import com.google.android.gms.maps.model.LatLng;
 
 public class PixelUtils {
 
-    public static PixelCoord latlng2pix(double lat, double lng, final int zoom) {
+    public static Pixel latlng2pix(double lat, double lng, final int zoom) {
         int xtile = (int) Math.floor((lng + 180) / 360 * (1 << zoom));
         int ytile = (int) Math.floor((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2 * (1 << zoom));
         if (xtile < 0)
@@ -18,19 +18,35 @@ public class PixelUtils {
         if (ytile >= (1 << zoom))
             ytile = ((1 << zoom) - 1);
 
-        return new PixelCoord(xtile, ytile, zoom);
+        return new Pixel(xtile, ytile, zoom);
     }
 
-    public static BoundingBox pix2bbox(PixelCoord pixelCoord) {
-        final int x = pixelCoord.x;
-        final int y = pixelCoord.y;
-        final int zoom = pixelCoord.zoom;
+    public static BoundingBox pix2bbox(Pixel pixel) {
+        final int x = pixel.x;
+        final int y = pixel.y;
+        final int zoom = pixel.zoom;
         BoundingBox bb = new BoundingBox();
         bb.north = pix2lat(y, zoom);
         bb.south = pix2lat(y + 1, zoom);
         bb.west = pix2lng(x, zoom);
         bb.east = pix2lng(x + 1, zoom);
         return bb;
+    }
+
+    public static BoundingBox latlng2bbox(double lat, double lng, int zoom) {
+        Pixel pix = latlng2pix(lat, lng, zoom);
+        return pix2bbox(pix);
+    }
+
+    public static BoundingBox latlng2bbox(LatLng latlng, int zoom) {
+        double lat = latlng.latitude;
+        double lng = latlng.longitude;
+        Pixel pix = latlng2pix(lat, lng, zoom);
+        return pix2bbox(pix);
+    }
+
+    public static int getGridZoom(int viewZoom) {
+        return Math.max(viewZoom + Constants.VIEW_GRID_ZOOM_DIFF, Constants.GRID_SHOW_MAX_ZOOM_LEVEL);
     }
 
     public static double pix2lng(int x, int z) {
@@ -42,26 +58,26 @@ public class PixelUtils {
         return Math.toDegrees(Math.atan(Math.sinh(n)));
     }
 
-    public static PixelCoord getParentPixelCoord(PixelCoord pixelCoord) throws Exception {
-        if (pixelCoord.zoom == 0) {
+    public static Pixel getParentPixel(Pixel pixel) throws Exception {
+        if (pixel.zoom == 0) {
             throw new Exception("Cannot get parent of root pixel");
         }
-        int zoom = pixelCoord.zoom - 1;
-        int x = pixelCoord.x / 2;
-        int y = pixelCoord.y / 2;
-        return new PixelCoord(x, y, zoom);
+        int zoom = pixel.zoom - 1;
+        int x = pixel.x / 2;
+        int y = pixel.y / 2;
+        return new Pixel(x, y, zoom);
     }
 
-    public static PixelCoord[] getChildrenPixelCoord(PixelCoord pixelCoord) throws Exception {
-        if (pixelCoord.zoom == Constants.LEAF_PIXEL_LEVEL) {
+    public static Pixel[] getChildrenPixels(Pixel pixel) throws Exception {
+        if (pixel.zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
             throw new Exception("Cannot get children of leaf pixel");
         }
-        PixelCoord[] childrenPixelCoords = new PixelCoord[4];
-        int zoom = pixelCoord.zoom + 1;
-        childrenPixelCoords[0] = new PixelCoord(pixelCoord.x * 2, pixelCoord.y * 2, zoom);
-        childrenPixelCoords[1] = new PixelCoord(pixelCoord.x * 2 + 1, pixelCoord.y * 2, zoom);
-        childrenPixelCoords[2] = new PixelCoord(pixelCoord.x * 2, pixelCoord.y * 2 + 1, zoom);
-        childrenPixelCoords[3] = new PixelCoord(pixelCoord.x * 2 + 1, pixelCoord.y * 2 + 1, zoom);
-        return childrenPixelCoords;
+        Pixel[] childrenPixels = new Pixel[4];
+        int zoom = pixel.zoom + 1;
+        childrenPixels[0] = new Pixel(pixel.x * 2, pixel.y * 2, zoom);
+        childrenPixels[1] = new Pixel(pixel.x * 2 + 1, pixel.y * 2, zoom);
+        childrenPixels[2] = new Pixel(pixel.x * 2, pixel.y * 2 + 1, zoom);
+        childrenPixels[3] = new Pixel(pixel.x * 2 + 1, pixel.y * 2 + 1, zoom);
+        return childrenPixels;
     }
 }

@@ -2,6 +2,7 @@ package com.canvearth.canvearth;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -10,7 +11,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.canvearth.canvearth.pixel.PixelCoord;
+import com.canvearth.canvearth.client.PixelManager;
+import com.canvearth.canvearth.pixel.BoundingBox;
+import com.canvearth.canvearth.pixel.Pixel;
+import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
@@ -20,6 +24,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -32,7 +38,6 @@ public class MapsActivity extends AppCompatActivity implements
     private GoogleMap mMap;
     private MapScaleView scaleView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final int DRAW_GRID_ZOOM_LEVEL = 20;
     private boolean mPermissionDenied = false;
 
     @Override
@@ -63,6 +68,7 @@ public class MapsActivity extends AppCompatActivity implements
         LatLng center = new LatLng(41.385064, 2.173403);
         scaleView = findViewById(R.id.scaleView);
 
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnCameraIdleListener(this);
         mMap.setOnCameraMoveListener(this);
@@ -95,6 +101,11 @@ public class MapsActivity extends AppCompatActivity implements
         CameraPosition cameraPosition = mMap.getCameraPosition();
         Toast.makeText(this, "zoom: " + cameraPosition.zoom, Toast.LENGTH_LONG).show();
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
+
+        PixelManager.cleanup();
+        if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL) {
+            PixelManager.draw(mMap, Math.round(cameraPosition.zoom));
+        }
     }
 
     @Override
@@ -109,10 +120,10 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMyLocationClick(@NonNull Location location) {
         double lat = location.getLatitude();
         double lng = location.getLongitude();
-        PixelCoord pixelCoord = PixelUtils.latlng2pix(lat, lng, DRAW_GRID_ZOOM_LEVEL);
+        Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
         Toast.makeText(this, "Lat: " + location.getLatitude() + "\n" +
                         "Lng: " + location.getLongitude() + "\n" +
-                        "Pix: " + pixelCoord.x + ", " + pixelCoord.y + "\n"
+                        "Pix: " + pixel.x + ", " + pixel.y + "\n"
                 , Toast.LENGTH_LONG).show();
     }
 
@@ -150,5 +161,4 @@ public class MapsActivity extends AppCompatActivity implements
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
-
 }
