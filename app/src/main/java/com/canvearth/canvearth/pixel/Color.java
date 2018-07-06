@@ -2,7 +2,7 @@ package com.canvearth.canvearth.pixel;
 
 import com.canvearth.canvearth.utils.Constants;
 
-public class Color {
+public class Color implements Cloneable {
     public Long r;
     public Long g;
     public Long b;
@@ -19,6 +19,13 @@ public class Color {
         this.a = 255L;
     }
 
+    public Color(Long r, Long g, Long b, Long a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
     public Color clone() throws CloneNotSupportedException {
         Color color = (Color) super.clone();
         color.r = this.r.longValue();
@@ -30,14 +37,17 @@ public class Color {
 
     public boolean isTransparent() {
         return (this.a < Constants.COLOR_TRANSPARENT_BOUND) ;
+    }
 
+    public String toString() {
+        return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
     }
 
     public void replaceColorPortion(Color originColor, Color newColor, double portion) {
         this.r = this.r + (long) ((newColor.r - originColor.r) * portion);
-        this.g = this.g + (long) ((newColor.r - originColor.r) * portion);
-        this.b = this.b + (long) ((newColor.r - originColor.r) * portion);
-        this.a = this.a + (long) ((newColor.r - originColor.r) * portion);
+        this.g = this.g + (long) ((newColor.g - originColor.g) * portion);
+        this.b = this.b + (long) ((newColor.b - originColor.b) * portion);
+        this.a = this.a + (long) ((newColor.a - originColor.a) * portion);
     }
 
     public static Color colorCompose(Color color1, Color color2) {
