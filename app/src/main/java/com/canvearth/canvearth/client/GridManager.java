@@ -1,7 +1,7 @@
 package com.canvearth.canvearth.client;
 
 import com.canvearth.canvearth.pixel.Pixel;
-import com.canvearth.canvearth.server.PixelDataManager;
+import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.SphericalMercator;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class GridManager {
     private static Map<String, Pixel> pixels = new HashMap<>();
-    private static PixelDataManager pixelDataManager = PixelDataManager.getInstance();
+    private static FBPixelManager fBPixelManager = FBPixelManager.getInstance();
 
     private static void addPixels(GoogleMap map, double pixSize, int gridZoom) {
         Projection projection = map.getProjection();
@@ -43,7 +43,7 @@ public class GridManager {
 
         for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
             Pixel pix = entry.getValue();
-            pixelDataManager.watchPixel(pix.data);
+            fBPixelManager.watchPixel(pix.data);
             pix.draw(map);
         }
     }
@@ -59,7 +59,7 @@ public class GridManager {
     public static void cleanup() {
         for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
             Pixel pix = entry.getValue();
-            pixelDataManager.unwatchPixel(pix.data);
+            fBPixelManager.unwatchPixel(pix.data);
             pix.erase();
         }
 

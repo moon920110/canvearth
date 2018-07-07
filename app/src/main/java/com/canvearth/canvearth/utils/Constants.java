@@ -15,4 +15,7 @@ public class Constants {
     public static float PIX_STROKE_WIDTH = 3;
     public static int PIX_STROKE_COLOR = Color.argb(50, 100, 100, 100);
     public static int PIX_COLOR_RED = Color.argb(100, 255, 0, 0);
+
+    public static String FIREBASE_DEV_PREFIX = "DEV";
+    public static String FIREBASE_PROD_PREFIX = "PROD";
 }

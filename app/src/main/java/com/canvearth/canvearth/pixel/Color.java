@@ -35,7 +35,14 @@ public class Color implements Cloneable {
         return color;
     }
 
-    public boolean isTransparent() {
+    public boolean equals(Color color) {
+        return this.r.longValue() == color.r.longValue()
+                && this.g.longValue() == color.g.longValue()
+                && this.b.longValue() == color.b.longValue()
+                && this.a.longValue() == color.a.longValue();
+    }
+
+    public boolean transparent() {
         return (this.a < Constants.COLOR_TRANSPARENT_BOUND) ;
     }
 
@@ -43,28 +50,19 @@ public class Color implements Cloneable {
         return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
     }
 
+    // TODO consider this one more time -- related Issue #19
+    // Let's consider the situation when parent pixel's color A is composed of its children's color B,C,D,E.
+    // When B is changed to B', A have to be changed accordingly.
+    // In this situation, we have to call A.replaceColorPortion(B, B', 0.25) (0.25 is because B contributes 0.25 for A)
     public void replaceColorPortion(Color originColor, Color newColor, double portion) {
-        this.r = this.r + (long) ((newColor.r - originColor.r) * portion);
-        this.g = this.g + (long) ((newColor.g - originColor.g) * portion);
-        this.b = this.b + (long) ((newColor.b - originColor.b) * portion);
-        this.a = this.a + (long) ((newColor.a - originColor.a) * portion);
-    }
-
-    public static Color colorCompose(Color color1, Color color2) {
-        // Can cause issue -- to be changed [0, 255] to [0., 1.] later sometime.
-        Color newColor = new Color();
-        newColor.r = (color1.r + color2.r) / 2;
-        newColor.g = (color1.g + color2.g) / 2;
-        newColor.b = (color1.b + color2.b) / 2;
-        newColor.a = (color1.a + color2.a) / 2;
-        return newColor;
-    }
-
-    public static boolean areDifferent(Color color1, Color color2) {
-        int diffSum = (int)(Math.abs(color1.r - color2.r)
-                + Math.abs(color1.g - color2.g)
-                + Math.abs(color1.b - color2.b)
-                + Math.abs(color1.a - color2.a));
-        return (diffSum > Constants.COLOR_DIFFERENT_BOUND);
+        long newA = this.a + (long)(portion * (newColor.a - originColor.a));
+        if (newA == 0) {
+            this.a = newA;
+            return;
+        }
+        this.r = (this.r * this.a + (long)(portion * (newColor.a * newColor.r - originColor.a * originColor.r))) / newA;
+        this.g = (this.g * this.a + (long)(portion * (newColor.a * newColor.g - originColor.a * originColor.g))) / newA;
+        this.b = (this.b * this.a + (long)(portion * (newColor.a * newColor.b - originColor.a * originColor.b))) / newA;
+        this.a = newA;
     }
 }

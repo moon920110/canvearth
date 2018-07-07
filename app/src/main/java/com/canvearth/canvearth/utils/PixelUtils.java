@@ -5,6 +5,10 @@ import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.google.android.gms.maps.model.LatLng;
 
+import junit.framework.Assert;
+
+import java.util.ArrayList;
+
 public class PixelUtils {
 
     public static Pixel latlng2pix(double lat, double lng, final int zoom) {
@@ -69,16 +73,19 @@ public class PixelUtils {
         return new PixelData(x, y, zoom);
     }
 
-    public static PixelData[] getChildrenPixelData(PixelData pixelData) throws Exception {
-        if (pixelData.zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+    public static ArrayList<PixelData> getChildrenPixelData(PixelData pixelData, int level) throws Exception {
+        if (pixelData.zoom + level > Constants.LEAF_PIXEL_ZOOM_LEVEL) {
             throw new Exception("Cannot get children of leaf pixel");
         }
-        PixelData[] childrenPixelData = new PixelData[4];
-        int zoom = pixelData.zoom + 1;
-        childrenPixelData[0] = new PixelData(pixelData.x * 2, pixelData.y * 2, zoom);
-        childrenPixelData[1] = new PixelData(pixelData.x * 2 + 1, pixelData.y * 2, zoom);
-        childrenPixelData[2] = new PixelData(pixelData.x * 2, pixelData.y * 2 + 1, zoom);
-        childrenPixelData[3] = new PixelData(pixelData.x * 2 + 1, pixelData.y * 2 + 1, zoom);
+        int numChildrenSide = MathUtils.intPow(2, level);
+        ArrayList<PixelData> childrenPixelData = new ArrayList<>(numChildrenSide * numChildrenSide);
+        int zoom = pixelData.zoom + level;
+        for (int y = 0; y < numChildrenSide; y++) {
+            for(int x = 0; x < numChildrenSide; x++) {
+                childrenPixelData.add(new PixelData(pixelData.x * numChildrenSide + x, pixelData.y * numChildrenSide + y, zoom));
+                Assert.assertEquals(childrenPixelData.size(), y * numChildrenSide + x + 1);
+            }
+        }
         return childrenPixelData;
     }
 }
