@@ -1,13 +1,11 @@
 package com.canvearth.canvearth;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.canvearth.canvearth.pixel.Color;
-import com.canvearth.canvearth.pixel.PixelCoord;
-import com.canvearth.canvearth.server.Pixel4Firebase;
+import com.canvearth.canvearth.pixel.PixelData;
+import com.canvearth.canvearth.server.FBPixel;
 import com.canvearth.canvearth.server.PixelDataManager;
 import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
@@ -23,16 +21,18 @@ import java.util.Random;
 @RunWith(AndroidJUnit4.class)
 public class ServerInterfaceTest {
 
-    private ArrayList<PixelCoord> makeSamplePixelCoords(PixelCoord startPixelCoord, int numX, int numY) {
-        ArrayList<PixelCoord> pixelCoords = new ArrayList<>();
+    private ArrayList<PixelData> makeSamplePixelData(PixelData startPixelData, int numX, int numY) {
+        ArrayList<PixelData> pixelData = new ArrayList<>();
         for (int x = 0; x < numX; x++) {
             for (int y = 0; y < numY; y++) {
-                PixelCoord nearbyPixelCood
-                        = new PixelCoord(startPixelCoord.x + x, startPixelCoord.y + y, startPixelCoord.zoom);
-                pixelCoords.add(nearbyPixelCood);
+                PixelData nearbyPixelData = new PixelData(
+                        startPixelData.x + x,
+                        startPixelData.y + y,
+                        startPixelData.zoom);
+                pixelData.add(nearbyPixelData);
             }
         }
-        return pixelCoords;
+        return pixelData;
     }
 
     @Before
@@ -43,65 +43,74 @@ public class ServerInterfaceTest {
     @Test
     public void leafPixelReadTest() {
         PixelDataManager pixelDataManager = PixelDataManager.getInstance();
-        ArrayList<PixelCoord> samePixelCoords
-                = makeSamplePixelCoords(new PixelCoord(0, 0, Constants.LEAF_PIXEL_LEVEL), 20, 20);
+        ArrayList<PixelData> samePixelData = makeSamplePixelData(
+                new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
+                20,
+                20);
         // You have to watch pixel first..
-        for (PixelCoord pixelCoord : samePixelCoords) {
-            pixelDataManager.watchPixel(pixelCoord);
+        for (PixelData pixelData : samePixelData) {
+            pixelDataManager.watchPixel(pixelData);
         }
         // Get a random pixel info
         Random random = new Random();
-        PixelCoord randomPixelCoord = samePixelCoords.get(random.nextInt(20 * 20));
-        Pixel4Firebase pixelInfo = pixelDataManager.readPixel(randomPixelCoord);
+        PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
+        FBPixel pixelInfo = pixelDataManager.readPixel(randomPixelData);
         // You have to unwatch pixel
-        for (PixelCoord pixelCoord : samePixelCoords) {
-            pixelDataManager.unwatchPixel(pixelCoord);
+        for (PixelData pixelData : samePixelData) {
+            pixelDataManager.unwatchPixel(pixelData);
         }
     }
 
     @Test
     public void leafPixelWriteTest() {
         PixelDataManager pixelDataManager = PixelDataManager.getInstance();
-        ArrayList<PixelCoord> samePixelCoords
-                = makeSamplePixelCoords(new PixelCoord(0, 0, Constants.LEAF_PIXEL_LEVEL), 20, 20);
+        ArrayList<PixelData> samePixelData = makeSamplePixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
+                20,
+                20);
+
         // You have to watch pixel first..
-        for (PixelCoord pixelCoord : samePixelCoords) {
-            pixelDataManager.watchPixel(pixelCoord);
+        for (PixelData pixelData : samePixelData) {
+            pixelDataManager.watchPixel(pixelData);
         }
+
         // Write black color to the random pixel
         Random random = new Random();
-        PixelCoord randomPixelCoord = samePixelCoords.get(random.nextInt(20 * 20));
-        pixelDataManager.writePixel(randomPixelCoord, new Color(0L, 0L, 0L),()->{
+        PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
+        pixelDataManager.writePixel(randomPixelData, new Color(0L, 0L, 0L), () -> {
             Log.d("leafPixelWriteTest", "Succeed");
         });
+
         // You have to unwatch pixel
-        for (PixelCoord pixelCoord : samePixelCoords) {
-            pixelDataManager.unwatchPixel(pixelCoord);
+        for (PixelData pixelData : samePixelData) {
+            pixelDataManager.unwatchPixel(pixelData);
         }
     }
 
     @Test
     public void leafPixelWriteReadTest() {
         PixelDataManager pixelDataManager = PixelDataManager.getInstance();
-        ArrayList<PixelCoord> samePixelCoords
-                = makeSamplePixelCoords(new PixelCoord(0, 0, Constants.LEAF_PIXEL_LEVEL), 20, 20);
+        ArrayList<PixelData> samePixelData = makeSamplePixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
+                20,
+                20);
         // You have to watch pixel first..
-        for (PixelCoord pixelCoord : samePixelCoords) {
-            pixelDataManager.watchPixel(pixelCoord);
+        for (PixelData pixelData : samePixelData) {
+            pixelDataManager.watchPixel(pixelData);
         }
+
         // Write black color to the random pixel
         Random random = new Random();
-        PixelCoord randomPixelCoord = samePixelCoords.get(random.nextInt(20 * 20));
+        PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
         Color black = new Color(0L, 0L, 0L);
-        pixelDataManager.writePixel(randomPixelCoord, black,()->{
+        pixelDataManager.writePixel(randomPixelData, black, () -> {
             Log.d("leafPixelWriteTest", "Succeed");
         });
+
         // Read same pixel
-        Pixel4Firebase pixelInfo = pixelDataManager.readPixel(randomPixelCoord);
-        assert(pixelInfo.color.equals(black));
+        FBPixel pixelInfo = pixelDataManager.readPixel(randomPixelData);
+        assert (pixelInfo.color.equals(black));
         // You have to unwatch pixel
-        for (PixelCoord pixelCoord : samePixelCoords) {
-            pixelDataManager.unwatchPixel(pixelCoord);
+        for (PixelData pixelData : samePixelData) {
+            pixelDataManager.unwatchPixel(pixelData);
         }
     }
 }
