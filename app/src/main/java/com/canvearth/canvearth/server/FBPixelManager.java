@@ -10,6 +10,7 @@ import com.canvearth.canvearth.client.PixelEvents;
 import com.canvearth.canvearth.pixel.Color;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.utils.BitmapUtils;
+import com.canvearth.canvearth.utils.ColorUtils;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.MathUtils;
@@ -226,7 +227,7 @@ public class FBPixelManager {
             FBPixel parentFBPixel = readPixelInstantly(parentPixelData);
             FBPixel newParentFBPixel = parentFBPixel.clone();
             newParentFBPixel.futureColor.replaceColorPortion(childOriginPixel.color, childNewPixel.color, 0.25);
-            if (Color.areDifferent(newParentFBPixel.color, newParentFBPixel.futureColor)) {
+            if (ColorUtils.areDifferent(newParentFBPixel.color, newParentFBPixel.futureColor)) {
                 newParentFBPixel.color = newParentFBPixel.futureColor.clone();
                 latchForAllFinish.countUp();
                 String parentId = parentPixelData.firebaseId;
