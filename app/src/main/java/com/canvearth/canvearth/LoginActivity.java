@@ -80,6 +80,13 @@ public class LoginActivity extends AppCompatActivity {
                 mUserInformation.handleFacebookAccessToken(LoginActivity.this, loginResult.getAccessToken());
             }
         });
+        Button fakeLoginButton = findViewById(R.id.facebook_fake_login);
+        fakeLoginButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                loginButton.performClick();
+            }
+        });
     }
 
     @Override
