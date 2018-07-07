@@ -15,6 +15,7 @@ import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.MathUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
+import com.canvearth.canvearth.utils.concurrency.Function;
 import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -138,8 +139,12 @@ public class FBPixelManager {
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.v(TAG, "Got one pixel");
-                        FBPixel ServerFBPixel = dataSnapshot.getValue(FBPixel.class);
+                        FBPixel ServerFBPixel;
+                        if (childPixelData.isLeaf()) {
+                            ServerFBPixel = dataSnapshot.getValue(LeafFBPixel.class);
+                        } else {
+                            ServerFBPixel = dataSnapshot.getValue(FBPixel.class);
+                        }
                         if (ServerFBPixel == null) {
                             ServerFBPixel = FBPixel.emptyPixel();
                         }
@@ -170,7 +175,7 @@ public class FBPixelManager {
     }
 
 
-    public void writePixelAsync(PixelData pixelData, Color color, @Nullable Runnable callback) {
+    public void writePixelAsync(PixelData pixelData, Color color, @Nullable Function<PixelData> callback) {
         try {
             if (!pixelData.isLeaf()) {
                 throw new Exception("Pixel is not leaf");
@@ -189,12 +194,12 @@ public class FBPixelManager {
                 Log.v(TAG, "setValue finished");
                 latchForAllFinish.countDown();
             }); // TODO transaction based on time / push uid
-            updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
+            final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
             new Thread(() -> {
                 try {
                     latchForAllFinish.await();
                     if (callback != null) {
-                        callback.run();
+                        callback.run(lastUpdatedPixelData);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "in callback - " +  e.getMessage());
@@ -206,21 +211,27 @@ public class FBPixelManager {
     }
 
     // Please prefer writePixelAsync, for performance.
-    public void writePixelSync(PixelData pixelData, Color color) {
+    // returns last update pixel data.
+    public PixelData writePixelSync(PixelData pixelData, Color color) {
+        final PixelData returnPixelData = new PixelData(0, 0, 0);
         try {
             CountDownLatch latchForFinish = new CountDownLatch(1);
-            writePixelAsync(pixelData, color, latchForFinish::countDown);
+            writePixelAsync(pixelData, color, (PixelData lastUpdatedPixelData) -> {
+                returnPixelData.copyFrom(lastUpdatedPixelData);
+                latchForFinish.countDown();
+            });
             latchForFinish.await();
         } catch (InterruptedException e) {
             Log.e(TAG, e.getMessage());
         }
+        return returnPixelData;
     }
 
-
-    private void updateParent(FBPixel childOriginPixel, FBPixel childNewPixel,
+    // returns last updated pixel
+    private PixelData updateParent(FBPixel childOriginPixel, FBPixel childNewPixel,
                               PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
         if (childPixelData.isRoot()) {
-            return;
+            return childPixelData;
         }
         try {
             PixelData parentPixelData = PixelUtils.getParentPixelData(childPixelData);
@@ -236,7 +247,7 @@ public class FBPixelManager {
                             Log.v(TAG, "setValue finished");
                             latchForAllFinish.countDown();
                         });
-                updateParent(parentFBPixel, newParentFBPixel, parentPixelData, latchForAllFinish);
+                return updateParent(parentFBPixel, newParentFBPixel, parentPixelData, latchForAllFinish);
             } else {
                 Log.v(TAG, "Update canceled - original color is " + newParentFBPixel.color.toString()
                         + " , future color is " + newParentFBPixel.futureColor.toString());
@@ -244,5 +255,6 @@ public class FBPixelManager {
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
+        return childPixelData;
     }
 }

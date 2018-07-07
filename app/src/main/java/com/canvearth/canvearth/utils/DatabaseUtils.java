@@ -12,4 +12,9 @@ public class DatabaseUtils {
             return database.child(Constants.FIREBASE_PROD_PREFIX).child(pixelId);
         }
     }
+
+    public static void clearDev() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(Constants.FIREBASE_DEV_PREFIX).removeValue();
+    }
 }

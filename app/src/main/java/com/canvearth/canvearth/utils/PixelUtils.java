@@ -88,4 +88,18 @@ public class PixelUtils {
         }
         return childrenPixelData;
     }
+
+    public static ArrayList<PixelData> makeBatchPixelData(PixelData startPixelData, int numX, int numY) {
+        ArrayList<PixelData> pixelData = new ArrayList<>();
+        for (int x = 0; x < numX; x++) {
+            for (int y = 0; y < numY; y++) {
+                PixelData nearbyPixelData = new PixelData(
+                        startPixelData.x + x,
+                        startPixelData.y + y,
+                        startPixelData.zoom);
+                pixelData.add(nearbyPixelData);
+            }
+        }
+        return pixelData;
+    }
 }
