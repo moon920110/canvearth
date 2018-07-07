@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -63,6 +64,12 @@ public class PixelDataManager {
         DatabaseUtils.getPixelReference(firebaseId).addValueEventListener(valueEventListener);
     }
 
+    public void watchPixels(List<PixelCoord> pixelCoords) {
+        for (PixelCoord pixelCoord: pixelCoords) {
+            watchPixel(pixelCoord);
+        }
+    }
+
     // Client have to call unwatchPixel when you don't need to track pixel data anymore.
     public void unwatchPixel(PixelCoord pixelCoord) {
         String firebaseId = pixelCoord.getFirebaseId();
@@ -70,6 +77,12 @@ public class PixelDataManager {
         ValueEventListener registeredListener = watchingPixels.get(firebaseId).getValueEventListener();
         DatabaseUtils.getPixelReference(firebaseId).removeEventListener(registeredListener);
         watchingPixels.remove(firebaseId);
+    }
+
+    public void unwatchPixels(List<PixelCoord> pixelCoords) {
+        for (PixelCoord pixelCoord: pixelCoords) {
+            unwatchPixel(pixelCoord);
+        }
     }
 
     public Pixel4Firebase readPixel(PixelCoord pixelCoord) {
@@ -123,7 +136,7 @@ public class PixelDataManager {
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //TODO
+                        Log.v(TAG, "Got one pixel");
                         Pixel4Firebase ServerPixel4Firebase = dataSnapshot.getValue(Pixel4Firebase.class);
                         if (ServerPixel4Firebase == null) {
                             ServerPixel4Firebase = Pixel4Firebase.emptyPixel();
@@ -181,7 +194,7 @@ public class PixelDataManager {
                         callback.run();
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, "in callback - " +  e.getMessage());
                 }
             }).start();
         } catch (Exception e) {

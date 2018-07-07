@@ -35,7 +35,14 @@ public class Color implements Cloneable {
         return color;
     }
 
-    public boolean isTransparent() {
+    public boolean equals(Color color) {
+        return this.r.longValue() == color.r.longValue()
+                && this.g.longValue() == color.g.longValue()
+                && this.b.longValue() == color.b.longValue()
+                && this.a.longValue() == color.a.longValue();
+    }
+
+    public boolean transparent() {
         return (this.a < Constants.COLOR_TRANSPARENT_BOUND) ;
     }
 
@@ -46,6 +53,10 @@ public class Color implements Cloneable {
     // TODO consider this one more time
     public void replaceColorPortion(Color originColor, Color newColor, double portion) {
         long newA = this.a + (long)(portion * (newColor.a - originColor.a));
+        if (newA == 0) {
+            this.a = newA;
+            return;
+        }
         this.r = (this.r * this.a + (long)(portion * (newColor.a * newColor.r - originColor.a * originColor.r))) / newA;
         this.g = (this.g * this.a + (long)(portion * (newColor.a * newColor.g - originColor.a * originColor.g))) / newA;
         this.b = (this.b * this.a + (long)(portion * (newColor.a * newColor.b - originColor.a * originColor.b))) / newA;
@@ -63,6 +74,7 @@ public class Color implements Cloneable {
         return newColor;
     }
 
+    // TODO this logic is wierd
     public static boolean areDifferent(Color color1, Color color2) {
         int diffSum = (int)(Math.abs(color1.r - color2.r)
                 + Math.abs(color1.g - color2.g)
