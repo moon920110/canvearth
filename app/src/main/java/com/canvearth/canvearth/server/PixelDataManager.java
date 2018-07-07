@@ -69,14 +69,14 @@ public class PixelDataManager {
         watchingPixels.remove(firebaseId);
     }
 
-    public FBPixel readPixel(Pixel pixelCoord) {
-        String firebaseId = pixelCoord.getFirebaseId();
+    public FBPixel readPixel(Pixel pixel) {
+        String firebaseId = pixel.getFirebaseId();
         return watchingPixels.get(firebaseId).getFBPixel();
     }
 
     // You can read unwatching pixel by this method
-    private FBPixel readPixelInstantly(Pixel pixelCoord) throws InterruptedException {
-        String firebaseId = pixelCoord.getFirebaseId();
+    private FBPixel readPixelInstantly(Pixel pixel) throws InterruptedException {
+        String firebaseId = pixel.getFirebaseId();
         final FBPixel fbPixel = FBPixel.emptyPixel();
         final CountDownLatch latchForFinish = new CountDownLatch(1);
         DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -101,12 +101,12 @@ public class PixelDataManager {
         return fbPixel;
     }
 
-    public boolean writePixel(Pixel pixelCoord, Color color, @Nullable Runnable callback) {
+    public boolean writePixel(Pixel pixel, Color color, @Nullable Runnable callback) {
         try {
-            if (!pixelCoord.isLeaf()) {
+            if (!pixel.isLeaf()) {
                 throw new Exception("Pixel is not leaf");
             }
-            String firebaseId = pixelCoord.getFirebaseId();
+            String firebaseId = pixel.getFirebaseId();
             // You have to watch pixel before you write it.
             if (!watchingPixels.containsKey(firebaseId)) {
                 throw new Exception("Try to write pixel which is not watched");
@@ -120,7 +120,7 @@ public class PixelDataManager {
                 Log.v(TAG, "setValue finished");
                 latchForAllFinish.countDown();
             }); // TODO transaction based on time / push uid
-            updateParent(originalPixel, newPixel, pixelCoord, latchForAllFinish);
+            updateParent(originalPixel, newPixel, pixel, latchForAllFinish);
             new Thread(() -> {
                 try {
                     latchForAllFinish.await();

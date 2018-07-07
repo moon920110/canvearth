@@ -3,11 +3,10 @@ package com.canvearth.canvearth.utils;
 import android.graphics.Color;
 
 public class Constants {
-    public static int LEAF_PIXEL_ZOOM_LEVEL = 20; // TODO to be fixed
+    public static int LEAF_PIXEL_ZOOM_LEVEL = 20;
     public static int GRID_SHOW_MAX_ZOOM_LEVEL = 18;
     public static int GRID_SHOW_MIN_ZOOM_LEVEL = 14;
     public static int VIEW_GRID_ZOOM_DIFF = 3;
-    public static int MAX_GRID_ZOOM_LEVEL = 20;
     // we regard a color is transparent when its alpha is lower than below.
     public static int COLOR_TRANSPARENT_BOUND = 10;
 

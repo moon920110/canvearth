@@ -46,7 +46,7 @@ public class PixelUtils {
     }
 
     public static int getGridZoom(int viewZoom) {
-        return Math.min(viewZoom + Constants.VIEW_GRID_ZOOM_DIFF, Constants.MAX_GRID_ZOOM_LEVEL);
+        return Math.min(viewZoom + Constants.VIEW_GRID_ZOOM_DIFF, Constants.LEAF_PIXEL_ZOOM_LEVEL);
     }
 
     public static double pix2lng(int x, int z) {

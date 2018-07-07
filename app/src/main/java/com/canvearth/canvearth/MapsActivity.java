@@ -2,7 +2,6 @@ package com.canvearth.canvearth;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -11,8 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.canvearth.canvearth.client.PixelManager;
-import com.canvearth.canvearth.pixel.BoundingBox;
+import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -24,8 +22,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -104,9 +100,9 @@ public class MapsActivity extends AppCompatActivity implements
         Toast.makeText(this, "zoom: " + cameraPosition.zoom, Toast.LENGTH_LONG).show();
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
 
-        PixelManager.cleanup();
+        GridManager.cleanup();
         if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_ZOOM_LEVEL) {
-            PixelManager.draw(mMap, Math.round(cameraPosition.zoom));
+            GridManager.draw(mMap, Math.round(cameraPosition.zoom));
         }
     }
 

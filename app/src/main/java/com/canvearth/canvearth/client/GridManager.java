@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PixelManager {
+public class GridManager {
     private static Set<Pixel> pixels = new HashSet<>();
 
     private static void addPixels(GoogleMap map, double pixSize, int gridZoom) {

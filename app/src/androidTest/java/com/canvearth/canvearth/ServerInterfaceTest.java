@@ -22,15 +22,15 @@ import java.util.Random;
 public class ServerInterfaceTest {
 
     private ArrayList<Pixel> makeSamplePixels(Pixel startPixel, int numX, int numY) {
-        ArrayList<Pixel> pixelCoords = new ArrayList<>();
+        ArrayList<Pixel> pixels = new ArrayList<>();
         for (int x = 0; x < numX; x++) {
             for (int y = 0; y < numY; y++) {
                 Pixel nearbyPixelCood
                         = new Pixel(startPixel.x + x, startPixel.y + y, startPixel.zoom);
-                pixelCoords.add(nearbyPixelCood);
+                pixels.add(nearbyPixelCood);
             }
         }
-        return pixelCoords;
+        return pixels;
     }
 
     @Before
@@ -44,16 +44,16 @@ public class ServerInterfaceTest {
         ArrayList<Pixel> samePixels
                 = makeSamplePixels(new Pixel(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 20, 20);
         // You have to watch pixel first..
-        for (Pixel pixelCoord : samePixels) {
-            pixelDataManager.watchPixel(pixelCoord);
+        for (Pixel pixel : samePixels) {
+            pixelDataManager.watchPixel(pixel);
         }
         // Get a random pixel info
         Random random = new Random();
         Pixel randomPixel = samePixels.get(random.nextInt(20 * 20));
         FBPixel pixelInfo = pixelDataManager.readPixel(randomPixel);
         // You have to unwatch pixel
-        for (Pixel pixelCoord : samePixels) {
-            pixelDataManager.unwatchPixel(pixelCoord);
+        for (Pixel pixel : samePixels) {
+            pixelDataManager.unwatchPixel(pixel);
         }
     }
 
@@ -63,8 +63,8 @@ public class ServerInterfaceTest {
         ArrayList<Pixel> samePixels
                 = makeSamplePixels(new Pixel(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 20, 20);
         // You have to watch pixel first..
-        for (Pixel pixelCoord : samePixels) {
-            pixelDataManager.watchPixel(pixelCoord);
+        for (Pixel pixel : samePixels) {
+            pixelDataManager.watchPixel(pixel);
         }
         // Write black color to the random pixel
         Random random = new Random();
@@ -73,8 +73,8 @@ public class ServerInterfaceTest {
             Log.d("leafPixelWriteTest", "Succeed");
         });
         // You have to unwatch pixel
-        for (Pixel pixelCoord : samePixels) {
-            pixelDataManager.unwatchPixel(pixelCoord);
+        for (Pixel pixel : samePixels) {
+            pixelDataManager.unwatchPixel(pixel);
         }
     }
 
@@ -84,8 +84,8 @@ public class ServerInterfaceTest {
         ArrayList<Pixel> samePixels
                 = makeSamplePixels(new Pixel(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 20, 20);
         // You have to watch pixel first..
-        for (Pixel pixelCoord : samePixels) {
-            pixelDataManager.watchPixel(pixelCoord);
+        for (Pixel pixel : samePixels) {
+            pixelDataManager.watchPixel(pixel);
         }
         // Write black color to the random pixel
         Random random = new Random();
@@ -98,8 +98,8 @@ public class ServerInterfaceTest {
         FBPixel pixelInfo = pixelDataManager.readPixel(randomPixel);
         assert (pixelInfo.color.equals(black));
         // You have to unwatch pixel
-        for (Pixel pixelCoord : samePixels) {
-            pixelDataManager.unwatchPixel(pixelCoord);
+        for (Pixel pixel : samePixels) {
+            pixelDataManager.unwatchPixel(pixel);
         }
     }
 }
