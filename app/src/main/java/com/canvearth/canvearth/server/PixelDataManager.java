@@ -9,7 +9,7 @@ import android.util.Log;
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
 import com.canvearth.canvearth.pixel.Color;
-import com.canvearth.canvearth.pixel.PixelCoord;
+import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
@@ -31,28 +31,30 @@ import java.util.concurrent.CountDownLatch;
 public class PixelDataManager {
     private static final PixelDataManager ourInstance = new PixelDataManager();
     private static final String TAG = "PixelDataManager";
+
     public static PixelDataManager getInstance() {
         return ourInstance;
     }
 
     private Map<String, WatchingPixel> watchingPixels = new HashMap<>();
+
     private PixelDataManager() {
     }
 
     // Client have to call watchPixel to keep track pixel data.
-    public void watchPixel(final PixelCoord pixelCoord) {
-        final String firebaseId = pixelCoord.getFirebaseId();
+    public void watchPixel(final PixelData pixelData) {
+        final String firebaseId = pixelData.firebaseId;
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Pixel4Firebase pixel4Firebase;
-                if (pixelCoord.zoom < Constants.LEAF_PIXEL_LEVEL) {
-                    pixel4Firebase = dataSnapshot.getValue(Pixel4Firebase.class);
+                FBPixel FBPixel;
+                if (pixelData.zoom < Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+                    FBPixel = dataSnapshot.getValue(FBPixel.class);
                 } else {
-                    pixel4Firebase = dataSnapshot.getValue(LeafPixel4Firebase.class);
+                    FBPixel = dataSnapshot.getValue(LeafFBPixel.class);
                 }
-                watchingPixels.get(firebaseId).setPixel4Firebase(pixel4Firebase);
-                PixelEvents.watchingPixelChanged(pixel4Firebase);
+                watchingPixels.get(firebaseId).setFBPixel(FBPixel);
+                PixelEvents.watchingPixelChanged(FBPixel);
             }
 
             @Override
@@ -64,45 +66,45 @@ public class PixelDataManager {
         DatabaseUtils.getPixelReference(firebaseId).addValueEventListener(valueEventListener);
     }
 
-    public void watchPixels(List<PixelCoord> pixelCoords) {
-        for (PixelCoord pixelCoord: pixelCoords) {
+    public void watchPixels(List<PixelData> pixelCoords) {
+        for (PixelData pixelCoord: pixelCoords) {
             watchPixel(pixelCoord);
         }
     }
 
     // Client have to call unwatchPixel when you don't need to track pixel data anymore.
-    public void unwatchPixel(PixelCoord pixelCoord) {
-        String firebaseId = pixelCoord.getFirebaseId();
+    public void unwatchPixel(PixelData pixelData) {
+        String firebaseId = pixelData.firebaseId;
 
         ValueEventListener registeredListener = watchingPixels.get(firebaseId).getValueEventListener();
         DatabaseUtils.getPixelReference(firebaseId).removeEventListener(registeredListener);
         watchingPixels.remove(firebaseId);
     }
 
-    public void unwatchPixels(List<PixelCoord> pixelCoords) {
-        for (PixelCoord pixelCoord: pixelCoords) {
-            unwatchPixel(pixelCoord);
+    public FBPixel readPixel(PixelData pixelData) {
+        String firebaseId = pixelData.firebaseId;
+        return watchingPixels.get(firebaseId).getFBPixel();
+    }
+
+    public void unwatchPixels(List<PixelData> pixelDataList) {
+        for (PixelData pixelData: pixelDataList) {
+            unwatchPixel(pixelData);
         }
     }
 
-    public Pixel4Firebase readPixel(PixelCoord pixelCoord) {
-        String firebaseId = pixelCoord.getFirebaseId();
-        return watchingPixels.get(firebaseId).getPixel4Firebase();
-    }
-
     // You can read unwatching pixel by this method
-    public Pixel4Firebase readPixelInstantly(PixelCoord pixelCoord) throws InterruptedException {
-        String firebaseId = pixelCoord.getFirebaseId();
-        final Pixel4Firebase pixel4Firebase = Pixel4Firebase.emptyPixel();
+    private FBPixel readPixelInstantly(PixelData pixelData) throws InterruptedException {
+        String firebaseId = pixelData.firebaseId;
+        final FBPixel fbPixel = FBPixel.emptyPixel();
         final CountDownLatch latchForFinish = new CountDownLatch(1);
         DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Pixel4Firebase ServerPixel4Firebase = dataSnapshot.getValue(Pixel4Firebase.class);
-                if (ServerPixel4Firebase == null) {
+                FBPixel serverFBPixel = dataSnapshot.getValue(FBPixel.class);
+                if (serverFBPixel == null) {
                     latchForFinish.countDown();
                 } else {
-                    ServerPixel4Firebase.copyTo(pixel4Firebase);
+                    serverFBPixel.copyTo(fbPixel);
                     latchForFinish.countDown();
                 }
             }
@@ -114,32 +116,32 @@ public class PixelDataManager {
             }
         });
         latchForFinish.await();
-        return pixel4Firebase;
+        return fbPixel;
     }
 
     // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
     // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
     // TODO cache this when there is performance issue
     // Do we need Async version of this?
-    public Bitmap getBitmapSync(PixelCoord pixelCoord, int resolutionFactor) {
+    public Bitmap getBitmapSync(PixelData pixelCoord, int resolutionFactor) {
         int resolution = MathUtils.intPow(2, resolutionFactor);
         final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
         try {
-            int hierarchy = Math.min(Constants.LEAF_PIXEL_LEVEL - pixelCoord.zoom, resolutionFactor);
+            int hierarchy = Math.min(Constants.LEAF_PIXEL_ZOOM_LEVEL - pixelCoord.zoom, resolutionFactor);
             int chargeForOnePixel = MathUtils.intPow(2, resolutionFactor - hierarchy);
-            ArrayList<PixelCoord> childrenPixelCoord = PixelUtils.getChildrenPixelCoord(pixelCoord, hierarchy);
+            ArrayList<PixelData> childrenPixelCoord = PixelUtils.getChildrenPixelCoord(pixelCoord, hierarchy);
             int childrenStartX = childrenPixelCoord.get(0).x;
             int childrenStartY = childrenPixelCoord.get(0).y;
             CountDownLatch latchForFinish = new CountDownLatch(childrenPixelCoord.size());
-            for (PixelCoord childPixelCoord: childrenPixelCoord) {
-                String firebaseId = childPixelCoord.getFirebaseId();
+            for (PixelData childPixelCoord: childrenPixelCoord) {
+                String firebaseId = childPixelCoord.firebaseId;
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Log.v(TAG, "Got one pixel");
-                        Pixel4Firebase ServerPixel4Firebase = dataSnapshot.getValue(Pixel4Firebase.class);
+                        FBPixel ServerPixel4Firebase = dataSnapshot.getValue(FBPixel.class);
                         if (ServerPixel4Firebase == null) {
-                            ServerPixel4Firebase = Pixel4Firebase.emptyPixel();
+                            ServerPixel4Firebase = FBPixel.emptyPixel();
                         }
                         int color = BitmapUtils.intColor(ServerPixel4Firebase.color);
                         int relativeCoordX = childPixelCoord.x - childrenStartX;
@@ -167,27 +169,28 @@ public class PixelDataManager {
         return bitmap;
     }
 
-    public void writePixelAsync(PixelCoord pixelCoord, Color color, @Nullable Runnable callback) {
+
+    public void writePixelAsync(PixelData pixelData, Color color, @Nullable Runnable callback) {
         try {
-            if (!pixelCoord.isLeaf()) {
+            if (!pixelData.isLeaf()) {
                 throw new Exception("Pixel is not leaf");
             }
-            String firebaseId = pixelCoord.getFirebaseId();
+            String firebaseId = pixelData.firebaseId;
             // You have to watch pixel before you write it.
             if (!watchingPixels.containsKey(firebaseId)) {
                 throw new Exception("Try to write pixel which is not watched");
             }
-            Pixel4Firebase originalPixel = watchingPixels.get(firebaseId).getPixel4Firebase();
+            FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
             UserInformation userInformation = UserInformation.getInstance();
             String userToken = userInformation.getToken();
-            LeafPixel4Firebase newPixel = new LeafPixel4Firebase(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+            LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
             final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
-            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference)->{
+            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
                 Log.v(TAG, "setValue finished");
                 latchForAllFinish.countDown();
             }); // TODO transaction based on time / push uid
-            updateParent(originalPixel, newPixel, pixelCoord, latchForAllFinish);
-            new Thread(()->{
+            updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
+            new Thread(() -> {
                 try {
                     latchForAllFinish.await();
                     if (callback != null) {
@@ -203,7 +206,7 @@ public class PixelDataManager {
     }
 
     // Please prefer writePixelAsync, for performance.
-    public void writePixelSync(PixelCoord pixelCoord, Color color) {
+    public void writePixelSync(PixelData pixelCoord, Color color) {
         try {
             CountDownLatch latchForFinish = new CountDownLatch(1);
             writePixelAsync(pixelCoord, color, latchForFinish::countDown);
@@ -213,29 +216,30 @@ public class PixelDataManager {
         }
     }
 
-    private void updateParent(Pixel4Firebase childOriginPixel, Pixel4Firebase childNewPixel,
-                              PixelCoord childPixelCoord, final CountUpDownLatch latchForAllFinish) {
-        if (childPixelCoord.isRoot()) {
+
+    private void updateParent(FBPixel childOriginPixel, FBPixel childNewPixel,
+                              PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
+        if (childPixelData.isRoot()) {
             return;
         }
         try {
-            PixelCoord parentPixelCoord = PixelUtils.getParentPixelCoord(childPixelCoord);
-            Pixel4Firebase parentPixel = readPixelInstantly(parentPixelCoord);
-            Pixel4Firebase newParentPixel = parentPixel.clone();
-            newParentPixel.futureColor.replaceColorPortion(childOriginPixel.color, childNewPixel.color, 0.25);
-            if (Color.areDifferent(newParentPixel.color, newParentPixel.futureColor)) {
-                newParentPixel.color = newParentPixel.futureColor.clone();
+            PixelData parentPixelData = PixelUtils.getParentPixelData(childPixelData);
+            FBPixel parentFBPixel = readPixelInstantly(parentPixelData);
+            FBPixel newParentFBPixel = parentFBPixel.clone();
+            newParentFBPixel.futureColor.replaceColorPortion(childOriginPixel.color, childNewPixel.color, 0.25);
+            if (Color.areDifferent(newParentFBPixel.color, newParentFBPixel.futureColor)) {
+                newParentFBPixel.color = newParentFBPixel.futureColor.clone();
                 latchForAllFinish.countUp();
-                String parentId = parentPixelCoord.getFirebaseId();
-                DatabaseUtils.getPixelReference(parentId).setValue(newParentPixel,
+                String parentId = parentPixelData.firebaseId;
+                DatabaseUtils.getPixelReference(parentId).setValue(newParentFBPixel,
                         (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
                             Log.v(TAG, "setValue finished");
                             latchForAllFinish.countDown();
                         });
-                updateParent(parentPixel, newParentPixel, parentPixelCoord, latchForAllFinish);
+                updateParent(parentFBPixel, newParentFBPixel, parentPixelData, latchForAllFinish);
             } else {
-                Log.v(TAG, "Update canceled - original color is " + newParentPixel.color.toString()
-                        + " , future color is " + newParentPixel.futureColor.toString());
+                Log.v(TAG, "Update canceled - original color is " + newParentFBPixel.color.toString()
+                        + " , future color is " + newParentFBPixel.futureColor.toString());
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
