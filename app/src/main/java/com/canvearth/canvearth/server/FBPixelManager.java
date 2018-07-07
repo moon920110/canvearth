@@ -139,11 +139,11 @@ public class FBPixelManager {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Log.v(TAG, "Got one pixel");
-                        FBPixel ServerPixel4Firebase = dataSnapshot.getValue(FBPixel.class);
-                        if (ServerPixel4Firebase == null) {
-                            ServerPixel4Firebase = FBPixel.emptyPixel();
+                        FBPixel ServerFBPixel = dataSnapshot.getValue(FBPixel.class);
+                        if (ServerFBPixel == null) {
+                            ServerFBPixel = FBPixel.emptyPixel();
                         }
-                        int color = BitmapUtils.intColor(ServerPixel4Firebase.color);
+                        int color = BitmapUtils.intColor(ServerFBPixel.color);
                         int relativeCoordX = childPixelData.x - childrenStartX;
                         int relativeCoordY = childPixelData.y - childrenStartY;
                         for (int y = 0; y < chargeForOnePixel; y++) {
