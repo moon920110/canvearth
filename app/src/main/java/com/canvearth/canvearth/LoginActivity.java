@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.facebook.CallbackManager;
@@ -45,25 +48,36 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.button_facebook_login);
+        final LoginButton loginButton = findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions("email", "public_profile");
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+        // Commenting out for dev purposes. Will not need to type email and password to go to MapsActivity
+//        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                Log.d(TAG, "Login callback succeed");
+//                mUserInformation.handleFacebookAccessToken(LoginActivity.this, loginResult.getAccessToken());
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                Log.w(TAG, "Login callback canceled");
+//            }
+//
+//            @Override
+//            public void onError(FacebookException error) {
+//                Log.e(TAG, "Login callback error" + error.getMessage());
+//            }
+//        });
+        loginButton.setOnClickListener(new Button.OnClickListener() {
             @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "Login callback succeed");
                 mUserInformation.handleFacebookAccessToken(LoginActivity.this, loginResult.getAccessToken());
-            }
-
-            @Override
-            public void onCancel() {
-                Log.w(TAG, "Login callback canceled");
-                // ...
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.e(TAG, "Login callback error" + error.getMessage());
-                // ...
             }
         });
     }

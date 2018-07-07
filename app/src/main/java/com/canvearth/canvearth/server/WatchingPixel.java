@@ -8,30 +8,30 @@ import java.util.concurrent.CountDownLatch;
 
 public class WatchingPixel {
     private static final String TAG = "WatchingPixel";
-    private Pixel4Firebase mPixel4Firebase;
+    private FBPixel mFBPixel;
     private ValueEventListener mValueEventListener;
     private CountDownLatch checkFetchedDone;
 
-    public WatchingPixel(Pixel4Firebase pixel4Firebase, ValueEventListener valueEventListener) {
-        this.mPixel4Firebase = pixel4Firebase;
+    public WatchingPixel(FBPixel FBPixel, ValueEventListener valueEventListener) {
+        this.mFBPixel = FBPixel;
         this.mValueEventListener = valueEventListener;
         this.checkFetchedDone = new CountDownLatch(1);
     }
 
-    public Pixel4Firebase getPixel4Firebase() {
+    public FBPixel getFBPixel() {
         try {
             this.checkFetchedDone.await();
         } catch (InterruptedException e) {
             Log.e(TAG, e.getMessage());
         }
-        if (mPixel4Firebase == null) {
-            return Pixel4Firebase.emptyPixel();
+        if (mFBPixel == null) {
+            return FBPixel.emptyPixel();
         }
-        return mPixel4Firebase;
+        return mFBPixel;
     }
 
-    public void setPixel4Firebase(Pixel4Firebase pixel4Firebase) {
-        mPixel4Firebase = pixel4Firebase;
+    public void setFBPixel(FBPixel FBPixel) {
+        mFBPixel = FBPixel;
         this.checkFetchedDone.countDown();
     }
 
