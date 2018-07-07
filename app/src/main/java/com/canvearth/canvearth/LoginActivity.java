@@ -81,11 +81,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Button fakeLoginButton = findViewById(R.id.facebook_fake_login);
-        fakeLoginButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                loginButton.performClick();
-            }
+        fakeLoginButton.setOnClickListener((View v) -> {
+            loginButton.performClick();
         });
     }
 
