@@ -131,7 +131,7 @@ public class MapsActivity extends AppCompatActivity implements
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
         showToast(this, "Lat: " + location.getLatitude() + "\n" +
                 "Lng: " + location.getLongitude() + "\n" +
-                "Pix: " + pixelCoord.x + ", " + pixelCoord.y);
+                "Pix: " + pixel.data.x + ", " + pixel.data.y);
     }
 
     @Override
