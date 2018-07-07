@@ -1,7 +1,5 @@
 package com.canvearth.canvearth.pixel;
 
-import android.util.Log;
-
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.google.android.gms.maps.GoogleMap;
@@ -10,27 +8,19 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 public class Pixel {
-    public int x;
-    public int y;
-    public int zoom;
+    public PixelData data;
     private Polygon polygon;
 
     public Pixel(int x, int y, int zoom) {
-        this.x = x;
-        this.y = y;
-        this.zoom = zoom;
+        this.data = new PixelData(x, y, zoom);
     }
 
     public boolean isLeaf() {
-        return zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL;
+        return data.isLeaf();
     }
 
     public boolean isRoot() {
-        return zoom == 0;
-    }
-
-    public String getFirebaseId() { // This method have to be synchronized with FBPixel.getFirebaseId().
-        return Integer.toString(zoom) + "," + Integer.toString(x) + "," + Integer.toString(y);
+        return data.isRoot();
     }
 
     public PolygonOptions getPolygonOptions() {

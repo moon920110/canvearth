@@ -1,17 +1,19 @@
 package com.canvearth.canvearth.client;
 
 import com.canvearth.canvearth.pixel.Pixel;
+import com.canvearth.canvearth.server.PixelDataManager;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.SphericalMercator;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GridManager {
-    private static Set<Pixel> pixels = new HashSet<>();
+    private static Map<String, Pixel> pixels = new HashMap<>();
+    private static PixelDataManager pixelDataManager = PixelDataManager.getInstance();
 
     private static void addPixels(GoogleMap map, double pixSize, int gridZoom) {
         Projection projection = map.getProjection();
@@ -24,19 +26,24 @@ public class GridManager {
         for (double y = minY; y < maxY; y += pixSize) {
             if (minX <= maxX) {
                 for (double x = minX; x < maxX; x += pixSize) {
-                    pixels.add(PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom));
+                    Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
+                    pixels.put(pixel.data.firebaseId, pixel);
                 }
             } else {
                 for (double x = -180; x < minX; x += pixSize) {
-                    pixels.add(PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom));
+                    Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
+                    pixels.put(pixel.data.firebaseId, pixel);
                 }
                 for (double x = maxX; x < 180; x += pixSize) {
-                    pixels.add(PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom));
+                    Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
+                    pixels.put(pixel.data.firebaseId, pixel);
                 }
             }
         }
 
-        for (Pixel pix : pixels) {
+        for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
+            Pixel pix = entry.getValue();
+            pixelDataManager.watchPixel(pix.data);
             pix.draw(map);
         }
     }
@@ -50,9 +57,12 @@ public class GridManager {
     }
 
     public static void cleanup() {
-        for (Pixel p : pixels) {
-            p.erase();
+        for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
+            Pixel pix = entry.getValue();
+            pixelDataManager.unwatchPixel(pix.data);
+            pix.erase();
         }
+
         pixels.clear();
     }
 }

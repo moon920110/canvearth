@@ -2,6 +2,7 @@ package com.canvearth.canvearth.utils;
 
 import com.canvearth.canvearth.pixel.BoundingBox;
 import com.canvearth.canvearth.pixel.Pixel;
+import com.canvearth.canvearth.pixel.PixelData;
 import com.google.android.gms.maps.model.LatLng;
 
 public class PixelUtils {
@@ -22,9 +23,9 @@ public class PixelUtils {
     }
 
     public static BoundingBox pix2bbox(Pixel pixel) {
-        final int x = pixel.x;
-        final int y = pixel.y;
-        final int zoom = pixel.zoom;
+        final int x = pixel.data.x;
+        final int y = pixel.data.y;
+        final int zoom = pixel.data.zoom;
         BoundingBox bb = new BoundingBox();
         bb.north = pix2lat(y, zoom);
         bb.south = pix2lat(y + 1, zoom);
@@ -58,26 +59,26 @@ public class PixelUtils {
         return Math.toDegrees(Math.atan(Math.sinh(n)));
     }
 
-    public static Pixel getParentPixel(Pixel pixel) throws Exception {
-        if (pixel.zoom == 0) {
+    public static PixelData getParentPixelData(PixelData pixelData) throws Exception {
+        if (pixelData.zoom == 0) {
             throw new Exception("Cannot get parent of root pixel");
         }
-        int zoom = pixel.zoom - 1;
-        int x = pixel.x / 2;
-        int y = pixel.y / 2;
-        return new Pixel(x, y, zoom);
+        int zoom = pixelData.zoom - 1;
+        int x = pixelData.x / 2;
+        int y = pixelData.y / 2;
+        return new PixelData(x, y, zoom);
     }
 
-    public static Pixel[] getChildrenPixels(Pixel pixel) throws Exception {
-        if (pixel.zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+    public static PixelData[] getChildrenPixelData(PixelData pixelData) throws Exception {
+        if (pixelData.zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
             throw new Exception("Cannot get children of leaf pixel");
         }
-        Pixel[] childrenPixels = new Pixel[4];
-        int zoom = pixel.zoom + 1;
-        childrenPixels[0] = new Pixel(pixel.x * 2, pixel.y * 2, zoom);
-        childrenPixels[1] = new Pixel(pixel.x * 2 + 1, pixel.y * 2, zoom);
-        childrenPixels[2] = new Pixel(pixel.x * 2, pixel.y * 2 + 1, zoom);
-        childrenPixels[3] = new Pixel(pixel.x * 2 + 1, pixel.y * 2 + 1, zoom);
-        return childrenPixels;
+        PixelData[] childrenPixelData = new PixelData[4];
+        int zoom = pixelData.zoom + 1;
+        childrenPixelData[0] = new PixelData(pixelData.x * 2, pixelData.y * 2, zoom);
+        childrenPixelData[1] = new PixelData(pixelData.x * 2 + 1, pixelData.y * 2, zoom);
+        childrenPixelData[2] = new PixelData(pixelData.x * 2, pixelData.y * 2 + 1, zoom);
+        childrenPixelData[3] = new PixelData(pixelData.x * 2 + 1, pixelData.y * 2 + 1, zoom);
+        return childrenPixelData;
     }
 }
