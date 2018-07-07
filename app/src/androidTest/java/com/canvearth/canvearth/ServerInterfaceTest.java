@@ -7,7 +7,7 @@ import android.util.Log;
 import com.canvearth.canvearth.pixel.Color;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.server.FBPixel;
-import com.canvearth.canvearth.server.PixelDataManager;
+import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
@@ -32,74 +32,74 @@ public class ServerInterfaceTest {
 
     @Test
     public void leafPixelReadTest() {
-        PixelDataManager pixelDataManager = PixelDataManager.getInstance();
+        FBPixelManager fBPixelManager = FBPixelManager.getInstance();
         ArrayList<PixelData> samePixelData = makeSamplePixelData(
                 new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
                 20,
                 20);
         // You have to watch pixel first..
-        pixelDataManager.watchPixels(samePixelData);
+        fBPixelManager.watchPixels(samePixelData);
         // Get a random pixel info
         Random random = new Random();
         PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
-        FBPixel pixelInfo = pixelDataManager.readPixel(randomPixelData);
+        FBPixel pixelInfo = fBPixelManager.readPixel(randomPixelData);
         // You have to unwatch pixel
-        pixelDataManager.unwatchPixels(samePixelData);
+        fBPixelManager.unwatchPixels(samePixelData);
     }
 
     @Test
     public void leafPixelWriteTest() {
-        PixelDataManager pixelDataManager = PixelDataManager.getInstance();
+        FBPixelManager fBPixelManager = FBPixelManager.getInstance();
         ArrayList<PixelData> samePixelData = makeSamplePixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
                 20,
                 20);
 
         // You have to watch pixel first..
-        pixelDataManager.watchPixels(samePixelData);
+        fBPixelManager.watchPixels(samePixelData);
         // Write black color to the random pixel
         Random random = new Random();
         PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
-        pixelDataManager.writePixelAsync(randomPixelData, new Color(0L, 0L, 0L), () -> {
+        fBPixelManager.writePixelAsync(randomPixelData, new Color(0L, 0L, 0L), () -> {
             Log.d("leafPixelWriteTest", "Succeed");
         });
 
         // You have to unwatch pixel
-        pixelDataManager.unwatchPixels(samePixelData);
+        fBPixelManager.unwatchPixels(samePixelData);
     }
 
     @Test
     public void leafPixelWriteReadTest() {
-        PixelDataManager pixelDataManager = PixelDataManager.getInstance();
+        FBPixelManager fBPixelManager = FBPixelManager.getInstance();
         ArrayList<PixelData> samePixelData = makeSamplePixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
                 20,
                 20);
         // You have to watch pixel first..
-        pixelDataManager.watchPixels(samePixelData);
+        fBPixelManager.watchPixels(samePixelData);
         // Write black color to the random pixel
         Random random = new Random();
         PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
         Color red = new Color(255L, 0L, 0L);
-        pixelDataManager.writePixelSync(randomPixelData, red);
+        fBPixelManager.writePixelSync(randomPixelData, red);
         // Read same pixel
-        FBPixel pixelInfo = pixelDataManager.readPixel(randomPixelData);
+        FBPixel pixelInfo = fBPixelManager.readPixel(randomPixelData);
         Assert.assertTrue(pixelInfo.color.equals(red));
         // You have to unwatch pixel
-        pixelDataManager.unwatchPixels(samePixelData);
+        fBPixelManager.unwatchPixels(samePixelData);
     }
 
     @Test
     public void bitmapReadTest() {
-        PixelDataManager pixelDataManager = PixelDataManager.getInstance();
-        ArrayList<PixelData> samePixelCoords
+        FBPixelManager fBPixelManager = FBPixelManager.getInstance();
+        ArrayList<PixelData> samePixelData
                 = makeSamplePixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 8, 8);
         // You have to watch pixel first..
-        pixelDataManager.watchPixels(samePixelCoords);
+        fBPixelManager.watchPixels(samePixelData);
         Color green = new Color(0L, 255L, 0L);
-        for (PixelData pixelCoord : samePixelCoords) {
-            pixelDataManager.writePixelSync(pixelCoord, green);
+        for (PixelData pixelData : samePixelData) {
+            fBPixelManager.writePixelSync(pixelData, green);
         }
-        PixelData zoomedOutPixelCoord = new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL - 3);
-        Bitmap bitmap = pixelDataManager.getBitmapSync(zoomedOutPixelCoord, 5);
+        PixelData zoomedOutPixelData = new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL - 3);
+        Bitmap bitmap = fBPixelManager.getBitmapSync(zoomedOutPixelData, 5);
         int expectedSide = MathUtils.intPow(2, 5);
         Assert.assertEquals(bitmap.getWidth(), expectedSide);
         Assert.assertEquals(bitmap.getHeight(), expectedSide);
@@ -109,7 +109,7 @@ public class ServerInterfaceTest {
             }
         }
         // You have to unwatch pixel
-        pixelDataManager.unwatchPixels(samePixelCoords);
+        fBPixelManager.unwatchPixels(samePixelData);
     }
 
     private ArrayList<PixelData> makeSamplePixelData(PixelData startPixelData, int numX, int numY) {

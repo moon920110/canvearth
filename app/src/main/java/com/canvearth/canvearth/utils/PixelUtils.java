@@ -73,19 +73,19 @@ public class PixelUtils {
         return new PixelData(x, y, zoom);
     }
 
-    public static ArrayList<PixelData> getChildrenPixelCoord(PixelData pixelCoord, int level) throws Exception {
-        if (pixelCoord.zoom + level > Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+    public static ArrayList<PixelData> getChildrenPixelData(PixelData pixelData, int level) throws Exception {
+        if (pixelData.zoom + level > Constants.LEAF_PIXEL_ZOOM_LEVEL) {
             throw new Exception("Cannot get children of leaf pixel");
         }
         int numChildrenSide = MathUtils.intPow(2, level);
-        ArrayList<PixelData> childrenPixelCoords = new ArrayList<>(numChildrenSide * numChildrenSide);
-        int zoom = pixelCoord.zoom + level;
+        ArrayList<PixelData> childrenPixelData = new ArrayList<>(numChildrenSide * numChildrenSide);
+        int zoom = pixelData.zoom + level;
         for (int y = 0; y < numChildrenSide; y++) {
             for(int x = 0; x < numChildrenSide; x++) {
-                childrenPixelCoords.add(new PixelData(pixelCoord.x * numChildrenSide + x, pixelCoord.y * numChildrenSide + y, zoom));
-                Assert.assertEquals(childrenPixelCoords.size(), y * numChildrenSide + x + 1);
+                childrenPixelData.add(new PixelData(pixelData.x * numChildrenSide + x, pixelData.y * numChildrenSide + y, zoom));
+                Assert.assertEquals(childrenPixelData.size(), y * numChildrenSide + x + 1);
             }
         }
-        return childrenPixelCoords;
+        return childrenPixelData;
     }
 }

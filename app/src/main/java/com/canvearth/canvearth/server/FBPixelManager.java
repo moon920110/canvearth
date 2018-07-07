@@ -3,7 +3,6 @@ package com.canvearth.canvearth.server;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
@@ -28,17 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-public class PixelDataManager {
-    private static final PixelDataManager ourInstance = new PixelDataManager();
-    private static final String TAG = "PixelDataManager";
+public class FBPixelManager {
+    private static final FBPixelManager ourInstance = new FBPixelManager();
+    private static final String TAG = "FBPixelManager";
 
-    public static PixelDataManager getInstance() {
+    public static FBPixelManager getInstance() {
         return ourInstance;
     }
 
     private Map<String, WatchingPixel> watchingPixels = new HashMap<>();
 
-    private PixelDataManager() {
+    private FBPixelManager() {
     }
 
     // Client have to call watchPixel to keep track pixel data.
@@ -66,9 +65,9 @@ public class PixelDataManager {
         DatabaseUtils.getPixelReference(firebaseId).addValueEventListener(valueEventListener);
     }
 
-    public void watchPixels(List<PixelData> pixelCoords) {
-        for (PixelData pixelCoord: pixelCoords) {
-            watchPixel(pixelCoord);
+    public void watchPixels(List<PixelData> pixelDataList) {
+        for (PixelData pixelData: pixelDataList) {
+            watchPixel(pixelData);
         }
     }
 
@@ -123,18 +122,18 @@ public class PixelDataManager {
     // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
     // TODO cache this when there is performance issue
     // Do we need Async version of this?
-    public Bitmap getBitmapSync(PixelData pixelCoord, int resolutionFactor) {
+    public Bitmap getBitmapSync(PixelData pixelData, int resolutionFactor) {
         int resolution = MathUtils.intPow(2, resolutionFactor);
         final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
         try {
-            int hierarchy = Math.min(Constants.LEAF_PIXEL_ZOOM_LEVEL - pixelCoord.zoom, resolutionFactor);
+            int hierarchy = Math.min(Constants.LEAF_PIXEL_ZOOM_LEVEL - pixelData.zoom, resolutionFactor);
             int chargeForOnePixel = MathUtils.intPow(2, resolutionFactor - hierarchy);
-            ArrayList<PixelData> childrenPixelCoord = PixelUtils.getChildrenPixelCoord(pixelCoord, hierarchy);
-            int childrenStartX = childrenPixelCoord.get(0).x;
-            int childrenStartY = childrenPixelCoord.get(0).y;
-            CountDownLatch latchForFinish = new CountDownLatch(childrenPixelCoord.size());
-            for (PixelData childPixelCoord: childrenPixelCoord) {
-                String firebaseId = childPixelCoord.firebaseId;
+            ArrayList<PixelData> childrenPixelData = PixelUtils.getChildrenPixelData(pixelData, hierarchy);
+            int childrenStartX = childrenPixelData.get(0).x;
+            int childrenStartY = childrenPixelData.get(0).y;
+            CountDownLatch latchForFinish = new CountDownLatch(childrenPixelData.size());
+            for (PixelData childPixelData: childrenPixelData) {
+                String firebaseId = childPixelData.firebaseId;
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -144,8 +143,8 @@ public class PixelDataManager {
                             ServerPixel4Firebase = FBPixel.emptyPixel();
                         }
                         int color = BitmapUtils.intColor(ServerPixel4Firebase.color);
-                        int relativeCoordX = childPixelCoord.x - childrenStartX;
-                        int relativeCoordY = childPixelCoord.y - childrenStartY;
+                        int relativeCoordX = childPixelData.x - childrenStartX;
+                        int relativeCoordY = childPixelData.y - childrenStartY;
                         for (int y = 0; y < chargeForOnePixel; y++) {
                             for (int x = 0; x < chargeForOnePixel; x++) {
                                 bitmap.setPixel(relativeCoordX * chargeForOnePixel + x,
@@ -206,10 +205,10 @@ public class PixelDataManager {
     }
 
     // Please prefer writePixelAsync, for performance.
-    public void writePixelSync(PixelData pixelCoord, Color color) {
+    public void writePixelSync(PixelData pixelData, Color color) {
         try {
             CountDownLatch latchForFinish = new CountDownLatch(1);
-            writePixelAsync(pixelCoord, color, latchForFinish::countDown);
+            writePixelAsync(pixelData, color, latchForFinish::countDown);
             latchForFinish.await();
         } catch (InterruptedException e) {
             Log.e(TAG, e.getMessage());
