@@ -8,4 +8,7 @@ public class Constants {
 
     // we regard two colors are different when their diffsum is larger than below.
     public static int COLOR_DIFFERENT_BOUND = 20;
+
+    public static String FIREBASE_DEV_PREFIX = "DEV";
+    public static String FIREBASE_PROD_PREFIX = "PROD";
 }

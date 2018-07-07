@@ -6,6 +6,10 @@ import com.google.firebase.database.FirebaseDatabase;
 public class DatabaseUtils {
     public static DatabaseReference getPixelReference(String pixelId) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        return database.child(pixelId);
+        if (Configs.TESTING) {
+            return database.child(Constants.FIREBASE_DEV_PREFIX).child(pixelId);
+        } else {
+            return database.child(Constants.FIREBASE_PROD_PREFIX).child(pixelId);
+        }
     }
 }
