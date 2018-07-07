@@ -174,7 +174,7 @@ public class FBPixelManager {
         return bitmap;
     }
 
-
+    // TODO Even this may block main thread.
     public void writePixelAsync(PixelData pixelData, Color color, @Nullable Function<PixelData> callback) {
         try {
             if (!pixelData.isLeaf()) {

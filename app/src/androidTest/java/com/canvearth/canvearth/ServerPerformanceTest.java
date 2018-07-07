@@ -63,7 +63,7 @@ public class ServerPerformanceTest {
         float averageUpdated = ((float) totalUpdated) / samePixelData.size();
         float averageElapsedTime = elapsedTime / samePixelData.size();
         Log.i(TAG, "Average Elapsed Time: " + averageElapsedTime
-                + ", Average Updated Number: " + averageUpdated);
+                + "ms, Average Updated Number: " + averageUpdated);
         // You have to unwatch pixel
         fBPixelManager.unwatchPixels(samePixelData);
     }
@@ -85,12 +85,12 @@ public class ServerPerformanceTest {
         long elapsedTime8x8 = TimeUtils.measureTimeMillis((Object object) -> {
             fBPixelManager.getBitmapSync(zoomedOutPixelData8x8, 3);
         });
-        Log.v(TAG, "Elapsed Time For getting 8x8 bitmap: " + elapsedTime8x8);
+        Log.i(TAG, "Elapsed Time For getting 8x8 bitmap: " + elapsedTime8x8 + "ms");
         PixelData zoomedOutPixelData16x16 = new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL - 4);
         long elapsedTime16x16 = TimeUtils.measureTimeMillis((Object object) -> {
             fBPixelManager.getBitmapSync(zoomedOutPixelData16x16, 4);
         });
-        Log.v(TAG, "Elapsed Time For getting 16x16 bitmap: " + elapsedTime16x16);
+        Log.i(TAG, "Elapsed Time For getting 16x16 bitmap: " + elapsedTime16x16 + "ms");
 
         // You have to unwatch pixel
         fBPixelManager.unwatchPixels(samePixelData);
