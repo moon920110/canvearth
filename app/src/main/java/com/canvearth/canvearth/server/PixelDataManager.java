@@ -60,7 +60,7 @@ public class PixelDataManager {
             }
         };
         watchingPixels.put(firebaseId, new WatchingPixel(null, valueEventListener));
-        DatabaseUtils.getPixelReference(firebaseId).addValueEventListener(valueEventListener); // TODO check when null value comes
+        DatabaseUtils.getPixelReference(firebaseId).addValueEventListener(valueEventListener);
     }
 
     // Client have to call unwatchPixel when you don't need to track pixel data anymore.
@@ -154,7 +154,7 @@ public class PixelDataManager {
         return bitmap;
     }
 
-    public boolean writePixel(PixelCoord pixelCoord, Color color, @Nullable Runnable callback) {
+    public void writePixelAsync(PixelCoord pixelCoord, Color color, @Nullable Runnable callback) {
         try {
             if (!pixelCoord.isLeaf()) {
                 throw new Exception("Pixel is not leaf");
@@ -187,7 +187,17 @@ public class PixelDataManager {
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-        return true;
+    }
+
+    // Please prefer writePixelAsync, for performance.
+    public void writePixelSync(PixelCoord pixelCoord, Color color) {
+        try {
+            CountDownLatch latchForFinish = new CountDownLatch(1);
+            writePixelAsync(pixelCoord, color, latchForFinish::countDown);
+            latchForFinish.await();
+        } catch (InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     private void updateParent(Pixel4Firebase childOriginPixel, Pixel4Firebase childNewPixel,
