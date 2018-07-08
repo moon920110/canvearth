@@ -174,40 +174,41 @@ public class FBPixelManager {
         return bitmap;
     }
 
-    // TODO Even this may block main thread.
     public void writePixelAsync(PixelData pixelData, Color color, @Nullable Function<PixelData> callback) {
-        try {
-            if (!pixelData.isLeaf()) {
-                throw new Exception("Pixel is not leaf");
-            }
-            String firebaseId = pixelData.firebaseId;
-            // You have to watch pixel before you write it.
-            if (!watchingPixels.containsKey(firebaseId)) {
-                throw new Exception("Try to write pixel which is not watched");
-            }
-            FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
-            UserInformation userInformation = UserInformation.getInstance();
-            String userToken = userInformation.getToken();
-            LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
-            final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
-            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
-                Log.v(TAG, "setValue finished");
-                latchForAllFinish.countDown();
-            }); // TODO transaction based on time / push uid
-            final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
-            new Thread(() -> {
-                try {
-                    latchForAllFinish.await();
-                    if (callback != null) {
-                        callback.run(lastUpdatedPixelData);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "in callback - " +  e.getMessage());
+        new Thread(()-> {
+            try {
+                if (!pixelData.isLeaf()) {
+                    throw new Exception("Pixel is not leaf");
                 }
-            }).start();
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
+                String firebaseId = pixelData.firebaseId;
+                // You have to watch pixel before you write it.
+                if (!watchingPixels.containsKey(firebaseId)) {
+                    throw new Exception("Try to write pixel which is not watched");
+                }
+                FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
+                UserInformation userInformation = UserInformation.getInstance();
+                String userToken = userInformation.getToken();
+                LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+                final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
+                DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
+                    Log.v(TAG, "setValue finished");
+                    latchForAllFinish.countDown();
+                }); // TODO transaction based on time / push uid
+                final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
+                new Thread(() -> {
+                    try {
+                        latchForAllFinish.await();
+                        if (callback != null) {
+                            callback.run(lastUpdatedPixelData);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "in callback - " + e.getMessage());
+                    }
+                }).start();
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }).start();
     }
 
     // Please prefer writePixelAsync, for performance.
