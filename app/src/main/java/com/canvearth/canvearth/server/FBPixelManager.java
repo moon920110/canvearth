@@ -119,10 +119,16 @@ public class FBPixelManager {
         return fbPixel;
     }
 
+    public void getBitmapAsync(PixelData pixelData, int resolutionFactor, Function<Bitmap> callback) {
+        new Thread(()->{
+            callback.run(getBitmapSync(pixelData, resolutionFactor));
+        }).start();
+    }
+
     // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
     // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
     // TODO cache this when there is performance issue
-    // Do we need Async version of this?
+    // TODO this seems better to executed in server side.
     public Bitmap getBitmapSync(PixelData pixelData, int resolutionFactor) {
         int resolution = MathUtils.intPow(2, resolutionFactor);
         final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
