@@ -3,13 +3,18 @@ package com.canvearth.canvearth;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.canvearth.canvearth.client.GridManager;
@@ -25,6 +30,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.InputStream;
+
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         GoogleMap.OnCameraIdleListener,
@@ -33,15 +40,52 @@ public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
+    private static final String TAG="Maps";
     private GoogleMap mMap;
     private MapScaleView scaleView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
 
+    protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView imageView;
+
+        public DownloadImageTask(ImageView imageView) {
+            this.imageView = imageView;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        String userName = getIntent().getExtras().getString("userName");
+        Log.d(TAG, "userName: " + userName);
+
+        String userPhotoUrlString = getIntent().getExtras().getString("userPhotoUrl");
+        Log.d(TAG, "userPhotoUriString: " + userPhotoUrlString);
+
+        ImageView photoImageView = findViewById(R.id.userPhotoImageView);
+        DownloadImageTask photoImageDonwloadTask = new DownloadImageTask(photoImageView);
+        photoImageDonwloadTask.execute(userPhotoUrlString);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
