@@ -55,7 +55,7 @@ public class FBPixelManager {
                     FBPixel = dataSnapshot.getValue(LeafFBPixel.class);
                 }
                 watchingPixels.get(firebaseId).setFBPixel(FBPixel);
-                PixelEvents.watchingPixelChanged(FBPixel);
+                PixelEvents.watchingPixelChanged(pixelData, FBPixel);
             }
 
             @Override
