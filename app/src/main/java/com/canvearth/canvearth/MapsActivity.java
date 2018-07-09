@@ -1,6 +1,7 @@
 package com.canvearth.canvearth;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.canvearth.canvearth.client.GridManager;
@@ -88,6 +90,13 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    private void showToast(Context context, String text){
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL|Gravity.BOTTOM,
+                0, 200);
+        toast.show();
+    }
+
     @Override
     public void onCameraMove() {
         CameraPosition cameraPosition = mMap.getCameraPosition();
@@ -97,7 +106,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onCameraIdle() {
         CameraPosition cameraPosition = mMap.getCameraPosition();
-        Toast.makeText(this, "zoom: " + cameraPosition.zoom, Toast.LENGTH_LONG).show();
+        showToast(this, "zoom: " + cameraPosition.zoom);
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
 
         GridManager.cleanup();
@@ -118,11 +127,11 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMyLocationClick(@NonNull Location location) {
         double lat = location.getLatitude();
         double lng = location.getLongitude();
+      
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
-        Toast.makeText(this, "Lat: " + location.getLatitude() + "\n" +
-                        "Lng: " + location.getLongitude() + "\n" +
-                        "Pix: " + pixel.data.x + ", " + pixel.data.y + "\n"
-                , Toast.LENGTH_LONG).show();
+        showToast(this, "Lat: " + location.getLatitude() + "\n" +
+                "Lng: " + location.getLongitude() + "\n" +
+                "Pix: " + pixel.data.x + ", " + pixel.data.y);
     }
 
     @Override
