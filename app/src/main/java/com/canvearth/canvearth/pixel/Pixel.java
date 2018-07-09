@@ -1,5 +1,7 @@
 package com.canvearth.canvearth.pixel;
 
+import android.util.Log;
+
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.google.android.gms.maps.GoogleMap;

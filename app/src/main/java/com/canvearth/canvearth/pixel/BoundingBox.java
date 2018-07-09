@@ -12,7 +12,7 @@ public class BoundingBox {
     public double east; // longitude
     public double west; // longitude
 
-    public double getSize() {
+    public double getSideLength() {
         return Math.abs(east - west);
     }
 
