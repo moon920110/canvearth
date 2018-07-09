@@ -1,6 +1,6 @@
 package com.canvearth.canvearth.server;
 
-import com.canvearth.canvearth.pixel.Color;
+import com.canvearth.canvearth.pixel.PixelColor;
 
 import java.util.Date;
 
@@ -13,8 +13,8 @@ public class LeafFBPixel extends FBPixel {
         // Default constructor required for Firebase db
     }
 
-    public LeafFBPixel(Color color, String userToken, Date now) {
-        super(color);
+    public LeafFBPixel(PixelColor pixelColor, String userToken, Date now) {
+        super(pixelColor);
         this.modifiedUserToken = userToken;
         this.modifiedTime = now.toString();
     }

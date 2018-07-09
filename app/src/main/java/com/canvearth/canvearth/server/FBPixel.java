@@ -1,34 +1,34 @@
 package com.canvearth.canvearth.server;
 
-import com.canvearth.canvearth.pixel.Color;
+import com.canvearth.canvearth.pixel.PixelColor;
 
 // This class is for Firebase.
 public class FBPixel implements Cloneable {
-    public Color color;
-    public Color futureColor;
+    public PixelColor pixelColor;
+    public PixelColor futurePixelColor;
 
     public FBPixel() {
         // Default constructor required for Firebase
     }
 
-    public FBPixel(Color color) {
-        this.color = color;
-        this.futureColor = color;
+    public FBPixel(PixelColor pixelColor) {
+        this.pixelColor = pixelColor;
+        this.futurePixelColor = pixelColor;
     }
 
     public void copyTo(FBPixel FBPixel) {
-        FBPixel.color = this.color;
-        FBPixel.futureColor = this.futureColor;
+        FBPixel.pixelColor = this.pixelColor;
+        FBPixel.futurePixelColor = this.futurePixelColor;
     }
 
     public FBPixel clone() throws CloneNotSupportedException {
         FBPixel FBPixel = (FBPixel) super.clone();
-        FBPixel.color = this.color.clone();
-        FBPixel.futureColor = this.futureColor.clone();
+        FBPixel.pixelColor = this.pixelColor.clone();
+        FBPixel.futurePixelColor = this.futurePixelColor.clone();
         return FBPixel;
     }
 
     public static FBPixel emptyPixel() {
-        return new FBPixel(new Color(0L,0L,0L,0L));
+        return new FBPixel(new PixelColor(0L,0L,0L,0L));
     }
 }

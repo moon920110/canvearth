@@ -1,6 +1,6 @@
 package com.canvearth.canvearth.utils;
 
-import com.canvearth.canvearth.pixel.Color;
+import com.canvearth.canvearth.pixel.PixelColor;
 
 public class BitmapUtils {
     // This method is for Bitmap.Config.ARGB_8888
@@ -9,11 +9,11 @@ public class BitmapUtils {
         return (a & 0xff) << 24 | (b & 0xff) << 16 | (g & 0xff) << 8 | (r & 0xff);
     }
 
-    public static int intColor(Color color) {
-        int r = color.r.intValue();
-        int g = color.g.intValue();
-        int b = color.b.intValue();
-        int a = color.a.intValue();
+    public static int intColor(PixelColor pixelColor) {
+        int r = pixelColor.r.intValue();
+        int g = pixelColor.g.intValue();
+        int b = pixelColor.b.intValue();
+        int a = pixelColor.a.intValue();
         return intColor(r, g, b, a);
     }
 }

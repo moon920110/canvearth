@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
-import com.canvearth.canvearth.pixel.Color;
+import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.ColorUtils;
@@ -143,7 +143,7 @@ public class FBPixelManager {
                         if (ServerFBPixel == null) {
                             ServerFBPixel = FBPixel.emptyPixel();
                         }
-                        int color = BitmapUtils.intColor(ServerFBPixel.color);
+                        int color = BitmapUtils.intColor(ServerFBPixel.pixelColor);
                         int relativeCoordX = childPixelData.x - childrenStartX;
                         int relativeCoordY = childPixelData.y - childrenStartY;
                         for (int y = 0; y < chargeForOnePixel; y++) {
@@ -170,7 +170,7 @@ public class FBPixelManager {
     }
 
 
-    public void writePixelAsync(PixelData pixelData, Color color, @Nullable Runnable callback) {
+    public void writePixelAsync(PixelData pixelData, PixelColor pixelColor, @Nullable Runnable callback) {
         try {
             if (!pixelData.isLeaf()) {
                 throw new Exception("Pixel is not leaf");
@@ -183,7 +183,7 @@ public class FBPixelManager {
             FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
             UserInformation userInformation = UserInformation.getInstance();
             String userToken = userInformation.getToken();
-            LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+            LeafFBPixel newPixel = new LeafFBPixel(pixelColor, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
             final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
             DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
                 Log.v(TAG, "setValue finished");
@@ -206,10 +206,10 @@ public class FBPixelManager {
     }
 
     // Please prefer writePixelAsync, for performance.
-    public void writePixelSync(PixelData pixelData, Color color) {
+    public void writePixelSync(PixelData pixelData, PixelColor pixelColor) {
         try {
             CountDownLatch latchForFinish = new CountDownLatch(1);
-            writePixelAsync(pixelData, color, latchForFinish::countDown);
+            writePixelAsync(pixelData, pixelColor, latchForFinish::countDown);
             latchForFinish.await();
         } catch (InterruptedException e) {
             Log.e(TAG, e.getMessage());
@@ -226,9 +226,9 @@ public class FBPixelManager {
             PixelData parentPixelData = PixelUtils.getParentPixelData(childPixelData);
             FBPixel parentFBPixel = readPixelInstantly(parentPixelData);
             FBPixel newParentFBPixel = parentFBPixel.clone();
-            newParentFBPixel.futureColor.replaceColorPortion(childOriginPixel.color, childNewPixel.color, 0.25);
-            if (ColorUtils.areDifferent(newParentFBPixel.color, newParentFBPixel.futureColor)) {
-                newParentFBPixel.color = newParentFBPixel.futureColor.clone();
+            newParentFBPixel.futurePixelColor.replaceColorPortion(childOriginPixel.pixelColor, childNewPixel.pixelColor, 0.25);
+            if (ColorUtils.areDifferent(newParentFBPixel.pixelColor, newParentFBPixel.futurePixelColor)) {
+                newParentFBPixel.pixelColor = newParentFBPixel.futurePixelColor.clone();
                 latchForAllFinish.countUp();
                 String parentId = parentPixelData.firebaseId;
                 DatabaseUtils.getPixelReference(parentId).setValue(newParentFBPixel,
@@ -238,8 +238,8 @@ public class FBPixelManager {
                         });
                 updateParent(parentFBPixel, newParentFBPixel, parentPixelData, latchForAllFinish);
             } else {
-                Log.v(TAG, "Update canceled - original color is " + newParentFBPixel.color.toString()
-                        + " , future color is " + newParentFBPixel.futureColor.toString());
+                Log.v(TAG, "Update canceled - original pixelColor is " + newParentFBPixel.pixelColor.toString()
+                        + " , future pixelColor is " + newParentFBPixel.futurePixelColor.toString());
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
