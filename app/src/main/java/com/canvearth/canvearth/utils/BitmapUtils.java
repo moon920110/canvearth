@@ -1,5 +1,9 @@
 package com.canvearth.canvearth.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.util.Log;
+
 import com.canvearth.canvearth.pixel.Color;
 
 public class BitmapUtils {
@@ -15,5 +19,21 @@ public class BitmapUtils {
         int b = color.b.intValue();
         int a = color.a.intValue();
         return intColor(r, g, b, a);
+    }
+
+    public static Bitmap getMutableBitmap(Bitmap immutableBitmap) {
+
+        Bitmap mutableBitmap = Bitmap.createBitmap(immutableBitmap.getWidth(),
+                immutableBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas mutableBitmapCanvas = new Canvas(mutableBitmap);
+        mutableBitmapCanvas.drawBitmap(immutableBitmap, 0, 0, null);
+        return mutableBitmap;
+    }
+
+    public static Bitmap emptyBitmap(int width, int height) {
+        int emptyColor = intColor(0, 0, 0, 0);
+        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        newBitmap.eraseColor(emptyColor);
+        return newBitmap;
     }
 }

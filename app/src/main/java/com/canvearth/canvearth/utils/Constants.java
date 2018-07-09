@@ -12,6 +12,8 @@ public class Constants {
     public static int GRID_SHOW_MAX_ZOOM_LEVEL = 18;
     public static int GRID_SHOW_MIN_ZOOM_LEVEL = 14;
     public static int VIEW_GRID_ZOOM_DIFF = 3;
+    public static int BITMAP_CACHE_RESOLUTION_FACTOR = 5;
+    public static int BITMAP_PNG_MAX_BYTES = 1024 * 1024; // 1 megabyte
 
     /* color related */
     // we regard a color is transparent when its alpha is lower than below.
