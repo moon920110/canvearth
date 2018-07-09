@@ -1,6 +1,8 @@
 package com.canvearth.canvearth.server;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.util.Log;
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
 import com.canvearth.canvearth.pixel.Color;
+import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.ColorUtils;
@@ -17,11 +20,16 @@ import com.canvearth.canvearth.utils.MathUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;
 import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -120,6 +128,25 @@ public class FBPixelManager {
         return fbPixel;
     }
 
+    // prefer use this rather than getBitmapAsync
+    public void getCachedBitmapAsync(PixelData pixelData, Function<Bitmap> callback) {
+        String firebaseId = pixelData.firebaseId;
+        int bitmapSide = MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+        DatabaseUtils.getBitmapReference(firebaseId)
+                .getBytes(Constants.BITMAP_PNG_MAX_BYTES)
+                .addOnSuccessListener((bytes -> {
+                    Log.v(TAG, "Got bitmap");
+                    Bitmap receivedBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Bitmap mutableBitmap = BitmapUtils.getMutableBitmap(receivedBitmap);
+                    callback.run(mutableBitmap);
+                }))
+                .addOnFailureListener((exception) -> {
+                    //TODO when another error?
+                    Log.v(TAG, "Could not get bitmap");
+                    callback.run(BitmapUtils.emptyBitmap(bitmapSide, bitmapSide));
+                });
+    }
+
     public void getBitmapAsync(PixelData pixelData, int resolutionFactor, Function<Bitmap> callback) {
         new Thread(()->{
             callback.run(getBitmapSync(pixelData, resolutionFactor));
@@ -128,8 +155,8 @@ public class FBPixelManager {
 
     // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
     // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
-    // TODO cache this when there is performance issue
     // TODO this seems better to executed in server side.
+    // Do we need Async version of this?
     public Bitmap getBitmapSync(PixelData pixelData, int resolutionFactor) {
         int resolution = MathUtils.intPow(2, resolutionFactor);
         final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
@@ -180,40 +207,44 @@ public class FBPixelManager {
         return bitmap;
     }
 
-    // TODO Even this may block main thread.
     public void writePixelAsync(PixelData pixelData, Color color, @Nullable Function<PixelData> callback) {
-        try {
-            if (!pixelData.isLeaf()) {
-                throw new Exception("Pixel is not leaf");
-            }
-            String firebaseId = pixelData.firebaseId;
-            // You have to watch pixel before you write it.
-            if (!watchingPixels.containsKey(firebaseId)) {
-                throw new Exception("Try to write pixel which is not watched");
-            }
-            FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
-            UserInformation userInformation = UserInformation.getInstance();
-            String userToken = userInformation.getToken();
-            LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
-            final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
-            DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
-                Log.v(TAG, "setValue finished");
-                latchForAllFinish.countDown();
-            }); // TODO transaction based on time / push uid
-            final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
-            new Thread(() -> {
-                try {
-                    latchForAllFinish.await();
-                    if (callback != null) {
-                        callback.run(lastUpdatedPixelData);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "in callback - " +  e.getMessage());
+        new Thread(()-> {
+            try {
+                if (!pixelData.isLeaf()) {
+                    throw new Exception("Pixel is not leaf");
                 }
-            }).start();
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
+                String firebaseId = pixelData.firebaseId;
+                // You have to watch pixel before you write it.
+                if (!watchingPixels.containsKey(firebaseId)) {
+                    throw new Exception("Try to write pixel which is not watched");
+                }
+                FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
+                UserInformation userInformation = UserInformation.getInstance();
+                String userToken = userInformation.getToken();
+                LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+                final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(2);
+                updateAncestorBitmapCacheAsync(newPixel, pixelData, (StorageMetadata metadata) -> {
+                    latchForAllFinish.countDown();
+                });
+                DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
+                    Log.v(TAG, "setValue finished");
+                    latchForAllFinish.countDown();
+                }); // TODO transaction based on time / push uid
+                final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
+                new Thread(() -> {
+                    try {
+                        latchForAllFinish.await();
+                        if (callback != null) {
+                            callback.run(lastUpdatedPixelData);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "in callback - " + e.getMessage());
+                    }
+                }).start();
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }).start();
     }
 
     // Please prefer writePixelAsync, for performance.
@@ -248,6 +279,10 @@ public class FBPixelManager {
                 newParentFBPixel.color = newParentFBPixel.futureColor.clone();
                 latchForAllFinish.countUp();
                 String parentId = parentPixelData.firebaseId;
+                updateAncestorBitmapCacheAsync(newParentFBPixel, parentPixelData, (StorageMetadata metadata) -> {
+                    latchForAllFinish.countDown();
+                });
+                latchForAllFinish.countUp();
                 DatabaseUtils.getPixelReference(parentId).setValue(newParentFBPixel,
                         (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
                             Log.v(TAG, "setValue finished");
@@ -262,5 +297,34 @@ public class FBPixelManager {
             Log.e(TAG, e.getMessage());
         }
         return childPixelData;
+    }
+
+    // TODO Update has to be transaction
+    private void updateAncestorBitmapCacheAsync(FBPixel childNewPixel, PixelData childPixelData, Function<StorageMetadata> callback) {
+        try {
+            if (childPixelData.zoom - Constants.BITMAP_CACHE_RESOLUTION_FACTOR < 0) {
+                return;
+            }
+            PixelData ancestorPixelData = PixelUtils.getAncestorPixelData(childPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+            String ancestorFirebaseId = ancestorPixelData.firebaseId;
+            getCachedBitmapAsync(ancestorPixelData, (Bitmap bitmap) -> {
+                int relativeX = childPixelData.x - ancestorPixelData.x * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+                int relativeY = childPixelData.y - ancestorPixelData.y * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+                Log.v(TAG, "updating " + relativeX + "," + relativeY);
+                bitmap.setPixel(relativeX, relativeY, BitmapUtils.intColor(childNewPixel.color));
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] uploadData = baos.toByteArray();
+                UploadTask uploadTask = DatabaseUtils.getBitmapReference(ancestorFirebaseId).putBytes(uploadData);
+                uploadTask.addOnFailureListener((@NonNull Exception exception) -> {
+                        Log.e(TAG, "Firebase storage upload failed");
+                    }).addOnSuccessListener((UploadTask.TaskSnapshot taskSnapshot) -> {
+                        Log.v(TAG, "Firebase storage upload succeed");
+                        callback.run(taskSnapshot.getMetadata());
+                    });
+            });
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 }

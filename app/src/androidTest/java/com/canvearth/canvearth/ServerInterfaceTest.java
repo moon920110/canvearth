@@ -60,15 +60,15 @@ public class ServerInterfaceTest {
     public void leafPixelWriteTest() {
         FBPixelManager fBPixelManager = FBPixelManager.getInstance();
         ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
-                20,
-                20);
+                8,
+                8);
 
         // You have to watch pixel first..
         fBPixelManager.watchPixels(samePixelData);
         // Write black color to the random pixel
         Random random = new Random();
-        PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
-        fBPixelManager.writePixelSync(randomPixelData, new Color(0L, 0L, 0L));
+        PixelData randomPixelData = samePixelData.get(random.nextInt(8 * 8));
+        fBPixelManager.writePixelSync(randomPixelData, new Color(255L, 255L, 255L));
         // You have to unwatch pixel
         fBPixelManager.unwatchPixels(samePixelData);
     }
