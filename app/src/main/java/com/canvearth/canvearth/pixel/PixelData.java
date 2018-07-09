@@ -15,6 +15,13 @@ public class PixelData {
         this.firebaseId = Integer.toString(zoom) + "," + Integer.toString(x) + "," + Integer.toString(y);
     }
 
+    public void copyFrom(PixelData pixelData) {
+        this.x = pixelData.x;
+        this.y = pixelData.y;
+        this.zoom = pixelData.zoom;
+        this.firebaseId = pixelData.firebaseId;
+    }
+
     public boolean isLeaf() {
         return zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL;
     }
