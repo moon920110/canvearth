@@ -1,5 +1,7 @@
 package com.canvearth.canvearth.pixel;
 
+import android.graphics.Color;
+
 import com.canvearth.canvearth.utils.Constants;
 
 public class PixelColor implements Cloneable {
@@ -24,6 +26,13 @@ public class PixelColor implements Cloneable {
         this.g = g;
         this.b = b;
         this.a = a;
+    }
+
+    public PixelColor(int color) {
+        this.r = Long.valueOf(Color.red(color));
+        this.g = Long.valueOf(Color.green(color));
+        this.b = Long.valueOf(Color.blue(color));
+        this.a = Long.valueOf(Color.alpha(color));
     }
 
     public PixelColor clone() throws CloneNotSupportedException {
