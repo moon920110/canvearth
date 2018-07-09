@@ -63,6 +63,16 @@ public class PixelUtils {
         return Math.toDegrees(Math.atan(Math.sinh(n)));
     }
 
+    public static PixelData getAncestorPixelData(PixelData pixelData, int level) throws Exception {
+        if (pixelData.zoom - level < 0) {
+            throw new Exception("Cannot get ancestor");
+        }
+        int zoom = pixelData.zoom - level;
+        int x = pixelData.x / MathUtils.intPow(2, level);
+        int y = pixelData.x / MathUtils.intPow(2, level);
+        return new PixelData(x, y, zoom);
+    }
+
     public static PixelData getParentPixelData(PixelData pixelData) throws Exception {
         if (pixelData.zoom == 0) {
             throw new Exception("Cannot get parent of root pixel");
@@ -87,5 +97,19 @@ public class PixelUtils {
             }
         }
         return childrenPixelData;
+    }
+
+    public static ArrayList<PixelData> makeBatchPixelData(PixelData startPixelData, int numX, int numY) {
+        ArrayList<PixelData> pixelData = new ArrayList<>();
+        for (int x = 0; x < numX; x++) {
+            for (int y = 0; y < numY; y++) {
+                PixelData nearbyPixelData = new PixelData(
+                        startPixelData.x + x,
+                        startPixelData.y + y,
+                        startPixelData.zoom);
+                pixelData.add(nearbyPixelData);
+            }
+        }
+        return pixelData;
     }
 }
