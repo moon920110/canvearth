@@ -25,4 +25,7 @@ public class Constants {
     public static float PIX_STROKE_WIDTH = 3;
     public static int PIX_STROKE_COLOR = Color.argb(50, 100, 100, 100);
     public static int PALETTE_DEFAULT_COLOR = Color.argb(100, 255, 0, 0);
+
+    /* UI related */
+    public static int PALETTE_COLOR_NUM = 7;
 }

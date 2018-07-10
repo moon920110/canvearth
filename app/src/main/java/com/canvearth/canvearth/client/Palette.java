@@ -19,6 +19,10 @@ public class Palette {
         ourInstance.color = c.toArgb();
     }
 
+    public void setColor(int color) {
+        ourInstance.color = color;
+    }
+
     public int getColor() {
         return ourInstance.color;
     }
