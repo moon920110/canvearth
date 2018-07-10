@@ -19,6 +19,15 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="4dp" />
 
+    <!-- Temporary logout button -->
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:text="Logout"
+        android:padding="10dp"
+        android:layout_marginTop="20dp" />
     <ImageView
         android:id="@+id/userPhotoImageView"
         android:layout_width="64dp"

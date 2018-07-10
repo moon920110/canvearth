@@ -2,6 +2,7 @@ package com.canvearth.canvearth;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
+import com.facebook.login.LoginManager;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 
@@ -91,6 +95,18 @@ public class MapsActivity extends AppCompatActivity implements
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        /* Temporary logout button */
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        Button logoutButton = findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(
+                (view) -> {
+                    auth.signOut();
+                    LoginManager.getInstance().logOut();
+                    finish();
+                    Intent intent =  new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                });
     }
 
 
