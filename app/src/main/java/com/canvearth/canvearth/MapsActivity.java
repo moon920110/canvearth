@@ -14,6 +14,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -45,6 +48,7 @@ public class MapsActivity extends AppCompatActivity implements
     private MapScaleView scaleView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
+    private boolean utilVisibility = false;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -91,6 +95,20 @@ public class MapsActivity extends AppCompatActivity implements
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
+        Button utilButton = findViewById(R.id.utilButton);
+        utilButton.setOnClickListener((View v) -> {
+            if(utilVisibility) {
+                utilButtonsLayout.setVisibility(View.INVISIBLE);
+                utilVisibility = false;
+            }
+            else {
+                utilButtonsLayout.setVisibility(View.VISIBLE);
+                utilVisibility = true;
+            }
+
+        });
     }
 
 
