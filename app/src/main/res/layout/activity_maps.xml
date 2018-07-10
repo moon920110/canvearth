@@ -28,4 +28,10 @@
         android:text="Logout"
         android:padding="10dp"
         android:layout_marginTop="20dp" />
+    <ImageView
+        android:id="@+id/userPhotoImageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="facebook user photo"
+        android:visibility="visible" />
 </FrameLayout>
