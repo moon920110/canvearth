@@ -41,7 +41,7 @@ public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final String TAG="Maps";
+    private static final String TAG = "Maps";
     private GoogleMap mMap;
     private MapScaleView scaleView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -97,11 +97,10 @@ public class MapsActivity extends AppCompatActivity implements
         LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
         Button utilButton = findViewById(R.id.utilButton);
         utilButton.setOnClickListener((View v) -> {
-            if(utilVisibility) {
+            if (utilVisibility) {
                 utilButtonsLayout.setVisibility(View.INVISIBLE);
                 utilVisibility = false;
-            }
-            else {
+            } else {
                 utilButtonsLayout.setVisibility(View.VISIBLE);
                 utilVisibility = true;
             }
@@ -150,7 +149,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     private void showToast(Context context, String text) {
         Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL | Gravity.BOTTOM,
+        toast.setGravity(Gravity.CENTER | Gravity.BOTTOM,
                 0, 200);
         toast.show();
     }

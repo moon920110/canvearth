@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.canvearth.canvearth.authorization.UserInformation;
+import com.canvearth.canvearth.utils.Configs;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -63,43 +64,36 @@ public class LoginActivity extends AppCompatActivity {
         mCallbackManager = CallbackManager.Factory.create();
         final LoginButton loginButton = findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions("email", "public_profile");
-        // Commenting out for dev purposes. Will not need to type email and password to go to MapsActivity
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "Login callback succeed");
-                mUserInformation.handleFacebookAccessToken(LoginActivity.this, loginResult.getAccessToken());
 
-                @NonNull FirebaseUser user = mAuth.getCurrentUser();
-                Intent intent = new MapsActivityIntent(user);
+        if (!Configs.TESTING) {
+            loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    Log.d(TAG, "Login callback succeed");
+                    mUserInformation.handleFacebookAccessToken(LoginActivity.this, loginResult.getAccessToken());
+
+                    @NonNull FirebaseUser user = mAuth.getCurrentUser();
+                    Intent intent = new MapsActivityIntent(user);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onCancel() {
+                    Log.w(TAG, "Login callback canceled");
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+                    Log.e(TAG, "Login callback error" + error.getMessage());
+                }
+            });
+        } else {
+
+            loginButton.setOnClickListener(view -> {
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                 startActivity(intent);
-            }
-
-            @Override
-            public void onCancel() {
-                Log.w(TAG, "Login callback canceled");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.e(TAG, "Login callback error" + error.getMessage());
-            }
-        });
-//        loginButton.setOnClickListener(new Button.OnClickListener() {
-////            @Override
-////            public void onClick(View view) {
-////                Log.d("gimun", "onClick");
-////                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-////                startActivity(intent);
-////            }
-//
-//            public void onSuccess(LoginResult loginResult) {
-//                Log.d(TAG, "Login callback succeed");
-//                mUserInformation.handleFacebookAccessToken(LoginActivity.this, loginResult.getAccessToken());
-//                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+            });
+        }
         Button fakeLoginButton = findViewById(R.id.facebook_fake_login);
         fakeLoginButton.setOnClickListener((View v) -> {
             loginButton.performClick();
