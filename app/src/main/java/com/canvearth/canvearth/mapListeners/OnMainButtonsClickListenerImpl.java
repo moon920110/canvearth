@@ -18,10 +18,10 @@ public class OnMainButtonsClickListenerImpl implements View.OnClickListener{
     @Override
     public void onClick(View view){
         switch (view.getId()){
-            case R.id.showMeneButton:
+            case R.id.showMenuButton:
                 VisibilityHandler.handleMenuButton(activity);
                 break;
-            case R.id.pickerBucketButton:
+            case R.id.brushButton:
                 VisibilityHandler.handlePickerBucketButton(activity);
                 break;
             default:
