@@ -19,11 +19,14 @@ import com.canvearth.canvearth.utils.MathUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;
 import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
+import com.canvearth.canvearth.utils.concurrency.Succeed;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.UploadTask;
@@ -75,7 +78,7 @@ public class FBPixelManager {
     }
 
     public void watchPixels(List<PixelData> pixelDataList) {
-        for (PixelData pixelData: pixelDataList) {
+        for (PixelData pixelData : pixelDataList) {
             watchPixel(pixelData);
         }
     }
@@ -95,7 +98,7 @@ public class FBPixelManager {
     }
 
     public void unwatchPixels(List<PixelData> pixelDataList) {
-        for (PixelData pixelData: pixelDataList) {
+        for (PixelData pixelData : pixelDataList) {
             unwatchPixel(pixelData);
         }
     }
@@ -147,7 +150,7 @@ public class FBPixelManager {
     }
 
     public void getBitmapAsync(PixelData pixelData, int resolutionFactor, Function<Bitmap> callback) {
-        new Thread(()->{
+        new Thread(() -> {
             callback.run(getBitmapSync(pixelData, resolutionFactor));
         }).start();
     }
@@ -155,7 +158,6 @@ public class FBPixelManager {
     // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
     // returns Bitmap which has resolution of 2^resolutionFactor * 2^resolutionFactor
     // TODO this seems better to executed in server side.
-    // Do we need Async version of this?
     public Bitmap getBitmapSync(PixelData pixelData, int resolutionFactor) {
         int resolution = MathUtils.intPow(2, resolutionFactor);
         final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
@@ -166,7 +168,7 @@ public class FBPixelManager {
             int childrenStartX = childrenPixelData.get(0).x;
             int childrenStartY = childrenPixelData.get(0).y;
             CountDownLatch latchForFinish = new CountDownLatch(childrenPixelData.size());
-            for (PixelData childPixelData: childrenPixelData) {
+            for (PixelData childPixelData : childrenPixelData) {
                 String firebaseId = childPixelData.firebaseId;
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -207,7 +209,7 @@ public class FBPixelManager {
     }
 
     public void writePixelAsync(PixelData pixelData, PixelColor pixelColor, @Nullable Function<PixelData> callback) {
-        new Thread(()-> {
+        new Thread(() -> {
             try {
                 if (!pixelData.isLeaf()) {
                     throw new Exception("Pixel is not leaf");
@@ -217,18 +219,46 @@ public class FBPixelManager {
                 if (!watchingPixels.containsKey(firebaseId)) {
                     throw new Exception("Try to write pixel which is not watched");
                 }
-                FBPixel originalPixel = watchingPixels.get(firebaseId).getFBPixel();
-                UserInformation userInformation = UserInformation.getInstance();
-                String userToken = userInformation.getToken();
-                LeafFBPixel newPixel = new LeafFBPixel(pixelColor, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
-                final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(2);
-                updateAncestorBitmapCacheAsync(newPixel, pixelData, (StorageMetadata metadata) -> {
-                    latchForAllFinish.countDown();
+
+                final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
+                final CountDownLatch latchForCurrentUpdateFinish = new CountDownLatch(1);
+                final FBPixel originalPixel = new FBPixel();
+                final FBPixel newPixel = new FBPixel();
+                // TODO need to check again for transaction logic
+                DatabaseUtils.getPixelReference(firebaseId).runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        try {
+                            FBPixel serverOriginPixel = mutableData.getValue(LeafFBPixel.class);
+                            if (serverOriginPixel == null) {
+                                serverOriginPixel = FBPixel.emptyPixel();
+                            }
+                            serverOriginPixel.copyTo(originalPixel);
+                            UserInformation userInformation = UserInformation.getInstance();
+                            String userToken = userInformation.getToken();
+                            LeafFBPixel newPixel = new LeafFBPixel(pixelColor, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+                            mutableData.setValue(newPixel);
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        if (!b) {
+                            Log.e(TAG, "transaction failed");
+                            return;
+                        }
+                        dataSnapshot.getValue(LeafFBPixel.class).copyTo(newPixel);
+                        updateAncestorBitmapCacheAsync(newPixel, pixelData, (StorageMetadata metadata) -> {
+                            latchForAllFinish.countDown();
+                        });
+                        latchForCurrentUpdateFinish.countDown();
+                    }
                 });
-                DatabaseUtils.getPixelReference(firebaseId).setValue(newPixel, (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
-                    Log.v(TAG, "setValue finished");
-                    latchForAllFinish.countDown();
-                }); // TODO transaction based on time / push uid
+                latchForCurrentUpdateFinish.await();
                 final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
                 new Thread(() -> {
                     try {
@@ -265,32 +295,56 @@ public class FBPixelManager {
 
     // returns last updated pixel
     private PixelData updateParent(FBPixel childOriginPixel, FBPixel childNewPixel,
-                              PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
+                                   PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
         if (childPixelData.isRoot()) {
             return childPixelData;
         }
         try {
             PixelData parentPixelData = PixelUtils.getParentPixelData(childPixelData);
-            FBPixel parentFBPixel = readPixelInstantly(parentPixelData);
-            FBPixel newParentFBPixel = parentFBPixel.clone();
-            newParentFBPixel.futurePixelColor.replaceColorPortion(childOriginPixel.pixelColor, childNewPixel.pixelColor, 0.25);
-            if (ColorUtils.areDifferent(newParentFBPixel.pixelColor, newParentFBPixel.futurePixelColor)) {
-                newParentFBPixel.pixelColor = newParentFBPixel.futurePixelColor.clone();
-                latchForAllFinish.countUp();
-                String parentId = parentPixelData.firebaseId;
-                updateAncestorBitmapCacheAsync(newParentFBPixel, parentPixelData, (StorageMetadata metadata) -> {
-                    latchForAllFinish.countDown();
-                });
-                latchForAllFinish.countUp();
-                DatabaseUtils.getPixelReference(parentId).setValue(newParentFBPixel,
-                        (@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) -> {
-                            Log.v(TAG, "setValue finished");
-                            latchForAllFinish.countDown();
-                        });
+            String parentId = parentPixelData.firebaseId;
+            final FBPixel parentFBPixel = new FBPixel();
+            final FBPixel newParentFBPixel = new FBPixel();
+            final Succeed needUpdate = new Succeed();
+            final CountDownLatch latchForCurrentUpdateFinish = new CountDownLatch(1);
+            latchForAllFinish.countUp();
+            DatabaseUtils.getPixelReference(parentId).runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                    try {
+                        FBPixel serverParentFBPixel = mutableData.getValue(FBPixel.class);
+                        if (serverParentFBPixel == null) {
+                            serverParentFBPixel = FBPixel.emptyPixel();
+                        }
+                        serverParentFBPixel.copyTo(parentFBPixel);
+                        parentFBPixel.copyTo(newParentFBPixel);
+                        newParentFBPixel.futurePixelColor.replaceColorPortion(childOriginPixel.pixelColor, childNewPixel.pixelColor, 0.25);
+                        needUpdate.setSucceed(ColorUtils.areDifferent(newParentFBPixel.pixelColor, newParentFBPixel.futurePixelColor));
+                        if (needUpdate.getSucceed()) {
+                            newParentFBPixel.pixelColor = newParentFBPixel.futurePixelColor.clone();
+                        }
+                        mutableData.setValue(newParentFBPixel);
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                    if (!b) {
+                        Log.e(TAG, "transaction failed");
+                        return;
+                    }
+                    updateAncestorBitmapCacheAsync(newParentFBPixel, parentPixelData, (StorageMetadata metadata) -> {
+                        latchForAllFinish.countDown();
+                    });
+                    latchForCurrentUpdateFinish.countDown();
+                }
+            });
+            latchForCurrentUpdateFinish.await();
+            if (needUpdate.getSucceed()) {
                 return updateParent(parentFBPixel, newParentFBPixel, parentPixelData, latchForAllFinish);
-            } else {
-                Log.v(TAG, "Update canceled - original pixelColor is " + newParentFBPixel.pixelColor.toString()
-                        + " , future pixelColor is " + newParentFBPixel.futurePixelColor.toString());
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -298,7 +352,6 @@ public class FBPixelManager {
         return childPixelData;
     }
 
-    // TODO Update has to be transaction
     private void updateAncestorBitmapCacheAsync(FBPixel childNewPixel, PixelData childPixelData, Function<StorageMetadata> callback) {
         try {
             if (childPixelData.zoom - Constants.BITMAP_CACHE_RESOLUTION_FACTOR < 0) {
@@ -306,7 +359,7 @@ public class FBPixelManager {
             }
             PixelData ancestorPixelData = PixelUtils.getAncestorPixelData(childPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
             String ancestorFirebaseId = ancestorPixelData.firebaseId;
-            getCachedBitmapAsync(ancestorPixelData, (Bitmap bitmap) -> {
+            getBitmapAsync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR, (Bitmap bitmap) -> {
                 int relativeX = childPixelData.x - ancestorPixelData.x * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 int relativeY = childPixelData.y - ancestorPixelData.y * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 Log.v(TAG, "updating " + relativeX + "," + relativeY);
@@ -316,11 +369,11 @@ public class FBPixelManager {
                 byte[] uploadData = baos.toByteArray();
                 UploadTask uploadTask = DatabaseUtils.getBitmapReference(ancestorFirebaseId).putBytes(uploadData);
                 uploadTask.addOnFailureListener((@NonNull Exception exception) -> {
-                        Log.e(TAG, "Firebase storage upload failed");
-                    }).addOnSuccessListener((UploadTask.TaskSnapshot taskSnapshot) -> {
-                        Log.v(TAG, "Firebase storage upload succeed");
-                        callback.run(taskSnapshot.getMetadata());
-                    });
+                    Log.e(TAG, "Firebase storage upload failed");
+                }).addOnSuccessListener((UploadTask.TaskSnapshot taskSnapshot) -> {
+                    Log.v(TAG, "Firebase storage upload succeed");
+                    callback.run(taskSnapshot.getMetadata());
+                });
             });
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
