@@ -26,12 +26,10 @@ import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.io.InputStream;
 
@@ -43,7 +41,7 @@ public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final String TAG="Maps";
+    private static final String TAG = "Maps";
     private GoogleMap mMap;
     private MapScaleView scaleView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -99,11 +97,10 @@ public class MapsActivity extends AppCompatActivity implements
         LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
         Button utilButton = findViewById(R.id.utilButton);
         utilButton.setOnClickListener((View v) -> {
-            if(utilVisibility) {
+            if (utilVisibility) {
                 utilButtonsLayout.setVisibility(View.INVISIBLE);
                 utilVisibility = false;
-            }
-            else {
+            } else {
                 utilButtonsLayout.setVisibility(View.VISIBLE);
                 utilVisibility = true;
             }
@@ -125,7 +122,6 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng center = new LatLng(41.385064, 2.173403);
         scaleView = findViewById(R.id.scaleView);
 
         // TODO: Enable tilt gesture when performance issue is resolved
@@ -134,7 +130,6 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnCameraIdleListener(this);
         mMap.setOnCameraMoveListener(this);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(center));
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
         enableMyLocation();
@@ -152,9 +147,9 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    private void showToast(Context context, String text){
+    private void showToast(Context context, String text) {
         Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL|Gravity.BOTTOM,
+        toast.setGravity(Gravity.CENTER | Gravity.BOTTOM,
                 0, 200);
         toast.show();
     }
@@ -168,7 +163,9 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onCameraIdle() {
         CameraPosition cameraPosition = mMap.getCameraPosition();
-        showToast(this, "zoom: " + cameraPosition.zoom);
+        showToast(this, "lat: " + cameraPosition.target.latitude + "\n" +
+                "lng: " + cameraPosition.target.longitude + "\n" +
+                "zoom: " + cameraPosition.zoom);
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
 
         GridManager.cleanup();
@@ -189,7 +186,7 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMyLocationClick(@NonNull Location location) {
         double lat = location.getLatitude();
         double lng = location.getLongitude();
-      
+
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
         showToast(this, "Lat: " + location.getLatitude() + "\n" +
                 "Lng: " + location.getLongitude() + "\n" +

@@ -9,8 +9,7 @@ import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
-import com.canvearth.canvearth.pixel.Color;
-import com.canvearth.canvearth.pixel.Pixel;
+import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.ColorUtils;
@@ -79,7 +78,7 @@ public class FBPixelManager {
     }
 
     public void watchPixels(List<PixelData> pixelDataList) {
-        for (PixelData pixelData: pixelDataList) {
+        for (PixelData pixelData : pixelDataList) {
             watchPixel(pixelData);
         }
     }
@@ -99,7 +98,7 @@ public class FBPixelManager {
     }
 
     public void unwatchPixels(List<PixelData> pixelDataList) {
-        for (PixelData pixelData: pixelDataList) {
+        for (PixelData pixelData : pixelDataList) {
             unwatchPixel(pixelData);
         }
     }
@@ -151,7 +150,7 @@ public class FBPixelManager {
     }
 
     public void getBitmapAsync(PixelData pixelData, int resolutionFactor, Function<Bitmap> callback) {
-        new Thread(()->{
+        new Thread(() -> {
             callback.run(getBitmapSync(pixelData, resolutionFactor));
         }).start();
     }
@@ -169,7 +168,7 @@ public class FBPixelManager {
             int childrenStartX = childrenPixelData.get(0).x;
             int childrenStartY = childrenPixelData.get(0).y;
             CountDownLatch latchForFinish = new CountDownLatch(childrenPixelData.size());
-            for (PixelData childPixelData: childrenPixelData) {
+            for (PixelData childPixelData : childrenPixelData) {
                 String firebaseId = childPixelData.firebaseId;
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -183,7 +182,7 @@ public class FBPixelManager {
                         if (ServerFBPixel == null) {
                             ServerFBPixel = FBPixel.emptyPixel();
                         }
-                        int color = BitmapUtils.intColor(ServerFBPixel.color);
+                        int color = BitmapUtils.intColor(ServerFBPixel.pixelColor);
                         int relativeCoordX = childPixelData.x - childrenStartX;
                         int relativeCoordY = childPixelData.y - childrenStartY;
                         for (int y = 0; y < chargeForOnePixel; y++) {
@@ -209,9 +208,8 @@ public class FBPixelManager {
         return bitmap;
     }
 
-    // You don't have to watch before you write
-    public void writePixelAsync(PixelData pixelData, Color color, @Nullable Function<PixelData> callback) {
-        new Thread(()-> {
+    public void writePixelAsync(PixelData pixelData, PixelColor pixelColor, @Nullable Function<PixelData> callback) {
+        new Thread(() -> {
             try {
                 if (!pixelData.isLeaf()) {
                     throw new Exception("Pixel is not leaf");
@@ -239,7 +237,7 @@ public class FBPixelManager {
                             serverOriginPixel.copyTo(originalPixel);
                             UserInformation userInformation = UserInformation.getInstance();
                             String userToken = userInformation.getToken();
-                            LeafFBPixel newPixel = new LeafFBPixel(color, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
+                            LeafFBPixel newPixel = new LeafFBPixel(pixelColor, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
                             mutableData.setValue(newPixel);
                         } catch (Exception e) {
                             Log.e(TAG, e.getMessage());
@@ -280,11 +278,11 @@ public class FBPixelManager {
 
     // Please prefer writePixelAsync, for performance.
     // returns last update pixel data.
-    public PixelData writePixelSync(PixelData pixelData, Color color) {
+    public PixelData writePixelSync(PixelData pixelData, PixelColor pixelColor) {
         final PixelData returnPixelData = new PixelData(0, 0, 0);
         try {
             CountDownLatch latchForFinish = new CountDownLatch(1);
-            writePixelAsync(pixelData, color, (PixelData lastUpdatedPixelData) -> {
+            writePixelAsync(pixelData, pixelColor, (PixelData lastUpdatedPixelData) -> {
                 returnPixelData.copyFrom(lastUpdatedPixelData);
                 latchForFinish.countDown();
             });
@@ -297,7 +295,7 @@ public class FBPixelManager {
 
     // returns last updated pixel
     private PixelData updateParent(FBPixel childOriginPixel, FBPixel childNewPixel,
-                              PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
+                                   PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
         if (childPixelData.isRoot()) {
             return childPixelData;
         }
@@ -320,10 +318,10 @@ public class FBPixelManager {
                         }
                         serverParentFBPixel.copyTo(parentFBPixel);
                         parentFBPixel.copyTo(newParentFBPixel);
-                        newParentFBPixel.futureColor.replaceColorPortion(childOriginPixel.color, childNewPixel.color, 0.25);
-                        needUpdate.setSucceed(ColorUtils.areDifferent(newParentFBPixel.color, newParentFBPixel.futureColor));
+                        newParentFBPixel.futurePixelColor.replaceColorPortion(childOriginPixel.pixelColor, childNewPixel.pixelColor, 0.25);
+                        needUpdate.setSucceed(ColorUtils.areDifferent(newParentFBPixel.pixelColor, newParentFBPixel.futurePixelColor));
                         if (needUpdate.getSucceed()) {
-                            newParentFBPixel.color = newParentFBPixel.futureColor.clone();
+                            newParentFBPixel.pixelColor = newParentFBPixel.futurePixelColor.clone();
                         }
                         mutableData.setValue(newParentFBPixel);
                     } catch (Exception e) {
@@ -365,17 +363,17 @@ public class FBPixelManager {
                 int relativeX = childPixelData.x - ancestorPixelData.x * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 int relativeY = childPixelData.y - ancestorPixelData.y * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 Log.v(TAG, "updating " + relativeX + "," + relativeY);
-                bitmap.setPixel(relativeX, relativeY, BitmapUtils.intColor(childNewPixel.color));
+                bitmap.setPixel(relativeX, relativeY, BitmapUtils.intColor(childNewPixel.pixelColor));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
                 byte[] uploadData = baos.toByteArray();
                 UploadTask uploadTask = DatabaseUtils.getBitmapReference(ancestorFirebaseId).putBytes(uploadData);
                 uploadTask.addOnFailureListener((@NonNull Exception exception) -> {
-                        Log.e(TAG, "Firebase storage upload failed");
-                    }).addOnSuccessListener((UploadTask.TaskSnapshot taskSnapshot) -> {
-                        Log.v(TAG, "Firebase storage upload succeed");
-                        callback.run(taskSnapshot.getMetadata());
-                    });
+                    Log.e(TAG, "Firebase storage upload failed");
+                }).addOnSuccessListener((UploadTask.TaskSnapshot taskSnapshot) -> {
+                    Log.v(TAG, "Firebase storage upload succeed");
+                    callback.run(taskSnapshot.getMetadata());
+                });
             });
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());

@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.canvearth.canvearth.pixel.Color;
+import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.server.FBPixel;
 import com.canvearth.canvearth.server.FBPixelManager;
@@ -17,7 +17,6 @@ import com.canvearth.canvearth.utils.PixelUtils;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,10 +64,13 @@ public class ServerInterfaceTest {
 
         // You have to watch pixel first..
         fBPixelManager.watchPixels(samePixelData);
-        // Write black color to the random pixel
+        // Write black pixelColor to the random pixel
         Random random = new Random();
         PixelData randomPixelData = samePixelData.get(random.nextInt(8 * 8));
-        fBPixelManager.writePixelSync(randomPixelData, new Color(255L, 255L, 255L));
+        fBPixelManager.writePixelAsync(randomPixelData, new PixelColor(0L, 0L, 0L), (pixelData) -> {
+            Log.d("leafPixelWriteTest", "Succeed");
+        });
+
         // You have to unwatch pixel
         fBPixelManager.unwatchPixels(samePixelData);
     }
@@ -81,14 +83,14 @@ public class ServerInterfaceTest {
                 20);
         // You have to watch pixel first..
         fBPixelManager.watchPixels(samePixelData);
-        // Write black color to the random pixel
+        // Write black pixelColor to the random pixel
         Random random = new Random();
         PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
-        Color red = new Color(255L, 0L, 0L);
+        PixelColor red = new PixelColor(255L, 0L, 0L);
         fBPixelManager.writePixelSync(randomPixelData, red);
         // Read same pixel
         FBPixel pixelInfo = fBPixelManager.readPixel(randomPixelData);
-        Assert.assertTrue(pixelInfo.color.equals(red));
+        Assert.assertTrue(pixelInfo.pixelColor.equals(red));
         // You have to unwatch pixel
         fBPixelManager.unwatchPixels(samePixelData);
     }
@@ -100,7 +102,7 @@ public class ServerInterfaceTest {
                 = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 8, 8);
         // You have to watch pixel first..
         fBPixelManager.watchPixels(samePixelData);
-        Color green = new Color(0L, 255L, 0L);
+        PixelColor green = new PixelColor(0L, 255L, 0L);
         for (PixelData pixelData : samePixelData) {
             fBPixelManager.writePixelSync(pixelData, green);
         }
