@@ -31,6 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.InputStream;
 
@@ -48,6 +49,7 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
     private boolean utilVisibility = false;
+
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -195,11 +197,16 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMyLocationClick(@NonNull Location location) {
         double lat = location.getLatitude();
         double lng = location.getLongitude();
+        int viewZoom = Math.round(mMap.getCameraPosition().zoom);
+        int gridZoom = PixelUtils.getGridZoom(viewZoom);
 
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
         showToast(this, "Lat: " + location.getLatitude() + "\n" +
                 "Lng: " + location.getLongitude() + "\n" +
                 "Pix: " + pixel.data.x + ", " + pixel.data.y);
+        if (gridZoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+            GridManager.fillMyPixel(lat, lng, gridZoom, Constants.PALETTE_DEFAULT_COLOR);
+        }
     }
 
     @Override

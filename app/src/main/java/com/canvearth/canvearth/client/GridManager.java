@@ -1,11 +1,15 @@
 package com.canvearth.canvearth.client;
 
 import com.canvearth.canvearth.pixel.Pixel;
+import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.server.FBPixelManager;
+import com.canvearth.canvearth.server.MockFBPixelManager;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.SphericalMercator;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.HashMap;
@@ -64,5 +68,13 @@ public class GridManager {
         }
 
         pixels.clear();
+    }
+
+    public static void fillMyPixel(double lat, double lng, int gridZoom, int color) {
+        Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
+
+        MockFBPixelManager.getInstance().writePixelAsync(pixel.data, new PixelColor(color), pixelData -> {
+            pixels.get(pixelData.firebaseId).fill(color);
+        });
     }
 }
