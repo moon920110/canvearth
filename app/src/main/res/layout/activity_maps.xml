@@ -29,54 +29,61 @@
         android:visibility="invisible">
 
         <Button
+            android:id="@+id/colorButton0"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#FF0000"/>
+            android:background="@color/paletteColor0"/>
         <Button
+            android:id="@+id/colorButton1"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#FF7F00"/>
+            android:background="@color/paletteColor1"/>
         <Button
+            android:id="@+id/colorButton2"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#FFFF00"/>
+            android:background="@color/paletteColor2"/>
         <Button
+            android:id="@+id/colorButton3"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#00FF00"/>
+            android:background="@color/paletteColor3"/>
         <Button
+            android:id="@+id/colorButton4"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#0000FF"/>
+            android:background="@color/paletteColor4"/>
         <Button
+            android:id="@+id/colorButton5"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#4B0082"/>
+            android:background="@color/paletteColor5"/>
         <Button
+            android:id="@+id/colorButton6"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_gravity="center"
-            android:background="#9400D3"/>
+            android:background="@color/paletteColor6"/>
         <ToggleButton
             android:id="@+id/grid_visibility"
             android:layout_width="30dp"

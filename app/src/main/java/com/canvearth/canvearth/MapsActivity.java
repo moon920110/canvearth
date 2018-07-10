@@ -5,9 +5,14 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.canvearth.canvearth.client.GridManager;
+import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -94,18 +100,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         mapFragment.getMapAsync(this);
 
-        LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
-        Button utilButton = findViewById(R.id.utilButton);
-        utilButton.setOnClickListener((View v) -> {
-            if (utilVisibility) {
-                utilButtonsLayout.setVisibility(View.INVISIBLE);
-                utilVisibility = false;
-            } else {
-                utilButtonsLayout.setVisibility(View.VISIBLE);
-                utilVisibility = true;
-            }
-
-        });
+        setButtonClickListeners();
     }
 
 
@@ -226,5 +221,31 @@ public class MapsActivity extends AppCompatActivity implements
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    private void setButtonClickListeners() {
+        LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
+        Button utilButton = findViewById(R.id.utilButton);
+        utilButton.setOnClickListener((View v) -> {
+            if (utilVisibility) {
+                utilButtonsLayout.setVisibility(View.INVISIBLE);
+                utilVisibility = false;
+            } else {
+                utilButtonsLayout.setVisibility(View.VISIBLE);
+                utilVisibility = true;
+            }
+        });
+        for (int i = 0; i < Constants.PALETTE_COLOR_NUM; i++) {
+            String buttonID = "colorButton" + i;
+            String colorID = "paletteColor" + i;
+            int buttonResID = getResources().getIdentifier(buttonID, "id", getPackageName());
+            int colorResId = getResources().getIdentifier(colorID, "color", getPackageName());
+
+            Button button = findViewById(buttonResID);
+            int color = getResources().getColor(colorResId);
+            button.setOnClickListener((View v) -> {
+                Palette.getInstance().setColor(color);
+            });
+        }
     }
 }
