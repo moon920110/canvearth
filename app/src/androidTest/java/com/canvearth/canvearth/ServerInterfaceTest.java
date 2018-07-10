@@ -66,7 +66,7 @@ public class ServerInterfaceTest {
         fBPixelManager.watchPixels(samePixelData);
         // Write black pixelColor to the random pixel
         Random random = new Random();
-        PixelData randomPixelData = samePixelData.get(random.nextInt(20 * 20));
+        PixelData randomPixelData = samePixelData.get(random.nextInt(8 * 8));
         fBPixelManager.writePixelAsync(randomPixelData, new PixelColor(0L, 0L, 0L), (pixelData) -> {
             Log.d("leafPixelWriteTest", "Succeed");
         });
