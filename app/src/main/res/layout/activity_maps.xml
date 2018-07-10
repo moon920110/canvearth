@@ -18,4 +18,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="4dp" />
+
+    <ImageView
+        android:id="@+id/userPhotoImageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="facebook user photo"
+        android:visibility="visible" />
 </FrameLayout>
