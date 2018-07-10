@@ -98,4 +98,10 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/round_button" />
 
+    <ImageView
+        android:id="@+id/userPhotoImageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="facebook user photo"
+        android:visibility="visible" />
 </FrameLayout>
