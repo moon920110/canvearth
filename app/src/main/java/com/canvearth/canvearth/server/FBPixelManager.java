@@ -2,10 +2,11 @@ package com.canvearth.canvearth.server;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.Pair;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.PixelEvents;
@@ -20,11 +21,8 @@ import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;
 import com.canvearth.canvearth.utils.concurrency.CountUpDownLatch;
 import com.canvearth.canvearth.utils.concurrency.Succeed;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
@@ -149,10 +147,36 @@ public class FBPixelManager {
                 });
     }
 
+    private static class GetBitmapAsyncTask extends AsyncTask<Pair<PixelData, Integer>, Void, Bitmap> {
+        private Function<Bitmap> callback;
+
+        public GetBitmapAsyncTask(Function<Bitmap> callback) {
+            super();
+            this.callback = callback;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Bitmap doInBackground(Pair<PixelData, Integer>[] params) {
+            return FBPixelManager.getInstance().getBitmapSync(params[0].first, params[0].second);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            callback.run(bitmap);
+        }
+    }
+
     public void getBitmapAsync(PixelData pixelData, int resolutionFactor, Function<Bitmap> callback) {
-        new Thread(() -> {
-            callback.run(getBitmapSync(pixelData, resolutionFactor));
-        }).start();
+        new GetBitmapAsyncTask(callback).execute(new Pair<>(pixelData, resolutionFactor));
     }
 
     // You don't have to watch this pixel (for now).. I'm nervous about performance issue of this method.
@@ -208,8 +232,8 @@ public class FBPixelManager {
         return bitmap;
     }
 
-    public void writePixelAsync(PixelData pixelData, PixelColor pixelColor, @Nullable Function<PixelData> callback) {
-        new Thread(() -> {
+    public Thread writePixelAsync(PixelData pixelData, PixelColor pixelColor) {
+        Thread thread = new Thread(() -> {
             try {
                 if (!pixelData.isLeaf()) {
                     throw new Exception("Pixel is not leaf");
@@ -260,37 +284,12 @@ public class FBPixelManager {
                 });
                 latchForCurrentUpdateFinish.await();
                 final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
-                new Thread(() -> {
-                    try {
-                        latchForAllFinish.await();
-                        if (callback != null) {
-                            callback.run(lastUpdatedPixelData);
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "in callback - " + e.getMessage());
-                    }
-                }).start();
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
-        }).start();
-    }
-
-    // Please prefer writePixelAsync, for performance.
-    // returns last update pixel data.
-    public PixelData writePixelSync(PixelData pixelData, PixelColor pixelColor) {
-        final PixelData returnPixelData = new PixelData(0, 0, 0);
-        try {
-            CountDownLatch latchForFinish = new CountDownLatch(1);
-            writePixelAsync(pixelData, pixelColor, (PixelData lastUpdatedPixelData) -> {
-                returnPixelData.copyFrom(lastUpdatedPixelData);
-                latchForFinish.countDown();
-            });
-            latchForFinish.await();
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-        return returnPixelData;
+        });
+        thread.start();
+        return thread;
     }
 
     // returns last updated pixel
@@ -352,14 +351,16 @@ public class FBPixelManager {
         return childPixelData;
     }
 
-    private void updateAncestorBitmapCacheAsync(FBPixel childNewPixel, PixelData childPixelData, Function<StorageMetadata> callback) {
+    private void updateAncestorBitmapCacheAsync(FBPixel childNewPixel, PixelData
+            childPixelData, Function<StorageMetadata> callback) {
         try {
             if (childPixelData.zoom - Constants.BITMAP_CACHE_RESOLUTION_FACTOR < 0) {
                 return;
             }
             PixelData ancestorPixelData = PixelUtils.getAncestorPixelData(childPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
             String ancestorFirebaseId = ancestorPixelData.firebaseId;
-            getBitmapAsync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR, (Bitmap bitmap) -> {
+            new Thread(() -> {
+                Bitmap bitmap = getBitmapSync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 int relativeX = childPixelData.x - ancestorPixelData.x * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 int relativeY = childPixelData.y - ancestorPixelData.y * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 Log.v(TAG, "updating " + relativeX + "," + relativeY);
@@ -374,7 +375,7 @@ public class FBPixelManager {
                     Log.v(TAG, "Firebase storage upload succeed");
                     callback.run(taskSnapshot.getMetadata());
                 });
-            });
+            }).start();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
