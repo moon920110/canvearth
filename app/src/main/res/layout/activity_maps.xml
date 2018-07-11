@@ -104,4 +104,10 @@
         android:layout_height="64dp"
         android:contentDescription="facebook user photo"
         android:visibility="visible" />
+
+    <Button
+        android:id="@+id/shareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Share" />
 </FrameLayout>

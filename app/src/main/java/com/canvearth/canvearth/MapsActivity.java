@@ -2,11 +2,14 @@ package com.canvearth.canvearth;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
+import com.facebook.login.LoginManager;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,6 +36,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -73,6 +78,28 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    protected void shareMap() {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            mMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                @Override
+                public void onSnapshotReady(Bitmap bitmap) {
+                    String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "canvearthMapSnapshot", null);
+                    Uri bitmapUri = Uri.parse(bitmapPath);
+
+                    Log.d(TAG, "snapshot Ready");
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND)
+                            .setType("image/*")
+                            .putExtra(Intent.EXTRA_STREAM, bitmapUri);
+                    startActivity(sendIntent);
+                }
+            });
+        }
+        else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +114,14 @@ public class MapsActivity extends AppCompatActivity implements
         ImageView photoImageView = findViewById(R.id.userPhotoImageView);
         DownloadImageTask photoImageDonwloadTask = new DownloadImageTask(photoImageView);
         photoImageDonwloadTask.execute(userPhotoUrlString);
+
+        Button shareButton = findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareMap();
+            }
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -196,6 +231,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
             return;
         }
@@ -207,6 +243,10 @@ public class MapsActivity extends AppCompatActivity implements
         } else {
             // Display the missing permission error dialog when the fragments resume.
             mPermissionDenied = true;
+        }
+
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            return;
         }
     }
 

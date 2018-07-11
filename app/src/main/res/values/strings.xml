@@ -3,6 +3,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="facebook_app_id">158146075058019</string>
     <string name="fb_login_protocol_scheme">fb158146075058019</string>
+    <string name="fb_content_provider">com.facebook.app.FacebookContentProvider158146075058019</string>
     <string name="Sign_in_facebook_button">Travel with Facebook</string>
 
     <!--    Permissions    -->
