@@ -1,6 +1,7 @@
 package com.canvearth.canvearth;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -78,25 +79,37 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    protected void shareMap() {
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            mMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
-                @Override
-                public void onSnapshotReady(Bitmap bitmap) {
-                    String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "canvearthMapSnapshot", null);
-                    Uri bitmapUri = Uri.parse(bitmapPath);
+    protected class ShareInvoker extends AsyncTask<Void, Void, Void>{
+        protected Activity mParentActivity;
+        protected GoogleMap mMap;
 
-                    Log.d(TAG, "snapshot Ready");
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND)
-                            .setType("image/*")
-                            .putExtra(Intent.EXTRA_STREAM, bitmapUri);
-                    startActivity(sendIntent);
-                }
-            });
+        public ShareInvoker(Activity parentActivity, GoogleMap map) {
+            this.mParentActivity = parentActivity;
+            this.mMap = map;
         }
-        else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (mParentActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                mMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap bitmap) {
+                        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "canvearthMapSnapshot", null);
+                        Uri bitmapUri = Uri.parse(bitmapPath);
+
+                        Log.d(TAG, "snapshot Ready");
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND)
+                                .setType("image/*")
+                                .putExtra(Intent.EXTRA_STREAM, bitmapUri);
+                        startActivity(sendIntent);
+                    }
+                });
+            }
+            else {
+                ActivityCompat.requestPermissions(mParentActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            }
+            return null;
         }
     }
 
@@ -119,7 +132,7 @@ public class MapsActivity extends AppCompatActivity implements
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareMap();
+                new ShareInvoker(MapsActivity.this, mMap).execute();
             }
         });
 
