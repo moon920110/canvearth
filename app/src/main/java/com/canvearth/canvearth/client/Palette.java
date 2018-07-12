@@ -14,9 +14,11 @@ public class Palette {
         return ourInstance;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void setColor(Color c) {
-        ourInstance.color = c.toArgb();
+    // It requires Color.argb(a, r, g, b) or 0xFFFFFFFF(argb) format data for parameter.
+    // Cuz Color.toArgb() method needs at least api version 26.
+    // But our minimum require version limit is 15.
+    public void setColor(int c) {
+        ourInstance.color = c;
     }
 
     public int getColor() {

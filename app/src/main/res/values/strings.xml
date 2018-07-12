@@ -4,6 +4,7 @@
     <string name="facebook_app_id">158146075058019</string>
     <string name="fb_login_protocol_scheme">fb158146075058019</string>
     <string name="Sign_in_facebook_button">Travel with Facebook</string>
+    <string name="fb_user_profilePic">facebook user photo</string>
 
     <!--    Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>

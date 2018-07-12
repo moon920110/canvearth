@@ -12,9 +12,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 
 public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener{
 
-    MapsActivity mapsActivity;
-    MapScaleView scaleView;
-    Context context;
+    private MapsActivity mapsActivity;
+    private MapScaleView scaleView;
+    private Context context;
 
     public OnCameraIdleListenerImpl(MapsActivity activity, Context context, MapScaleView scaleView) {
         super();

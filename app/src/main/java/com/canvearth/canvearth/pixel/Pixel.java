@@ -40,9 +40,7 @@ public class Pixel {
     public void draw(GoogleMap map) {
         PolygonOptions polygonOptions = getPolygonOptions();
         Polygon polygon = map.addPolygon(polygonOptions);
-
-        polygon.setClickable(true);
-        map.setOnPolygonClickListener(pg -> pg.setFillColor(Palette.getInstance().getColor()));
+        polygon.setFillColor(Palette.getInstance().getColor());
         this.polygon = polygon;
     }
 
