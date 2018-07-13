@@ -1,13 +1,18 @@
 package com.canvearth.canvearth;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.pixel.PixelData;
+import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.FBPixel;
 import com.canvearth.canvearth.server.FBPixelManager;
+import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
@@ -21,8 +26,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 
 @RunWith(AndroidJUnit4.class)
