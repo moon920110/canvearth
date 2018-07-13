@@ -27,16 +27,16 @@ public class GridManager {
             if (minX <= maxX) {
                 for (double x = minX; x < maxX; x += pixSideLen) {
                     Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                    pixels.put(pixel.data.firebaseId, pixel);
+                    pixels.put(pixel.data.getFirebaseId(), pixel);
                 }
             } else {
                 for (double x = -180; x < minX; x += pixSideLen) {
                     Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                    pixels.put(pixel.data.firebaseId, pixel);
+                    pixels.put(pixel.data.getFirebaseId(), pixel);
                 }
                 for (double x = maxX; x < 180; x += pixSideLen) {
                     Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                    pixels.put(pixel.data.firebaseId, pixel);
+                    pixels.put(pixel.data.getFirebaseId(), pixel);
                 }
             }
         }
