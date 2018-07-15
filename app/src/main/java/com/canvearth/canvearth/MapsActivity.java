@@ -1,8 +1,11 @@
 package com.canvearth.canvearth;
 
+import com.canvearth.canvearth.databinding.ActivityMapsBinding;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.canvearth.canvearth.client.GridManager;
@@ -48,6 +52,7 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
     private boolean utilVisibility = false;
+    private ActivityMapsBinding binding = null;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -77,7 +82,10 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
+        binding.setMapsActivityHandler(this);
+
+        relocateComponents();
 
         String userName = getIntent().getExtras().getString("userName");
         Log.d(TAG, "userName: " + userName);
@@ -240,5 +248,25 @@ public class MapsActivity extends AppCompatActivity implements
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    public void onClickMyPage() {
+        showToast(this, "Not Implemented Yet");
+    }
+
+    private void relocateComponents() {
+        relocateMyLocationButton();
+    }
+
+    private void relocateMyLocationButton() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        View mapView = mapFragment.getView();
+        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        // position on right bottom
+        rlp.topMargin = 120;
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
     }
 }
