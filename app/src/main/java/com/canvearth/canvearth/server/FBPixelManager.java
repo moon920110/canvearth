@@ -2,6 +2,7 @@ package com.canvearth.canvearth.server;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -145,6 +146,12 @@ public class FBPixelManager {
                     Log.v(TAG, "Could not get bitmap");
                     callback.run(BitmapUtils.emptyBitmap(bitmapSide, bitmapSide));
                 });
+    }
+
+    public void getCachedBitmapDownloadUrl(PixelData pixelData, Function<Uri> callback) {
+        String firebaseId = pixelData.firebaseId;
+        DatabaseUtils.getBitmapReference(firebaseId).getDownloadUrl()
+                .addOnSuccessListener(callback::run);
     }
 
     private static class GetBitmapAsyncTask extends AsyncTask<Pair<PixelData, Integer>, Void, Bitmap> {
