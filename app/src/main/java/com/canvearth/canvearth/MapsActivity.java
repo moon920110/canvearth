@@ -97,14 +97,6 @@ public class MapsActivity extends AppCompatActivity implements
         DownloadImageTask photoImageDonwloadTask = new DownloadImageTask(photoImageView);
         photoImageDonwloadTask.execute(userPhotoUrlString);
 
-        Button shareButton = findViewById(R.id.shareButton);
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new ShareInvoker(MapsActivity.this, mMap).shareMapSnapshot();
-            }
-        });
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -248,6 +240,10 @@ public class MapsActivity extends AppCompatActivity implements
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    public void onClickShare() {
+        new ShareInvoker(MapsActivity.this, mMap).shareMapSnapshot();
     }
 
     public void onClickMyPage() {
