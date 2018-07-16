@@ -361,8 +361,8 @@ public class FBPixelManager {
             String ancestorFirebaseId = ancestorPixelData.firebaseId;
             new Thread(() -> {
                 Bitmap bitmap = getBitmapSync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
-                int relativeX = childPixelData.x - ancestorPixelData.x * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
-                int relativeY = childPixelData.y - ancestorPixelData.y * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+                int relativeX = childPixelData.x % MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+                int relativeY = childPixelData.y % MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 Log.v(TAG, "updating " + relativeX + "," + relativeY);
                 bitmap.setPixel(relativeX, relativeY, BitmapUtils.intColor(childNewPixel.pixelColor));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
