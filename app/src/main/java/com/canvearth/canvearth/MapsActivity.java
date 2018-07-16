@@ -80,8 +80,6 @@ public class MapsActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
         binding.setMapsActivityHandler(this);
 
-        relocateComponents();
-
         String userName = getIntent().getExtras().getString("userName");
         Log.d(TAG, "userName: " + userName);
 
@@ -161,19 +159,29 @@ public class MapsActivity extends AppCompatActivity {
         ScreenUtils.showToast(this, "Not Implemented Yet");
     }
 
-    private void relocateComponents() {
-        relocateMyLocationButton();
+    public void onClickAddSketch() {
+        ScreenUtils.showToast(this, "Not Implemented Yet");
     }
 
-    private void relocateMyLocationButton() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        View mapView = mapFragment.getView();
-        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
-        // position on right bottom
-        rlp.topMargin = 120;
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+    public void onClickShowSketch() {
+        ScreenUtils.showToast(this, "Not Implemented Yet");
+    }
+
+    public void hidePaletteButton() {
+        binding.utilButton.setVisibility(View.GONE);
+    }
+
+    public void showPaletteButton() {
+        binding.utilButton.setVisibility(View.VISIBLE);
+    }
+
+    public void hideSketchButton() {
+        binding.addSketchButton.setVisibility(View.GONE);
+        binding.showSketchButton.setVisibility(View.GONE);
+    }
+
+    public void showSketchButton() {
+        binding.addSketchButton.setVisibility(View.VISIBLE);
+        binding.showSketchButton.setVisibility(View.VISIBLE);
     }
 }

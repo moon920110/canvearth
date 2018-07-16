@@ -15,10 +15,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     private Context context;
-    private AppCompatActivity activity;
+    private MapsActivity activity;
     private MapScaleView scaleView;
 
-    public OnMapReadyCallbackImpl(Context context, AppCompatActivity activity, MapScaleView scaleView) {
+    public OnMapReadyCallbackImpl(Context context, MapsActivity activity, MapScaleView scaleView) {
         super();
         this.context = context;
         this.activity = activity;
@@ -37,12 +37,12 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsActivity.Map = googleMap;
-
+        googleMap.setPadding(20, 150, 20, 150);
         // TODO: Enable tilt gesture when performance issue is resolved
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context, scaleView));
+        googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(activity, context, scaleView));
         googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(context, scaleView));
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView));

@@ -12,13 +12,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 
 public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener{
 
+    MapsActivity mapsActivity;
     MapScaleView scaleView;
     Context context;
 
-    public OnCameraIdleListenerImpl(Context context, MapScaleView scaleView) {
+    public OnCameraIdleListenerImpl(MapsActivity activity, Context context, MapScaleView scaleView) {
         super();
         this.scaleView = scaleView;
         this.context = context;
+        this.mapsActivity = activity;
     }
 
     @Override
@@ -32,6 +34,11 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener{
         GridManager.cleanup();
         if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_ZOOM_LEVEL) {
             GridManager.draw(MapsActivity.Map, Math.round(cameraPosition.zoom));
+            mapsActivity.showPaletteButton();
+            mapsActivity.hideSketchButton();
+        } else {
+            mapsActivity.hidePaletteButton();
+            mapsActivity.showSketchButton();
         }
     }
 }
