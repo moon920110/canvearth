@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.canvearth.canvearth.client.GridManager;
+import com.canvearth.canvearth.client.Palette;
+import com.canvearth.canvearth.client.PixelEvents;
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -34,6 +36,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -49,6 +53,7 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
     private boolean utilVisibility = false;
+    private static Palette palette = Palette.getInstance();
 
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -205,7 +210,7 @@ public class MapsActivity extends AppCompatActivity implements
                 "Lng: " + location.getLongitude() + "\n" +
                 "Pix: " + pixel.data.x + ", " + pixel.data.y);
         if (gridZoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
-            GridManager.fillMyPixel(lat, lng, gridZoom, Constants.PALETTE_DEFAULT_COLOR);
+            GridManager.fillMyPixel(lat, lng, gridZoom, palette.getColor());
         }
     }
 
