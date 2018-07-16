@@ -19,14 +19,17 @@ package com.canvearth.canvearth.utils;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 
 /**
@@ -34,6 +37,7 @@ import com.canvearth.canvearth.R;
  */
 public abstract class PermissionUtils {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     /**
      * Requests the fine location permission. If a rationale with an additional explanation should
      * be shown to the user, displays a dialog that triggers the request.
@@ -107,6 +111,18 @@ public abstract class PermissionUtils {
                         Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
+        }
+    }
+
+    public static void enableMyLocation(Context context, AppCompatActivity activity) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(activity, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        } else if (MapsActivity.Map != null) {
+            // Access to the location has been granted to the app.
+            MapsActivity.Map.setMyLocationEnabled(true);
         }
     }
 
