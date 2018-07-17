@@ -85,7 +85,11 @@ public class FBPixelManager {
     public void unwatchPixel(PixelData pixelData) {
         String firebaseId = pixelData.getFirebaseId();
 
-        ValueEventListener registeredListener = watchingPixels.get(firebaseId).getValueEventListener();
+        WatchingPixel watchingPixel = watchingPixels.get(firebaseId);
+        if (watchingPixel == null) {
+            return;
+        }
+        ValueEventListener registeredListener = watchingPixel.getValueEventListener();
         DatabaseUtils.getPixelReference(firebaseId).removeEventListener(registeredListener);
         watchingPixels.remove(firebaseId);
     }
