@@ -78,7 +78,7 @@ public class GridManager {
     public static void fillMyPixel(double lat, double lng, int gridZoom, int color) {
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
 
-        pixels.get(pixel.data.firebaseId).fill(color);
+        pixels.get(pixel.data.getFirebaseId()).fill(color);
         FBPixelManager.getInstance().writePixelAsync(pixel.data, new PixelColor(color));
     }
 
