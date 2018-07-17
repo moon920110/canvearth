@@ -1,7 +1,6 @@
 package com.canvearth.canvearth.pixel;
 
 import com.canvearth.canvearth.client.Palette;
-import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,10 +39,11 @@ public class Pixel {
     public void draw(GoogleMap map) {
         PolygonOptions polygonOptions = getPolygonOptions();
         Polygon polygon = map.addPolygon(polygonOptions);
-
-        polygon.setClickable(true);
-        map.setOnPolygonClickListener(pg -> pg.setFillColor(Palette.getInstance().getColor()));
         this.polygon = polygon;
+    }
+
+    public void fill(int color) {
+        polygon.setFillColor(color);
     }
 
     public void erase() {

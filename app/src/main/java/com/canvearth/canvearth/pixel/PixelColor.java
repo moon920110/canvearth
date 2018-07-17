@@ -51,6 +51,16 @@ public class PixelColor implements Cloneable {
                 && this.a.longValue() == pixelColor.a.longValue();
     }
 
+    public int getIntColor() {
+        byte[] colorByteArr = {a.byteValue(), r.byteValue(), g.byteValue(), b.byteValue()};
+        return byteArrToInt(colorByteArr);
+    }
+
+
+    private int byteArrToInt(byte[] colorByteArr) {
+        return (colorByteArr[0] << 24) + ((colorByteArr[1] & 0xFF) << 16) + ((colorByteArr[2] & 0xFF) << 8) + (colorByteArr[3] & 0xFF);
+    }
+
     public boolean transparent() {
         return (this.a < Constants.COLOR_TRANSPARENT_BOUND);
     }

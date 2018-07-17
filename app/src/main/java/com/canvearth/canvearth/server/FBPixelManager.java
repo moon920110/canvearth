@@ -52,7 +52,7 @@ public class FBPixelManager {
 
     // Client have to call watchPixel to keep track pixel data.
     public void watchPixel(final PixelData pixelData) {
-        final String firebaseId = pixelData.firebaseId;
+        final String firebaseId = pixelData.getFirebaseId();
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -83,7 +83,7 @@ public class FBPixelManager {
 
     // Client have to call unwatchPixel when you don't need to track pixel data anymore.
     public void unwatchPixel(PixelData pixelData) {
-        String firebaseId = pixelData.firebaseId;
+        String firebaseId = pixelData.getFirebaseId();
 
         ValueEventListener registeredListener = watchingPixels.get(firebaseId).getValueEventListener();
         DatabaseUtils.getPixelReference(firebaseId).removeEventListener(registeredListener);
@@ -91,7 +91,7 @@ public class FBPixelManager {
     }
 
     public FBPixel readPixel(PixelData pixelData) {
-        String firebaseId = pixelData.firebaseId;
+        String firebaseId = pixelData.getFirebaseId();
         return watchingPixels.get(firebaseId).getFBPixel();
     }
 
@@ -103,7 +103,7 @@ public class FBPixelManager {
 
     // You can read unwatching pixel by this method
     private FBPixel readPixelInstantly(PixelData pixelData) throws InterruptedException {
-        String firebaseId = pixelData.firebaseId;
+        String firebaseId = pixelData.getFirebaseId();
         final FBPixel fbPixel = FBPixel.emptyPixel();
         final CountDownLatch latchForFinish = new CountDownLatch(1);
         DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -130,7 +130,7 @@ public class FBPixelManager {
 
     // prefer use this rather than getBitmapAsync
     public void getCachedBitmapAsync(PixelData pixelData, Function<Bitmap> callback) {
-        String firebaseId = pixelData.firebaseId;
+        String firebaseId = pixelData.getFirebaseId();
         int bitmapSide = MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
         DatabaseUtils.getBitmapReference(firebaseId)
                 .getBytes(Constants.BITMAP_PNG_MAX_BYTES)
@@ -193,7 +193,7 @@ public class FBPixelManager {
             int childrenStartY = childrenPixelData.get(0).y;
             CountDownLatch latchForFinish = new CountDownLatch(childrenPixelData.size());
             for (PixelData childPixelData : childrenPixelData) {
-                String firebaseId = childPixelData.firebaseId;
+                String firebaseId = childPixelData.getFirebaseId();
                 DatabaseUtils.getPixelReference(firebaseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -238,7 +238,7 @@ public class FBPixelManager {
                 if (!pixelData.isLeaf()) {
                     throw new Exception("Pixel is not leaf");
                 }
-                String firebaseId = pixelData.firebaseId;
+                String firebaseId = pixelData.getFirebaseId();
                 // You have to watch pixel before you write it.
                 if (!watchingPixels.containsKey(firebaseId)) {
                     throw new Exception("Try to write pixel which is not watched");
@@ -300,7 +300,7 @@ public class FBPixelManager {
         }
         try {
             PixelData parentPixelData = PixelUtils.getParentPixelData(childPixelData);
-            String parentId = parentPixelData.firebaseId;
+            String parentId = parentPixelData.getFirebaseId();
             final FBPixel parentFBPixel = new FBPixel();
             final FBPixel newParentFBPixel = new FBPixel();
             final Succeed needUpdate = new Succeed();
@@ -358,11 +358,11 @@ public class FBPixelManager {
                 return;
             }
             PixelData ancestorPixelData = PixelUtils.getAncestorPixelData(childPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
-            String ancestorFirebaseId = ancestorPixelData.firebaseId;
+            String ancestorFirebaseId = ancestorPixelData.getFirebaseId();
             new Thread(() -> {
                 Bitmap bitmap = getBitmapSync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
-                int relativeX = childPixelData.x - ancestorPixelData.x * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
-                int relativeY = childPixelData.y - ancestorPixelData.y * MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+                int relativeX = childPixelData.x % MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
+                int relativeY = childPixelData.y % MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 Log.v(TAG, "updating " + relativeX + "," + relativeY);
                 bitmap.setPixel(relativeX, relativeY, BitmapUtils.intColor(childNewPixel.pixelColor));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
