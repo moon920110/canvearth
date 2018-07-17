@@ -359,8 +359,6 @@ public class FBPixelManager {
             }
             PixelData ancestorPixelData = PixelUtils.getAncestorPixelData(childPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
             String ancestorFirebaseId = ancestorPixelData.getFirebaseId();
-            getBitmapAsync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR, (Bitmap bitmap) -> {
-            String ancestorFirebaseId = ancestorPixelData.firebaseId;
             new Thread(() -> {
                 Bitmap bitmap = getBitmapSync(ancestorPixelData, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
                 int relativeX = childPixelData.x % MathUtils.intPow(2, Constants.BITMAP_CACHE_RESOLUTION_FACTOR);
