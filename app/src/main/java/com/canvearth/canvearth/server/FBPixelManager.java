@@ -31,6 +31,7 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -146,6 +147,25 @@ public class FBPixelManager {
                     Log.v(TAG, "Could not get bitmap");
                     callback.run(BitmapUtils.emptyBitmap(bitmapSide, bitmapSide));
                 });
+    }
+
+    class UrlWapper {
+        URL url;
+    }
+
+    public URL getCachedBitmapDownloadUrlSync(PixelData pixelData) throws InterruptedException {
+        CountDownLatch latchForFinish = new CountDownLatch(1);
+        UrlWapper urlWapper = new UrlWapper();
+        getCachedBitmapDownloadUrl(pixelData, (Uri uri) -> {
+            try {
+                urlWapper.url = new URL(uri.toString());
+                latchForFinish.countDown();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+       latchForFinish.await();
+       return urlWapper.url;
     }
 
     public void getCachedBitmapDownloadUrl(PixelData pixelData, Function<Uri> callback) {
