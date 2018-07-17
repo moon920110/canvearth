@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
-import com.canvearth.canvearth.mapListeners.OnPickerClickListenerImpl;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;

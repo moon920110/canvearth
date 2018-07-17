@@ -14,6 +14,7 @@ import java.util.Map;
 public class GridManager {
     private static Map<String, Pixel> pixels = new HashMap<>();
     private static FBPixelManager fBPixelManager = FBPixelManager.getInstance();
+    private static boolean isVisible = true;
 
     private static void addPixels(GoogleMap map, double pixSideLen, int gridZoom) {
         Projection projection = map.getProjection();
@@ -44,7 +45,7 @@ public class GridManager {
         for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
             Pixel pix = entry.getValue();
             fBPixelManager.watchPixel(pix.data);
-            pix.draw(map);
+            pix.draw(map, isVisible);
         }
     }
 
@@ -64,5 +65,14 @@ public class GridManager {
         }
 
         pixels.clear();
+    }
+
+    public static void toggleVisibility() {
+        isVisible = !isVisible;
+
+        for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
+            Pixel pix = entry.getValue();
+            pix.changeVisibility(isVisible);
+        }
     }
 }

@@ -46,11 +46,11 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView));
         PermissionUtils.enableMyLocation(context, activity);
 
-        OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl(googleMap);
+        OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl();
         setPickers(pickerButtons);
     }
 
-    private void setPickers(OnPickerClickListenerImpl pickerButtons){
+    private void setPickers(OnPickerClickListenerImpl pickerButtons) {
         Button redPicker = activity.findViewById(R.id.redPicker);
         redPicker.setOnClickListener(pickerButtons);
         Button orangePicker = activity.findViewById(R.id.orangePicker);

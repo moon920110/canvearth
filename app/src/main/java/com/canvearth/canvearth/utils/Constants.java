@@ -23,7 +23,8 @@ public class Constants {
 
     /* drawing related */
     public static float PIX_STROKE_WIDTH = 3;
-    public static int PIX_STROKE_COLOR = Color.argb(50, 100, 100, 100);
+    public static int PIX_STROKE_VISIBLE_COLOR = Color.argb(50, 100, 100, 100);
+    public static int PIX_STROKE_INVISIBLE_COLOR = Color.argb(0, 0, 0, 0);
     public static int PALETTE_DEFAULT_COLOR = Color.argb(100, 255, 255, 255);
     public static int RED_COLOR = 0xFFFF0000;
     public static int ORANGE_COLOR = 0xFFFF7F00;
