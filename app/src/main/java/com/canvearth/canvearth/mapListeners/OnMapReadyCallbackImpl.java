@@ -1,11 +1,6 @@
 package com.canvearth.canvearth.mapListeners;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -45,7 +40,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(activity, context, scaleView));
         googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(context, scaleView));
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
-        googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView));
+        googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
         PermissionUtils.enableMyLocation(context, activity);
     }
 

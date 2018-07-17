@@ -1,7 +1,10 @@
 package com.canvearth.canvearth.client;
 
+
 import com.canvearth.canvearth.pixel.Pixel;
+import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.server.FBPixelManager;
+import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.SphericalMercator;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,7 +18,8 @@ public class GridManager {
     private static Map<String, Pixel> pixels = new HashMap<>();
     private static FBPixelManager fBPixelManager = FBPixelManager.getInstance();
 
-    private static void addPixels(GoogleMap map, double pixSideLen, int gridZoom) {
+
+    private static void addPixels(GoogleMap map, double pixSideLen, int gridZoom, boolean shouldWatchPixel) {
         Projection projection = map.getProjection();
         LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
         double minY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.southwest.latitude) / pixSideLen) - 5 * (pixSideLen / 2);
@@ -43,9 +47,12 @@ public class GridManager {
 
         for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
             Pixel pix = entry.getValue();
-            fBPixelManager.watchPixel(pix.data);
+            if (shouldWatchPixel) {
+                fBPixelManager.watchPixel(pix.data);
+            }
             pix.draw(map);
         }
+
     }
 
 
@@ -53,7 +60,9 @@ public class GridManager {
         int gridZoom = PixelUtils.getGridZoom(zoom);
         double pixSideLen = PixelUtils.latlng2bbox(map.getCameraPosition().target, gridZoom).getSideLength();
 
-        addPixels(map, pixSideLen, gridZoom);
+        boolean shouldWatchPixel = zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL;
+
+        addPixels(map, pixSideLen, gridZoom, shouldWatchPixel);
     }
 
     public static void cleanup() {
@@ -64,5 +73,19 @@ public class GridManager {
         }
 
         pixels.clear();
+    }
+
+    public static void fillMyPixel(double lat, double lng, int gridZoom, int color) {
+        Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
+
+        pixels.get(pixel.data.firebaseId).fill(color);
+        FBPixelManager.getInstance().writePixelAsync(pixel.data, new PixelColor(color));
+    }
+
+    public static void changePixelColor(String firebaseId, int color) {
+        Pixel pixel = pixels.get(firebaseId);
+        if (pixel != null) {
+            pixel.fill(color);
+        }
     }
 }

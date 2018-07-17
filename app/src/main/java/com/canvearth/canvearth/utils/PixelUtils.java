@@ -26,6 +26,7 @@ public class PixelUtils {
         return new Pixel(xtile, ytile, zoom);
     }
 
+
     public static BoundingBox pix2bbox(Pixel pixel) {
         final int x = pixel.data.x;
         final int y = pixel.data.y;
@@ -91,7 +92,7 @@ public class PixelUtils {
         ArrayList<PixelData> childrenPixelData = new ArrayList<>(numChildrenSide * numChildrenSide);
         int zoom = pixelData.zoom + level;
         for (int y = 0; y < numChildrenSide; y++) {
-            for(int x = 0; x < numChildrenSide; x++) {
+            for (int x = 0; x < numChildrenSide; x++) {
                 childrenPixelData.add(new PixelData(pixelData.x * numChildrenSide + x, pixelData.y * numChildrenSide + y, zoom));
                 Assert.assertEquals(childrenPixelData.size(), y * numChildrenSide + x + 1);
             }
