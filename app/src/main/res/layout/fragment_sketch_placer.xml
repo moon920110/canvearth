@@ -16,8 +16,8 @@
 
         <com.canvearth.canvearth.client.SketchPlacerView
             android:id="@+id/sketch_placer"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_margin="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
