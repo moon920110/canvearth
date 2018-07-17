@@ -1,8 +1,11 @@
 package com.canvearth.canvearth.mapListeners;
 
 import android.content.Context;
+import android.widget.Button;
+import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.MapsActivity;
+import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,7 +45,27 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
         PermissionUtils.enableMyLocation(context, activity);
+
+        OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl();
+        setPickers(pickerButtons);
     }
 
-
+    private void setPickers(OnPickerClickListenerImpl pickerButtons) {
+        Button redPicker = activity.findViewById(R.id.redPicker);
+        redPicker.setOnClickListener(pickerButtons);
+        Button orangePicker = activity.findViewById(R.id.orangePicker);
+        orangePicker.setOnClickListener(pickerButtons);
+        Button yellowPicker = activity.findViewById(R.id.yellowPicker);
+        yellowPicker.setOnClickListener(pickerButtons);
+        Button greenPicker = activity.findViewById(R.id.greenPicker);
+        greenPicker.setOnClickListener(pickerButtons);
+        Button bluePicker = activity.findViewById(R.id.bluePicker);
+        bluePicker.setOnClickListener(pickerButtons);
+        Button indigoPicker = activity.findViewById(R.id.indigoPicker);
+        indigoPicker.setOnClickListener(pickerButtons);
+        Button purplePicker = activity.findViewById(R.id.purplePicker);
+        purplePicker.setOnClickListener(pickerButtons);
+        ToggleButton gridVisibilityButton = activity.findViewById(R.id.grid_visibility);
+        gridVisibilityButton.setOnClickListener(pickerButtons);
+    }
 }

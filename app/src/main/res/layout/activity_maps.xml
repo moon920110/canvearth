@@ -1,9 +1,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
-        <variable name="mapsActivityHandler" type="com.canvearth.canvearth.MapsActivity" />
+
+        <variable
+            name="mapsActivityHandler"
+            type="com.canvearth.canvearth.MapsActivity" />
     </data>
+
     <FrameLayout
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
@@ -33,80 +37,97 @@
             android:visibility="invisible">
 
             <Button
+                android:id="@+id/redPicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#FF0000"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#FF0000" />
+
             <Button
+                android:id="@+id/orangePicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#FF7F00"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#FF7F00" />
+
             <Button
+                android:id="@+id/yellowPicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#FFFF00"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#FFFF00" />
+
             <Button
+                android:id="@+id/greenPicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#00FF00"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#00FF00" />
+
             <Button
+                android:id="@+id/bluePicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#0000FF"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#0000FF" />
+
             <Button
+                android:id="@+id/indigoPicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#4B0082"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#4B0082" />
+
             <Button
+                android:id="@+id/purplePicker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
-                android:background="#9400D3"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:background="#9400D3" />
+
             <ToggleButton
                 android:id="@+id/grid_visibility"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="5dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
-                android:textOff=""
-                android:textOn=""
+                android:layout_marginStart="5dp"
                 android:background="@drawable/grid_visible_icon_selector"
-                android:layout_gravity="center" />
+                android:textOff=""
+                android:textOn="" />
         </LinearLayout>
+
         <Button
             android:id="@+id/utilButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="bottom|center_horizontal"
+            android:layout_gravity="bottom|left"
             android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
             android:background="@drawable/round_button" />
+
 
         <ImageView
             android:id="@+id/userPhotoImageView"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:contentDescription="facebook user photo"
+            android:contentDescription="@string/fb_user_profilePic"
             android:visibility="visible" />
 
         <Button

@@ -6,8 +6,8 @@ import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 
 public class OnMyLocationButtonClickListenerImpl implements GoogleMap.OnMyLocationButtonClickListener{
-    MapScaleView scaleView;
-    Context context;
+    private MapScaleView scaleView;
+    private Context context;
 
     public OnMyLocationButtonClickListenerImpl(Context context, MapScaleView scaleView) {
         super();

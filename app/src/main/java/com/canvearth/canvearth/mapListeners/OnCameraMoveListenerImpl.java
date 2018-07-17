@@ -8,8 +8,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 
 public class OnCameraMoveListenerImpl implements GoogleMap.OnCameraMoveListener{
-    MapScaleView scaleView;
-    Context context;
+    private MapScaleView scaleView;
+    private Context context;
 
     public OnCameraMoveListenerImpl(Context context, MapScaleView scaleView) {
         super();

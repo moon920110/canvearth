@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -26,9 +27,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import java.io.InputStream;
 
+
 public class MapsActivity extends AppCompatActivity {
     public static GoogleMap Map;
-
     private static final String TAG = "Maps";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
@@ -80,7 +81,7 @@ public class MapsActivity extends AppCompatActivity {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        MapScaleView scaleView = (MapScaleView) findViewById(R.id.scaleView);
+        MapScaleView scaleView = findViewById(R.id.scaleView);
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
 
         LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
@@ -93,7 +94,6 @@ public class MapsActivity extends AppCompatActivity {
                 utilButtonsLayout.setVisibility(View.VISIBLE);
                 utilVisibility = true;
             }
-
         });
     }
 

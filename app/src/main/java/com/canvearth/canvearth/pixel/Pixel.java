@@ -24,20 +24,26 @@ public class Pixel {
         return data.isRoot();
     }
 
-    public PolygonOptions getPolygonOptions() {
+    public PolygonOptions getPolygonOptions(boolean isVisible) {
         BoundingBox bbox = PixelUtils.pix2bbox(this);
-        return new PolygonOptions()
+        PolygonOptions polygonOptions = new PolygonOptions()
                 .add(new LatLng(bbox.north, bbox.west),
                         new LatLng(bbox.south, bbox.west),
                         new LatLng(bbox.south, bbox.east),
                         new LatLng(bbox.north, bbox.east),
                         new LatLng(bbox.north, bbox.west))
-                .strokeColor(Constants.PIX_STROKE_COLOR)
                 .strokeWidth(Constants.PIX_STROKE_WIDTH);
+
+        if (isVisible) {
+            polygonOptions.strokeColor(Constants.PIX_STROKE_VISIBLE_COLOR);
+        } else {
+            polygonOptions.strokeColor(Constants.PIX_STROKE_INVISIBLE_COLOR);
+        }
+        return polygonOptions;
     }
 
-    public void draw(GoogleMap map) {
-        PolygonOptions polygonOptions = getPolygonOptions();
+    public void draw(GoogleMap map, boolean isVisible) {
+        PolygonOptions polygonOptions = getPolygonOptions(isVisible);
         Polygon polygon = map.addPolygon(polygonOptions);
         this.polygon = polygon;
     }
@@ -48,5 +54,13 @@ public class Pixel {
 
     public void erase() {
         this.polygon.remove();
+    }
+
+    public void changeVisibility(boolean isVisible) {
+        if (!isVisible) {
+            this.polygon.setStrokeColor(Constants.PIX_STROKE_INVISIBLE_COLOR);
+        } else {
+            this.polygon.setStrokeColor(Constants.PIX_STROKE_VISIBLE_COLOR);
+        }
     }
 }
