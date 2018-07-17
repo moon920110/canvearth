@@ -43,7 +43,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(activity, context, scaleView));
         googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(context, scaleView));
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
-        googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView));
+        googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
         PermissionUtils.enableMyLocation(context, activity);
 
         OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl();

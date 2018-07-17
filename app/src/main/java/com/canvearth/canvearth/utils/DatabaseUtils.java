@@ -28,4 +28,31 @@ public class DatabaseUtils {
             return storage.child(Constants.FIREBASE_PROD_PREFIX).child(pixelId);
         }
     }
+
+    public static DatabaseReference getSketchPixelReference(String pixelId) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        if (Configs.TESTING) {
+            return database.child(Constants.FIREBASE_DEV_PREFIX).child("NearSketch").child(pixelId);
+        } else {
+            return database.child(Constants.FIREBASE_PROD_PREFIX).child("NearSketch").child(pixelId);
+        }
+    }
+
+    public static DatabaseReference getSketchRootReference() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        if (Configs.TESTING) {
+            return database.child(Constants.FIREBASE_DEV_PREFIX).child("Sketches");
+        } else {
+            return database.child(Constants.FIREBASE_PROD_PREFIX).child("Sketches");
+        }
+    }
+
+    public static StorageReference getSketchReference(String sketchId) {
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        if (Configs.TESTING) {
+            return storage.child(Constants.FIREBASE_DEV_PREFIX).child(sketchId);
+        } else {
+            return storage.child(Constants.FIREBASE_PROD_PREFIX).child(sketchId);
+        }
+    }
 }

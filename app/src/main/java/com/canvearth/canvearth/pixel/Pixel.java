@@ -1,5 +1,6 @@
 package com.canvearth.canvearth.pixel;
 
+import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,6 +46,10 @@ public class Pixel {
         PolygonOptions polygonOptions = getPolygonOptions(isVisible);
         Polygon polygon = map.addPolygon(polygonOptions);
         this.polygon = polygon;
+    }
+
+    public void fill(int color) {
+        polygon.setFillColor(color);
     }
 
     public void erase() {
