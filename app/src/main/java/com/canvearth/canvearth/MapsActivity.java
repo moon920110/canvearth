@@ -1,8 +1,15 @@
 package com.canvearth.canvearth;
 
+import com.canvearth.canvearth.client.Photo;
+import com.canvearth.canvearth.client.SketchPlacerFragment;
 import com.canvearth.canvearth.databinding.ActivityMapsBinding;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,12 +35,15 @@ import java.io.InputStream;
 
 public class MapsActivity extends AppCompatActivity {
     public static GoogleMap Map;
+    public static ContentResolver contentResolver;
 
     private static final String TAG = "Maps";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int REQUEST_SELECT_PHOTO = 2;
     private boolean mPermissionDenied = false;
     private boolean utilVisibility = false;
     private ActivityMapsBinding binding = null;
+    private Fragment addSketchFragment = null;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -63,6 +73,7 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        contentResolver = this.getContentResolver();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
         binding.setMapsActivityHandler(this);
 
@@ -93,9 +104,9 @@ public class MapsActivity extends AppCompatActivity {
                 utilButtonsLayout.setVisibility(View.VISIBLE);
                 utilVisibility = true;
             }
-
         });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -129,6 +140,37 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "something wrong");
+            return;
+        }
+
+        if (requestCode != REQUEST_SELECT_PHOTO) {
+            Log.e(TAG, "something wrong");
+            return;
+        }
+        Photo photo = data.getParcelableExtra("photo");
+        addSketchFragment = SketchPlacerFragment.newInstance(photo);
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.sketch_placer, addSketchFragment);
+        fragmentTransaction.commit();
+        findViewById(R.id.all_components).setVisibility(View.GONE);
+    }
+
+    public void addSketchFinish() {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.remove(addSketchFragment);
+        addSketchFragment = null;
+        fragmentTransaction.commit();
+        findViewById(R.id.all_components).setVisibility(View.VISIBLE);
+    }
+
     /**
      * Displays a dialog with error message explaining that the location permission is missing.
      */
@@ -146,7 +188,16 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     public void onClickAddSketch() {
-        ScreenUtils.showToast(this, "Not Implemented Yet");
+        String[] permissions = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        };
+        final int requestCodePermission = 2000;
+        if (PermissionUtils.checkSelfPermissions(this, permissions)) {
+            final Intent intent = SelectPhotoActivity.createIntent(this);
+            startActivityForResult(intent, REQUEST_SELECT_PHOTO);
+            return;
+        }
+        PermissionUtils.requestPermission(this, requestCodePermission, permissions[0], false);
     }
 
     public void onClickShowSketch() {

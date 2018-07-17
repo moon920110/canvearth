@@ -1,0 +1,35 @@
+<!--suppress AndroidUnknownAttribute -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="com.canvearth.canvearth.R" />
+        <import type="android.view.View" />
+        <variable
+            name="handler"
+            type="com.canvearth.canvearth.client.PhotoAdapter" />
+        <variable
+            name="position"
+            type="int" />
+        <variable
+            name="photo"
+            type="com.canvearth.canvearth.client.Photo" />
+    </data>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:onClick="@{(view) -> handler.onClickPhoto(view, position, photo)}">
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            app:glide_photo="@{photo}"
+            app:glide_placeholder="@{R.color.thumbnailPlaceholder}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+    </android.support.constraint.ConstraintLayout>
+</layout>

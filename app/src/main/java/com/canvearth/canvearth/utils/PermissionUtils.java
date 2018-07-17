@@ -51,8 +51,20 @@ public abstract class PermissionUtils {
         } else {
             // Location permission has not been granted yet, request it.
             ActivityCompat.requestPermissions(activity, new String[]{permission}, requestId);
-
         }
+    }
+
+    public static boolean checkSelfPermissions(Context context, String[] permissions)
+    {
+        for (String permission : permissions)
+        {
+            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

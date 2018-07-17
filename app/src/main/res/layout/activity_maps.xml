@@ -16,6 +16,13 @@
             android:layout_height="match_parent"
             tools:context="com.canvearth.canvearth.MapsActivity" />
 
+        <fragment
+            android:id="@+id/sketch_placer"
+            android:name="com.canvearth.canvearth.client.SketchPlacerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/activity_maps"/>
+
         <com.github.pengrad.mapscaleview.MapScaleView
             android:id="@+id/scaleView"
             android:layout_width="wrap_content"
@@ -23,122 +30,126 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="4dp" />
 
-        <LinearLayout
-            android:id="@+id/util_items"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="80dp"
-            android:background="#cccccc"
-            android:visibility="invisible">
+        <FrameLayout
+            android:id="@+id/all_components"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/util_items"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="80dp"
+                android:background="#cccccc"
+                android:visibility="invisible">
+
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#FF0000"/>
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#FF7F00"/>
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#FFFF00"/>
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#00FF00"/>
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#0000FF"/>
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#4B0082"/>
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="#9400D3"/>
+                <ToggleButton
+                    android:id="@+id/grid_visibility"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:textOff=""
+                    android:textOn=""
+                    android:background="@drawable/grid_visible_icon_selector"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/utilButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/round_button" />
+
+            <ImageView
+                android:id="@+id/userPhotoImageView"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="facebook user photo"
+                android:visibility="visible" />
 
             <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#FF0000"/>
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#FF7F00"/>
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#FFFF00"/>
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#00FF00"/>
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#0000FF"/>
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#4B0082"/>
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="center"
-                android:background="#9400D3"/>
-            <ToggleButton
-                android:id="@+id/grid_visibility"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
-                android:textOff=""
-                android:textOn=""
-                android:background="@drawable/grid_visible_icon_selector"
-                android:layout_gravity="center" />
-        </LinearLayout>
-        <Button
-            android:id="@+id/utilButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/round_button" />
+                android:id="@+id/shareButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
+                android:text="Share" />
 
-        <ImageView
-            android:id="@+id/userPhotoImageView"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:contentDescription="facebook user photo"
-            android:visibility="visible" />
+            <Button
+                android:id="@+id/myPageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
+                android:text="MY" />
 
-        <Button
-            android:id="@+id/shareButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
-            android:text="Share" />
+            <Button
+                android:id="@+id/addSketchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|bottom"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
+                android:text="ADD" />
 
-        <Button
-            android:id="@+id/myPageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
-            android:text="MY" />
-
-        <Button
-            android:id="@+id/addSketchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
-            android:text="ADD" />
-
-        <Button
-            android:id="@+id/showSketchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
-            android:text="SHOW" />
-
+            <Button
+                android:id="@+id/showSketchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
+                android:text="SHOW" />
+        </FrameLayout>
     </FrameLayout>
 </layout>
