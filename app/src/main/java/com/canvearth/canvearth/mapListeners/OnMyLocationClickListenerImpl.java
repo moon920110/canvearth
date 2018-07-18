@@ -34,9 +34,9 @@ public class OnMyLocationClickListenerImpl implements GoogleMap.OnMyLocationClic
         int gridZoom = PixelUtils.getGridZoom(viewZoom);
 
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
-        ScreenUtils.showToast(this.context, "Lat: " + location.getLatitude() + "\n" +
-                "Lng: " + location.getLongitude() + "\n" +
-                "Pix: " + pixel.data.x + ", " + pixel.data.y);
+//        ScreenUtils.showToast(this.context, "Lat: " + location.getLatitude() + "\n" +
+//                "Lng: " + location.getLongitude() + "\n" +
+//                "Pix: " + pixel.data.x + ", " + pixel.data.y);
         if (gridZoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
             GridManager.fillMyPixel(lat, lng, gridZoom, palette.getColor());
         }
