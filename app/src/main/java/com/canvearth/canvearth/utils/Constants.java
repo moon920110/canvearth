@@ -9,7 +9,8 @@ public class Constants {
 
     /* pixel logic related */
     public static int LEAF_PIXEL_GRID_ZOOM_LEVEL = 20;
-    public static int BITMAP_SHOW_GRID_ZOOM_LEVEL = 15;
+    public static int BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL = 15;
+    public static int BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL = 13;
     public static int GRID_SHOW_MAX_CAM_ZOOM_LEVEL = 18;
     public static int GRID_SHOW_MIN_CAM_ZOOM_LEVEL = 13;
     public static int VIEW_GRID_ZOOM_DIFF = 3;
