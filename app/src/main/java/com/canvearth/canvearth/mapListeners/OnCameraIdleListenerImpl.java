@@ -6,7 +6,6 @@ import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
-import com.canvearth.canvearth.utils.ScreenUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;

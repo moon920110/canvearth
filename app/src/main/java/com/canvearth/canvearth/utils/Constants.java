@@ -27,13 +27,4 @@ public class Constants {
     public static int PIX_STROKE_VISIBLE_COLOR = Color.argb(50, 100, 100, 100);
     public static int PIX_STROKE_INVISIBLE_COLOR = Color.argb(0, 0, 0, 0);
     public static int PALETTE_DEFAULT_COLOR = Color.argb(100, 255, 255, 255);
-    public static int RED_COLOR = 0xFFFF0000;
-    public static int ORANGE_COLOR = 0xFFFF7F00;
-    public static int YELLOW_COLOR = 0xFFFFFF00;
-    public static int GREEN_COLOR = 0xFF00FF00;
-    public static int BLUE_COLOR = 0xFF0000FF;
-    public static int INDIGO_COLOR = 0xFF4B0082;
-    public static int PURPLE_COLOR = 0xFF9400D3;
-
-
 }

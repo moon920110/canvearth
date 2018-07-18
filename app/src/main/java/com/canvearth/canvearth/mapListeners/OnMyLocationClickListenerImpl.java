@@ -6,10 +6,8 @@ import android.support.annotation.NonNull;
 
 import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.client.Palette;
-import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
-import com.canvearth.canvearth.utils.ScreenUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 
