@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 public class SketchPlacerView extends AppCompatImageView {
+    private Photo photo = null;
     private Drawable drawable = null;
     private Rect bound = null;
 
@@ -41,6 +42,7 @@ public class SketchPlacerView extends AppCompatImageView {
     }
 
     public void setPhoto(Photo photo) {
+        this.photo = photo;
         drawable = photo.getDrawable();
         int width = UI.getDisplayWidth();
         int height = UI.getDisplayHeight();
@@ -50,5 +52,13 @@ public class SketchPlacerView extends AppCompatImageView {
                 width * 3 / 4,
                 height * 3 / 4);
         invalidate();
+    }
+
+    public Rect getBound() {
+        return bound;
+    }
+
+    public Photo getPhoto() {
+        return photo;
     }
 }

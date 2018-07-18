@@ -1,6 +1,8 @@
 package com.canvearth.canvearth.client;
 
 
+import android.graphics.Point;
+
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.server.FBPixelManager;
@@ -12,6 +14,7 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GridManager {

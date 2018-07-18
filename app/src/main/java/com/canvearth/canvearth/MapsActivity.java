@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
@@ -25,7 +26,12 @@ import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
+import com.canvearth.canvearth.pixel.PixelData;
+import com.canvearth.canvearth.pixel.PixelDataSquare;
+import com.canvearth.canvearth.server.SketchRegisterManager;
+import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
+import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
 import com.github.pengrad.mapscaleview.MapScaleView;
@@ -33,6 +39,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import java.io.InputStream;
+import java.util.Set;
 
 
 public class MapsActivity extends AppCompatActivity {
@@ -164,7 +171,9 @@ public class MapsActivity extends AppCompatActivity {
         findViewById(R.id.all_components).setVisibility(View.GONE);
     }
 
-    public void addSketchFinish() {
+    public void addSketchFinish(Rect bound, Photo photo) {
+        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.RESGISTRATION_ZOOM_LEVEL);
+        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj)->{});
         FragmentManager fm = getFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.remove(addSketchFragment);

@@ -4,7 +4,9 @@ import android.util.Log;
 
 import com.canvearth.canvearth.utils.Constants;
 
-public class PixelData {
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+public class PixelData implements Cloneable {
     private static String TAG = "PixelData";
     public int x;
     public int y;
@@ -14,6 +16,17 @@ public class PixelData {
         this.x = x;
         this.y = y;
         this.zoom = zoom;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(x).append(y).append(zoom).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        PixelData rhs = (PixelData) object;
+        return x == rhs.x && y == rhs.y && zoom == rhs.zoom;
     }
 
     public void copyFrom(PixelData pixelData) {
