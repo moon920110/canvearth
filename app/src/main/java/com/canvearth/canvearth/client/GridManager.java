@@ -3,6 +3,8 @@ package com.canvearth.canvearth.client;
 
 import android.graphics.Point;
 
+import android.os.AsyncTask;
+
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.server.FBPixelManager;
@@ -31,32 +33,47 @@ public class GridManager {
         double maxY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.northeast.latitude) / pixSideLen) + 5 * (pixSideLen / 2);
         double maxX = -180 + pixSideLen * (int) (SphericalMercator.scaleLongitude(bounds.northeast.longitude) / pixSideLen) + 5 * (pixSideLen / 2);
 
-        for (double y = minY; y < maxY; y += pixSideLen) {
-            if (minX <= maxX) {
-                for (double x = minX; x < maxX; x += pixSideLen) {
-                    Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                    pixels.put(pixel.data.getFirebaseId(), pixel);
-                }
-            } else {
-                for (double x = -180; x < minX; x += pixSideLen) {
-                    Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                    pixels.put(pixel.data.getFirebaseId(), pixel);
-                }
-                for (double x = maxX; x < 180; x += pixSideLen) {
-                    Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                    pixels.put(pixel.data.getFirebaseId(), pixel);
-                }
-            }
-        }
+        new AsyncTask<Object, Pixel, Object>() {
+            @Override
+            protected Object doInBackground(Object... object) {
 
-        for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
-            Pixel pix = entry.getValue();
-            if (shouldWatchPixel) {
-                fBPixelManager.watchPixel(pix.data);
-            }
-            pix.draw(map, isVisible);
-        }
+                for (double y = minY; y < maxY; y += pixSideLen) {
+                    if (minX <= maxX) {
+                        for (double x = minX; x < maxX; x += pixSideLen) {
+                            Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
+                            pixels.put(pixel.data.getFirebaseId(), pixel);
+                        }
+                    } else {
+                        for (double x = -180; x < minX; x += pixSideLen) {
+                            Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
+                            pixels.put(pixel.data.getFirebaseId(), pixel);
+                        }
+                        for (double x = maxX; x < 180; x += pixSideLen) {
+                            Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
+                            pixels.put(pixel.data.getFirebaseId(), pixel);
+                        }
+                    }
+                }
 
+                for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
+                    Pixel pix = entry.getValue();
+                    if (shouldWatchPixel) {
+                        fBPixelManager.watchPixel(pix.data);
+                    }
+                    publishProgress(pix);
+                }
+                return new Object();
+            }
+
+            @Override
+            protected void onProgressUpdate(Pixel... params) {
+                params[0].draw(map, isVisible);
+            }
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+            }
+        }.execute();
     }
 
 
@@ -64,7 +81,7 @@ public class GridManager {
         int gridZoom = PixelUtils.getGridZoom(zoom);
         double pixSideLen = PixelUtils.latlng2bbox(map.getCameraPosition().target, gridZoom).getSideLength();
 
-        boolean shouldWatchPixel = zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL;
+        boolean shouldWatchPixel = gridZoom > Constants.BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL;
 
         addPixels(map, pixSideLen, gridZoom, shouldWatchPixel);
     }
@@ -87,7 +104,7 @@ public class GridManager {
             pix.changeVisibility(isVisible);
         }
     }
-  
+
     public static void fillMyPixel(double lat, double lng, int gridZoom, int color) {
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
 

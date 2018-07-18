@@ -6,10 +6,8 @@ import android.support.annotation.NonNull;
 
 import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.client.Palette;
-import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
-import com.canvearth.canvearth.utils.ScreenUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 
@@ -33,11 +31,7 @@ public class OnMyLocationClickListenerImpl implements GoogleMap.OnMyLocationClic
         int viewZoom = Math.round(map.getCameraPosition().zoom);
         int gridZoom = PixelUtils.getGridZoom(viewZoom);
 
-        Pixel pixel = PixelUtils.latlng2pix(lat, lng, Constants.LEAF_PIXEL_ZOOM_LEVEL);
-        ScreenUtils.showToast(this.context, "Lat: " + location.getLatitude() + "\n" +
-                "Lng: " + location.getLongitude() + "\n" +
-                "Pix: " + pixel.data.x + ", " + pixel.data.y);
-        if (gridZoom == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+        if (gridZoom == Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL) {
             GridManager.fillMyPixel(lat, lng, gridZoom, palette.getColor());
         }
     }

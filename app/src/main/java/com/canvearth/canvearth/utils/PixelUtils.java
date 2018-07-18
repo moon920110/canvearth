@@ -62,7 +62,7 @@ public class PixelUtils {
     }
 
     public static int getGridZoom(int viewZoom) {
-        return Math.min(viewZoom + Constants.VIEW_GRID_ZOOM_DIFF, Constants.LEAF_PIXEL_ZOOM_LEVEL);
+        return Math.min(viewZoom + Constants.VIEW_GRID_ZOOM_DIFF, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL);
     }
 
     public static double pix2lng(int x, int z) {
@@ -95,7 +95,7 @@ public class PixelUtils {
     }
 
     public static ArrayList<PixelData> getChildrenPixelData(PixelData pixelData, int level) throws Exception {
-        if (pixelData.zoom + level > Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+        if (pixelData.zoom + level > Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL) {
             throw new Exception("Cannot get children of leaf pixel");
         }
         int numChildrenSide = MathUtils.intPow(2, level);

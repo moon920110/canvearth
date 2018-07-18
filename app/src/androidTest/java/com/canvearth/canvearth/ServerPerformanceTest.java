@@ -40,7 +40,7 @@ public class ServerPerformanceTest {
             final String TAG = "ServerPerformanceTest/pixelWritePerformanceTest";
             FBPixelManager fBPixelManager = FBPixelManager.getInstance();
             ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(
-                    new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 5, 5);
+                    new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL), 5, 5);
 
             // You have to watch pixel first..
             fBPixelManager.watchPixels(samePixelData);
@@ -66,7 +66,7 @@ public class ServerPerformanceTest {
             final String TAG = "ServerPerformanceTest/bitmapReadPerformanceTest";
             FBPixelManager fBPixelManager = FBPixelManager.getInstance();
             ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(
-                    new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 5, 5);
+                    new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL), 5, 5);
 
             // You have to watch pixel first..
             fBPixelManager.watchPixels(samePixelData);
@@ -74,12 +74,12 @@ public class ServerPerformanceTest {
             for (PixelData pixelData : samePixelData) {
                 fBPixelManager.writePixelAsync(pixelData, green).join();
             }
-            PixelData zoomedOutPixelData8x8 = new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL - 3);
+            PixelData zoomedOutPixelData8x8 = new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL - 3);
             long elapsedTime8x8 = TimeUtils.measureTimeMillis((Object object) -> {
                 fBPixelManager.getBitmapSync(zoomedOutPixelData8x8, 3);
             });
             Log.i(TAG, "Elapsed Time For getting 8x8 bitmap: " + elapsedTime8x8 + "ms");
-            PixelData zoomedOutPixelData16x16 = new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL - 4);
+            PixelData zoomedOutPixelData16x16 = new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL - 4);
             long elapsedTime16x16 = TimeUtils.measureTimeMillis((Object object) -> {
                 fBPixelManager.getBitmapSync(zoomedOutPixelData16x16, 4);
             });

@@ -59,7 +59,7 @@ public class FBPixelManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 FBPixel FBPixel;
-                if (pixelData.zoom < Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+                if (pixelData.zoom < Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL) {
                     FBPixel = dataSnapshot.getValue(FBPixel.class);
                 } else {
                     FBPixel = dataSnapshot.getValue(LeafFBPixel.class);
@@ -217,7 +217,7 @@ public class FBPixelManager {
         int resolution = MathUtils.intPow(2, resolutionFactor);
         final Bitmap bitmap = Bitmap.createBitmap(resolution, resolution, Bitmap.Config.ARGB_8888);
         try {
-            int hierarchy = Math.min(Constants.LEAF_PIXEL_ZOOM_LEVEL - pixelData.zoom, resolutionFactor);
+            int hierarchy = Math.min(Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL - pixelData.zoom, resolutionFactor);
             int chargeForOnePixel = MathUtils.intPow(2, resolutionFactor - hierarchy);
             ArrayList<PixelData> childrenPixelData = PixelUtils.getChildrenPixelData(pixelData, hierarchy);
             int childrenStartX = childrenPixelData.get(0).x;
