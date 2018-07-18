@@ -5,12 +5,13 @@ import android.content.Context;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.utils.Constants;
+import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 
-public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener{
+public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener {
 
     private MapsActivity mapsActivity;
     private MapScaleView scaleView;
@@ -26,14 +27,14 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener{
     @Override
     public void onCameraIdle() {
         CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
-        ScreenUtils.showToast(context, "lat: " + cameraPosition.target.latitude + "\n" +
-                "lng: " + cameraPosition.target.longitude + "\n" +
-                "zoom: " + cameraPosition.zoom);
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
 
         GridManager.cleanup();
         if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_ZOOM_LEVEL) {
             GridManager.draw(MapsActivity.Map, Math.round(cameraPosition.zoom));
+        }
+
+        if (PixelUtils.getGridZoom(Math.round(cameraPosition.zoom)) == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
             mapsActivity.showPaletteButton();
             mapsActivity.hideSketchButton();
         } else {

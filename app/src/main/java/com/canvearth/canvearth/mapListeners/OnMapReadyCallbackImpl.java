@@ -6,6 +6,7 @@ import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
+import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +45,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(context, scaleView));
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
+        googleMap.setMaxZoomPreference(Constants.GRID_SHOW_MAX_ZOOM_LEVEL);
         PermissionUtils.enableMyLocation(context, activity);
 
         OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl();
