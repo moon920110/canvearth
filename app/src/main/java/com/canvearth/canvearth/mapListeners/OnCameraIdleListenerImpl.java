@@ -27,9 +27,6 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
     @Override
     public void onCameraIdle() {
         CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
-//        ScreenUtils.showToast(context, "lat: " + cameraPosition.target.latitude + "\n" +
-//                "lng: " + cameraPosition.target.longitude + "\n" +
-//                "zoom: " + cameraPosition.zoom);
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
 
         GridManager.cleanup();
