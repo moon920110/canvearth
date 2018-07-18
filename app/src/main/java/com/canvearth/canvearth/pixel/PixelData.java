@@ -27,7 +27,7 @@ public class PixelData {
     }
 
     public boolean isLeaf() {
-        return zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL;
+        return zoom == Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL;
     }
 
     public boolean isRoot() {
