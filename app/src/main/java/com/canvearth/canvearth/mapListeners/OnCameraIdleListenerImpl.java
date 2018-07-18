@@ -28,13 +28,16 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
     public void onCameraIdle() {
         CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
         scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
+        ScreenUtils.showToast(context, "zoom: " + Float.toString(cameraPosition.zoom) + "\n" +
+                "grid zoom: " + PixelUtils.getGridZoom(Math.round(cameraPosition.zoom)));
 
         GridManager.cleanup();
-        if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_ZOOM_LEVEL) {
+
+        if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_CAM_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL) {
             GridManager.draw(MapsActivity.Map, Math.round(cameraPosition.zoom));
         }
 
-        if (PixelUtils.getGridZoom(Math.round(cameraPosition.zoom)) == Constants.LEAF_PIXEL_ZOOM_LEVEL) {
+        if (PixelUtils.getGridZoom(Math.round(cameraPosition.zoom)) == Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL) {
             mapsActivity.showPaletteButton();
             mapsActivity.hideSketchButton();
         } else {

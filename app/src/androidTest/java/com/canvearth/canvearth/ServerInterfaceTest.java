@@ -1,18 +1,13 @@
 package com.canvearth.canvearth;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.canvearth.canvearth.pixel.PixelColor;
 import com.canvearth.canvearth.pixel.PixelData;
-import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.FBPixel;
 import com.canvearth.canvearth.server.FBPixelManager;
-import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.utils.BitmapUtils;
 import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
@@ -26,12 +21,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -51,7 +42,7 @@ public class ServerInterfaceTest {
     public void leafPixelReadTest() {
         FBPixelManager fBPixelManager = FBPixelManager.getInstance();
         ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(
-                new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
+                new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL),
                 8,
                 8);
         // You have to watch pixel first..
@@ -68,7 +59,7 @@ public class ServerInterfaceTest {
     public void leafPixelWriteTest() {
         try {
             FBPixelManager fBPixelManager = FBPixelManager.getInstance();
-            ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
+            ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL),
                     8,
                     8);
 
@@ -90,7 +81,7 @@ public class ServerInterfaceTest {
     public void leafPixelWriteReadTest() {
         try {
             FBPixelManager fBPixelManager = FBPixelManager.getInstance();
-            ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL),
+            ArrayList<PixelData> samePixelData = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL),
                     20,
                     20);
             // You have to watch pixel first..
@@ -115,14 +106,14 @@ public class ServerInterfaceTest {
         try {
             FBPixelManager fBPixelManager = FBPixelManager.getInstance();
             ArrayList<PixelData> samePixelData
-                    = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL), 8, 8);
+                    = PixelUtils.makeBatchPixelData(new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL), 8, 8);
             // You have to watch pixel first..
             fBPixelManager.watchPixels(samePixelData);
             PixelColor green = new PixelColor(0L, 255L, 0L);
             for (PixelData pixelData : samePixelData) {
                 fBPixelManager.writePixelAsync(pixelData, green).join();
             }
-            PixelData zoomedOutPixelData = new PixelData(0, 0, Constants.LEAF_PIXEL_ZOOM_LEVEL - 3);
+            PixelData zoomedOutPixelData = new PixelData(0, 0, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL - 3);
             Bitmap bitmap = fBPixelManager.getBitmapSync(zoomedOutPixelData, 5);
             int expectedSide = MathUtils.intPow(2, 5);
             Assert.assertEquals(bitmap.getWidth(), expectedSide);

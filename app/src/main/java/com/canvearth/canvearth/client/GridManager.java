@@ -78,7 +78,7 @@ public class GridManager {
         int gridZoom = PixelUtils.getGridZoom(zoom);
         double pixSideLen = PixelUtils.latlng2bbox(map.getCameraPosition().target, gridZoom).getSideLength();
 
-        boolean shouldWatchPixel = zoom == Constants.LEAF_PIXEL_ZOOM_LEVEL;
+        boolean shouldWatchPixel = gridZoom > Constants.BITMAP_SHOW_GRID_ZOOM_LEVEL;
 
         addPixels(map, pixSideLen, gridZoom, shouldWatchPixel);
     }
