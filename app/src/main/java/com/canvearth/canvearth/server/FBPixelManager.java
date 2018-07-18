@@ -173,7 +173,7 @@ public class FBPixelManager {
     }
 
     public void getCachedBitmapDownloadUrl(PixelData pixelData, Function<Uri> callback) {
-        String firebaseId = pixelData.firebaseId;
+        String firebaseId = pixelData.getFirebaseId();
         DatabaseUtils.getBitmapReference(firebaseId).getDownloadUrl()
                 .addOnSuccessListener(callback::run);
     }

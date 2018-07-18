@@ -36,8 +36,10 @@ public class SketchPlacerFragment extends Fragment {
 
         View view = binding.getRoot();
         if (getArguments() == null) {
+            binding.confirmButton.setVisibility(View.GONE);
             return view;
         }
+        binding.confirmButton.setVisibility(View.VISIBLE);
         Photo photo = getArguments().getParcelable(KEY_PHOTO);
         binding.setSketchPhoto(photo);
         ((SketchPlacerView) view.findViewById(R.id.sketch_placer)).setPhoto(photo);
