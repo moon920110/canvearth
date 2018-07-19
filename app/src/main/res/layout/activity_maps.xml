@@ -44,92 +44,252 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginBottom="80dp"
-                android:background="#cccccc"
+                android:orientation="vertical"
                 android:visibility="invisible">
 
-            <Button
-                android:id="@+id/redPicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#FF0000" />
-
-            <Button
-                android:id="@+id/orangePicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#FF7F00" />
-
-            <Button
-                android:id="@+id/yellowPicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#FFFF00" />
-
-            <Button
-                android:id="@+id/greenPicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#00FF00" />
-
-            <Button
-                android:id="@+id/bluePicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#0000FF" />
-
-            <Button
-                android:id="@+id/indigoPicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#4B0082" />
-
-            <Button
-                android:id="@+id/purplePicker"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:background="#9400D3" />
-
-            <ToggleButton
-                android:id="@+id/grid_visibility"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/grid_visible_icon_selector"
-                android:textOff=""
-                android:textOn="" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <Button
+                        android:id="@+id/redPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/red" />
+                    <Button
+                        android:id="@+id/pinkPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/pink" />
+                    <Button
+                        android:id="@+id/purplePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/purple" />
+                    <Button
+                        android:id="@+id/deepPurplePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/deep_purple" />
+                    <Button
+                        android:id="@+id/indigoPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/indigo" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <Button
+                        android:id="@+id/bluePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/blue" />
+                    <Button
+                        android:id="@+id/lightBluePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/light_blue" />
+                    <Button
+                        android:id="@+id/cyanPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/cyan" />
+                    <Button
+                        android:id="@+id/tealPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/teal" />
+                    <Button
+                        android:id="@+id/greenPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/green" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <Button
+                        android:id="@+id/lightGreenPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/light_green" />
+                    <Button
+                        android:id="@+id/limePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/lime" />
+                    <Button
+                        android:id="@+id/yellowPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/yellow" />
+                    <Button
+                        android:id="@+id/amberPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/amber" />
+                    <Button
+                        android:id="@+id/orangePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/orange" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <Button
+                        android:id="@+id/deepOrangePicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/deep_orange" />
+                    <Button
+                        android:id="@+id/brownPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/brown" />
+                    <Button
+                        android:id="@+id/greyPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/grey" />
+                    <Button
+                        android:id="@+id/blueGreyPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@color/blue_grey" />
+                    <Button
+                        android:id="@+id/defaultColorPicker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@drawable/default_color_button" />
+                </LinearLayout>
         </LinearLayout>
+
+        <ToggleButton
+            android:id="@+id/grid_visibility"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center|bottom"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/grid_visible_icon_selector"
+            android:textOff=""
+            android:textOn="" />
 
         <Button
             android:id="@+id/utilButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="bottom|left"
+            android:layout_gravity="bottom|start"
             android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
             android:background="@drawable/round_button" />
 
@@ -141,36 +301,36 @@
             android:contentDescription="@string/fb_user_profilePic"
             android:visibility="visible" />
 
-            <Button
-                android:id="@+id/shareButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
-                android:text="Share" />
+        <Button
+            android:id="@+id/shareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
+            android:text="Share" />
 
-            <Button
-                android:id="@+id/myPageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|top"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
-                android:text="MY" />
+        <Button
+            android:id="@+id/myPageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
+            android:text="MY" />
 
-            <Button
-                android:id="@+id/addSketchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start|bottom"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
-                android:text="ADD" />
+        <Button
+            android:id="@+id/addSketchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
+            android:text="ADD" />
 
-            <Button
-                android:id="@+id/showSketchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
-                android:text="SHOW" />
+        <Button
+            android:id="@+id/showSketchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
+            android:text="SHOW" />
         </FrameLayout>
     </FrameLayout>
 </layout>
