@@ -18,17 +18,17 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
-import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
-import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.SketchRegisterManager;
+import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
@@ -39,12 +39,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import java.io.InputStream;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class MapsActivity extends AppCompatActivity {
+public class MapsActivity extends AppCompatActivity
+        implements SketchShowFragment.OnSketchShowFragmentInteractionListener {
     public static GoogleMap Map;
     public static ContentResolver contentResolver;
+    public static String PACKAGE_NAME;
 
     private static final String TAG = "Maps";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -82,6 +85,7 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PACKAGE_NAME = this.getPackageName();
         contentResolver = this.getContentResolver();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
         binding.setMapsActivityHandler(this);
@@ -114,6 +118,7 @@ public class MapsActivity extends AppCompatActivity {
                 utilVisibility = true;
             }
         });
+//        findViewById(R.id.sketch_view).setVisibility(View.GONE);
     }
 
 
@@ -163,23 +168,14 @@ public class MapsActivity extends AppCompatActivity {
         }
         Photo photo = data.getParcelableExtra("photo");
         addSketchFragment = SketchPlacerFragment.newInstance(photo);
-
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.sketch_placer, addSketchFragment);
-        fragmentTransaction.commit();
-        findViewById(R.id.all_components).setVisibility(View.GONE);
+        startFragment(R.id.sketch_placer, addSketchFragment);
     }
 
     public void addSketchFinish(Rect bound, Photo photo) {
         PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.RESGISTRATION_ZOOM_LEVEL);
         SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj)->{});
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.remove(addSketchFragment);
+        endFragment(addSketchFragment);
         addSketchFragment = null;
-        fragmentTransaction.commit();
-        findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
 
     /**
@@ -212,7 +208,14 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     public void onClickShowSketch() {
-        ScreenUtils.showToast(this, "Not Implemented Yet");
+        SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
+        fragment.setSketches(NearbySketch.ITEMS);
+        findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
+        findViewById(R.id.all_components).setVisibility(View.GONE);
+    }
+
+    public void showAllComponents() {
+        findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
 
     public void hidePaletteButton() {
@@ -231,5 +234,27 @@ public class MapsActivity extends AppCompatActivity {
     public void showSketchButton() {
         binding.addSketchButton.setVisibility(View.VISIBLE);
         binding.showSketchButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
+        // TODO
+    }
+
+    private void startFragment(int id, Fragment fragment) {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(id, fragment);
+        fragmentTransaction.commit();
+        findViewById(R.id.all_components).setVisibility(View.GONE);
+    }
+
+    private void endFragment(Fragment fragment) {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.remove(fragment);
+        addSketchFragment = null;
+        fragmentTransaction.commit();
+        findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
 }
