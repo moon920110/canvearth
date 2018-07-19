@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <LinearLayout
-                android:id="@+id/util_items"
+                android:id="@+id/pickerBucket"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|bottom"
@@ -56,51 +56,51 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/red" />
+                        android:background="@color/red"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/pinkPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/pink" />
+                        android:background="@color/pink"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/purplePicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/purple" />
+                        android:background="@color/purple"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/deepPurplePicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/deep_purple" />
+                        android:background="@color/deep_purple"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/indigoPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/indigo" />
+                        android:background="@color/indigo"
+                        style="?android:attr/buttonBarButtonStyle"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -111,51 +111,51 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/blue" />
+                        android:background="@color/blue"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/lightBluePicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/light_blue" />
+                        android:background="@color/light_blue"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/cyanPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/cyan" />
+                        android:background="@color/cyan"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/tealPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/teal" />
+                        android:background="@color/teal"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/greenPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/green" />
+                        android:background="@color/green"
+                        style="?android:attr/buttonBarButtonStyle"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -166,51 +166,51 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/light_green" />
+                        android:background="@color/light_green"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/limePicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/lime" />
+                        android:background="@color/lime"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/yellowPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/yellow" />
+                        android:background="@color/yellow"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/amberPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/amber" />
+                        android:background="@color/amber"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/orangePicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/orange" />
+                        android:background="@color/orange"
+                        style="?android:attr/buttonBarButtonStyle"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -221,116 +221,131 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/deep_orange" />
+                        android:background="@color/deep_orange"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/brownPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/brown" />
+                        android:background="@color/brown"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/greyPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/grey" />
+                        android:background="@color/grey"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/blueGreyPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@color/blue_grey" />
+                        android:background="@color/blue_grey"
+                        style="?android:attr/buttonBarButtonStyle"/>
                     <Button
                         android:id="@+id/defaultColorPicker"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@drawable/default_color_button" />
+                        android:background="@drawable/default_color_button"
+                        style="?android:attr/buttonBarButtonStyle"/>
                 </LinearLayout>
-        </LinearLayout>
+            </LinearLayout>
 
-        <ToggleButton
-            android:id="@+id/grid_visibility"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center|bottom"
-            android:layout_marginEnd="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/grid_visible_icon_selector"
-            android:textOff=""
-            android:textOn="" />
+            <ToggleButton
+                android:id="@+id/grid_visibility"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center|bottom"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/grid_visible_icon_selector"
+                android:textOff=""
+                android:textOn="" />
 
-        <Button
-            android:id="@+id/utilButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom|start"
-            android:layout_marginBottom="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:background="@drawable/round_button" />
+            <Button
+                android:id="@+id/pickerBucketButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginBottom="20dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/round_button" />
 
+            <LinearLayout
+                android:id="@+id/menuLayout"
+                android:layout_width="300dp"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:visibility="invisible">
+                <ImageView
+                    android:id="@+id/userPhotoImageView"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/fb_user_profilePic"
+                    android:visibility="visible" />
 
-        <ImageView
-            android:id="@+id/userPhotoImageView"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:contentDescription="@string/fb_user_profilePic"
-            android:visibility="visible" />
+                <Button
+                    android:id="@+id/shareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
+                    android:text="Share" />
 
-        <Button
-            android:id="@+id/shareButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
-            android:text="Share" />
+                <Button
+                    android:id="@+id/myPageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
+                    android:text="MY" />
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/myPageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
-            android:text="MY" />
+            <Button
+                android:id="@+id/showMeneButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:text="MENU"/>
 
-        <Button
-            android:id="@+id/addSketchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
-            android:text="ADD" />
+            <Button
+                android:id="@+id/addSketchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|bottom"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
+                android:text="ADD" />
 
-        <Button
-            android:id="@+id/showSketchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
-            android:text="SHOW" />
+            <Button
+                android:id="@+id/showSketchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
+                android:text="SHOW" />
         </FrameLayout>
     </FrameLayout>
 </layout>

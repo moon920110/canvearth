@@ -50,6 +50,16 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
 
         OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl(context, activity);
         setPickers(pickerButtons);
+
+        OnMainButtonsClickListenerImpl mainButtons = new OnMainButtonsClickListenerImpl(context, activity);
+        setMainButtons(mainButtons);
+    }
+
+    private void setMainButtons(OnMainButtonsClickListenerImpl mainButtons){
+        Button menu = activity.findViewById(R.id.showMeneButton);
+        menu.setOnClickListener(mainButtons);
+        Button pickerBucket = activity.findViewById(R.id.pickerBucketButton);
+        pickerBucket.setOnClickListener(mainButtons);
     }
 
     private void setPickers(OnPickerClickListenerImpl pickerButtons) {

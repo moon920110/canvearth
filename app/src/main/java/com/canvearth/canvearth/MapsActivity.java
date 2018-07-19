@@ -20,13 +20,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ImageView;
-import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
-import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.utils.Constants;
@@ -39,7 +35,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import java.io.InputStream;
-import java.util.Set;
 
 
 public class MapsActivity extends AppCompatActivity {
@@ -102,18 +97,6 @@ public class MapsActivity extends AppCompatActivity {
 
         MapScaleView scaleView = findViewById(R.id.scaleView);
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
-
-        LinearLayout utilButtonsLayout = findViewById(R.id.util_items);
-        Button utilButton = findViewById(R.id.utilButton);
-        utilButton.setOnClickListener((View v) -> {
-            if (utilVisibility) {
-                utilButtonsLayout.setVisibility(View.INVISIBLE);
-                utilVisibility = false;
-            } else {
-                utilButtonsLayout.setVisibility(View.VISIBLE);
-                utilVisibility = true;
-            }
-        });
     }
 
 
@@ -216,11 +199,11 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     public void hidePaletteButton() {
-        binding.utilButton.setVisibility(View.GONE);
+        binding.pickerBucketButton.setVisibility(View.GONE);
     }
 
     public void showPaletteButton() {
-        binding.utilButton.setVisibility(View.VISIBLE);
+        binding.pickerBucketButton.setVisibility(View.VISIBLE);
     }
 
     public void hideSketchButton() {
