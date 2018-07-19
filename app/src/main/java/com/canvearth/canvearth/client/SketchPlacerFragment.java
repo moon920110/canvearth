@@ -16,6 +16,7 @@ import com.canvearth.canvearth.utils.DatabaseUtils;
 public class SketchPlacerFragment extends Fragment {
     private static final String KEY_PHOTO = "KEY_SKETCH_FRAGMENT_PHOTO";
     private FragmentSketchPlacerBinding binding = null;
+    private static SketchPlacerView sketchPlacerView = null;
 
     public SketchPlacerFragment() {
 
@@ -42,7 +43,8 @@ public class SketchPlacerFragment extends Fragment {
         binding.confirmButton.setVisibility(View.VISIBLE);
         Photo photo = getArguments().getParcelable(KEY_PHOTO);
         binding.setSketchPhoto(photo);
-        ((SketchPlacerView) view.findViewById(R.id.sketch_placer)).setPhoto(photo);
+        sketchPlacerView = view.findViewById(R.id.sketch_placer);
+        sketchPlacerView.setPhoto(photo);
         return view;
     }
 
@@ -52,7 +54,7 @@ public class SketchPlacerFragment extends Fragment {
     }
 
     public void onClickConfirmButton() {
-        ((MapsActivity) getActivity()).addSketchFinish();
+        ((MapsActivity) getActivity()).addSketchFinish(sketchPlacerView.getBound(), sketchPlacerView.getPhoto());
     }
 
 }

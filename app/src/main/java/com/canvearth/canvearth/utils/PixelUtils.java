@@ -1,8 +1,14 @@
 package com.canvearth.canvearth.utils;
 
+import android.graphics.Point;
+import android.graphics.Rect;
+
 import com.canvearth.canvearth.pixel.BoundingBox;
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelData;
+import com.canvearth.canvearth.pixel.PixelDataSquare;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
 
 import junit.framework.Assert;
@@ -10,6 +16,10 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 
 public class PixelUtils {
+
+    public static Pixel latlng2pix(LatLng latLng, final int zoom) {
+        return latlng2pix(latLng.latitude, latLng.longitude, zoom);
+    }
 
     public static Pixel latlng2pix(double lat, double lng, final int zoom) {
         int xtile = (int) Math.floor((lng + 180) / 360 * (1 << zoom));
@@ -112,5 +122,16 @@ public class PixelUtils {
             }
         }
         return pixelData;
+    }
+
+    public static PixelDataSquare getPixelDataSquareFromBound(GoogleMap map, Rect bound, int zoom) {
+        Projection projection = map.getProjection();
+        LatLng leftTop = projection.fromScreenLocation(new Point(bound.left, bound.top));
+        LatLng rightBottom = projection.fromScreenLocation(new Point(bound.right, bound.bottom));
+
+        PixelData leftTopPixelData = latlng2pix(leftTop, zoom).data;
+        PixelData rightBottomPixelData = latlng2pix(rightBottom, zoom).data;
+
+        return new PixelDataSquare(leftTopPixelData, rightBottomPixelData);
     }
 }

@@ -1,12 +1,18 @@
 package com.canvearth.canvearth.pixel;
 
+import android.graphics.Point;
+
 import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Pixel {
     public PixelData data;
