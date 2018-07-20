@@ -1,5 +1,6 @@
 package com.canvearth.canvearth;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.canvearth.canvearth.sketch.NearbySketch.Sketch;
 
 import java.util.ArrayList;
@@ -41,7 +43,9 @@ public class MysketchShowRecyclerViewAdapter extends RecyclerView.Adapter<Mysket
     @Override
     public void onBindViewHolder(final @NonNull ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mSketchView.setImageDrawable(mValues.get(position).photo.getDrawable());
+//        holder.mSketchView.setImageDrawable(mValues.get(position).photo.getDrawable());
+        Uri uri = mValues.get(position).photo.getUri();
+        Glide.with(holder.mSketchView).load(uri).into(holder.mSketchView);
         holder.mSketchName.setText(mValues.get(position).name);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

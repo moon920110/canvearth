@@ -14,6 +14,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.InputStream;
+import java.net.URL;
 
 public final class Photo implements Parcelable, Comparable<Photo>
 {
@@ -24,6 +25,10 @@ public final class Photo implements Parcelable, Comparable<Photo>
     public Photo()
     {
         // Nothing
+    }
+
+    public Photo(Uri uri) {
+        m_uri = uri;
     }
 
     //=========================================================================
@@ -92,7 +97,7 @@ public final class Photo implements Parcelable, Comparable<Photo>
             return null;
         }
         try {
-            InputStream inputStream = MapsActivity.contentResolver.openInputStream(m_uri);
+            InputStream inputStream = new URL(m_uri.toString()).openStream();// MapsActivity.contentResolver.openInputStream(m_uri);
             return Drawable.createFromStream(inputStream, m_uri.toString());
         } catch (Exception e) {
             e.printStackTrace();

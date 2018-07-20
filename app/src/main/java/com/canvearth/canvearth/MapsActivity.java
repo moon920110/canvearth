@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,8 +25,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
+import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
+import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.server.SketchRegisterManager;
+import com.canvearth.canvearth.server.WatchingPixel;
 import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -34,11 +38,15 @@ import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class MapsActivity extends AppCompatActivity
@@ -159,7 +167,9 @@ public class MapsActivity extends AppCompatActivity
 
     public void addSketchFinish(Rect bound, Photo photo) {
         PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.RESGISTRATION_ZOOM_LEVEL);
-        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj)->{});
+        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj)->{
+            Log.i(TAG, "Add Sketch Finished");
+        });
         endFragment(addSketchFragment);
         addSketchFragment = null;
     }
@@ -195,7 +205,7 @@ public class MapsActivity extends AppCompatActivity
 
     public void onClickShowSketch() {
         SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
-        fragment.setSketches(NearbySketch.ITEMS);
+        processNearbySketches(fragment);
         findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
         findViewById(R.id.all_components).setVisibility(View.GONE);
     }
@@ -225,6 +235,30 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
         // TODO
+    }
+
+    private void processNearbySketches(SketchShowFragment fragment) {
+        Projection projection = Map.getProjection();
+        LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
+        PixelData northeastPixelData = PixelUtils.latlng2pix(
+                bounds.northeast, Constants.RESGISTRATION_ZOOM_LEVEL).data;
+        PixelData southwestPixelData = PixelUtils.latlng2pix(
+                bounds.southwest, Constants.RESGISTRATION_ZOOM_LEVEL).data;
+        ArrayList<PixelData> pixelDatas = new ArrayList<>();
+        for (int y = northeastPixelData.y; y <= southwestPixelData.y; y++) {
+            for (int x = southwestPixelData.x; x <= northeastPixelData.x; x++) {
+                pixelDatas.add(new PixelData(x, y, Constants.RESGISTRATION_ZOOM_LEVEL));
+            }
+        }
+        SketchRegisterManager.getInstance().getRegisteredSketches(pixelDatas,
+            (List<Pair<Photo, String>> list) -> {
+                ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
+                for (Pair<Photo, String> pair: list) {
+                    sketches.add(new NearbySketch.Sketch(pair.second, pair.first, pair.second));
+                }
+                fragment.setSketches(sketches);
+                Log.i(TAG, "Done receiving sketches");
+            });
     }
 
     private void startFragment(int id, Fragment fragment) {
