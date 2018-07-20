@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import com.canvearth.canvearth.MapsActivity;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.InputStream;
+import java.net.URL;
 
 public final class Photo implements Parcelable, Comparable<Photo>
 {
@@ -23,6 +25,10 @@ public final class Photo implements Parcelable, Comparable<Photo>
     public Photo()
     {
         // Nothing
+    }
+
+    public Photo(Uri uri) {
+        m_uri = uri;
     }
 
     //=========================================================================
@@ -91,7 +97,7 @@ public final class Photo implements Parcelable, Comparable<Photo>
             return null;
         }
         try {
-            InputStream inputStream = MapsActivity.contentResolver.openInputStream(m_uri);
+            InputStream inputStream = new URL(m_uri.toString()).openStream();// MapsActivity.contentResolver.openInputStream(m_uri);
             return Drawable.createFromStream(inputStream, m_uri.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,10 +116,14 @@ public final class Photo implements Parcelable, Comparable<Photo>
     // Parcelable
     //=========================================================================
 
-    private Photo(Parcel in)
+    public Photo(Parcel in)
     {
         m_uri = in.readParcelable(Uri.class.getClassLoader());
         m_dateTaken = in.readLong();
+    }
+
+    public Photo(@DrawableRes int photoRes) {
+        m_uri = Uri.parse("android.resource://" + MapsActivity.PACKAGE_NAME + "/" + photoRes);
     }
 
     @Override
