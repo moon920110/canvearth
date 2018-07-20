@@ -31,8 +31,7 @@
             android:id="@+id/scaleView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="4dp" />
+            android:layout_gravity="bottom|end"/>
 
         <FrameLayout
             android:id="@+id/all_components"
@@ -280,6 +279,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/grid_visible_icon_selector"
+                android:visibility="invisible"
                 android:textOff=""
                 android:textOn="" />
 
@@ -290,6 +290,7 @@
                 android:layout_gravity="bottom|start"
                 android:layout_marginBottom="20dp"
                 android:layout_marginStart="20dp"
+                android:visibility="invisible"
                 android:background="@drawable/round_button" />
 
             <LinearLayout
@@ -322,6 +323,14 @@
                     android:layout_gravity="center"
                     android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
                     android:text="MY" />
+
+                <Button
+                    android:id="@+id/showSketchButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
+                    android:text="SHOW" />
             </LinearLayout>
 
             <Button
@@ -329,6 +338,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|top"
+                android:visibility="invisible"
                 android:text="MENU"/>
 
             <Button
@@ -336,16 +346,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|bottom"
+                android:visibility="invisible"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
                 android:text="ADD" />
-
-            <Button
-                android:id="@+id/showSketchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
-                android:text="SHOW" />
         </FrameLayout>
     </FrameLayout>
 </layout>

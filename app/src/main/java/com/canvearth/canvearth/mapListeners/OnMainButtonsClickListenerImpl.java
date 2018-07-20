@@ -2,6 +2,7 @@ package com.canvearth.canvearth.mapListeners;
 
 import android.content.Context;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 
 import com.canvearth.canvearth.R;
@@ -26,10 +27,26 @@ public class OnMainButtonsClickListenerImpl implements View.OnClickListener{
             case R.id.showMeneButton:
                 LinearLayout menuLayout = activity.findViewById(R.id.menuLayout);
                 if (menuVisibility){
+                    TranslateAnimation hideAni = new TranslateAnimation(
+                            0,
+                            -menuLayout.getWidth(),
+                            0,
+                            0
+                    );
+                    hideAni.setDuration(500);
                     menuLayout.setVisibility(View.INVISIBLE);
+                    menuLayout.startAnimation(hideAni);
                     menuVisibility = false;
                 } else {
+                    TranslateAnimation showAni = new TranslateAnimation(
+                            -menuLayout.getWidth(),
+                            0,
+                            0,
+                            0
+                    );
+                    showAni.setDuration(500);
                     menuLayout.setVisibility(View.VISIBLE);
+                    menuLayout.startAnimation(showAni);
                     menuVisibility = true;
                 }
                 break;

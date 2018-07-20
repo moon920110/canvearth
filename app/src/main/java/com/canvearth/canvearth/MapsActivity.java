@@ -20,7 +20,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
@@ -45,7 +48,6 @@ public class MapsActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int REQUEST_SELECT_PHOTO = 2;
     private boolean mPermissionDenied = false;
-    private boolean utilVisibility = false;
     private ActivityMapsBinding binding = null;
     private Fragment addSketchFragment = null;
 
@@ -97,8 +99,8 @@ public class MapsActivity extends AppCompatActivity {
 
         MapScaleView scaleView = findViewById(R.id.scaleView);
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
-    }
 
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -196,23 +198,5 @@ public class MapsActivity extends AppCompatActivity {
 
     public void onClickShowSketch() {
         ScreenUtils.showToast(this, "Not Implemented Yet");
-    }
-
-    public void hidePaletteButton() {
-        binding.pickerBucketButton.setVisibility(View.GONE);
-    }
-
-    public void showPaletteButton() {
-        binding.pickerBucketButton.setVisibility(View.VISIBLE);
-    }
-
-    public void hideSketchButton() {
-        binding.addSketchButton.setVisibility(View.GONE);
-        binding.showSketchButton.setVisibility(View.GONE);
-    }
-
-    public void showSketchButton() {
-        binding.addSketchButton.setVisibility(View.VISIBLE);
-        binding.showSketchButton.setVisibility(View.VISIBLE);
     }
 }
