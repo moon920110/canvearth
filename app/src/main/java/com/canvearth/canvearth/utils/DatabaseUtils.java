@@ -32,9 +32,9 @@ public class DatabaseUtils {
     public static DatabaseReference getSketchPixelReference(String pixelId) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         if (Configs.TESTING) {
-            return database.child(Constants.FIREBASE_DEV_PREFIX).child("NearSketch").child(pixelId);
+            return database.child(Constants.FIREBASE_DEV_PREFIX).child("Sketches").child(pixelId);
         } else {
-            return database.child(Constants.FIREBASE_PROD_PREFIX).child("NearSketch").child(pixelId);
+            return database.child(Constants.FIREBASE_PROD_PREFIX).child("Sketches").child(pixelId);
         }
     }
 

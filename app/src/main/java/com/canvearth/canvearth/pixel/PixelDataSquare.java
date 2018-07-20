@@ -36,7 +36,7 @@ public class PixelDataSquare {
 
     public Iterator<PixelData> pixelDataIterator() {
         return new Iterator<PixelData>() {
-            private PixelData cursor = leftTopPixelData;
+            private PixelData cursor = leftTopPixelData.clone();
             @Override
             public boolean hasNext() {
                 return cursor != null;
@@ -44,16 +44,15 @@ public class PixelDataSquare {
 
             @Override
             public PixelData next() {
-                PixelData returnCursor = cursor;
+                PixelData returnCursor = cursor.clone();
                 if (cursor.equals(rightBottomPixelData)) {
                     cursor = null;
                 } else {
-                    cursor = returnCursor.clone();
-                    if (returnCursor.x == rightBottomPixelData.x) {
-                        returnCursor.y++;
-                        returnCursor.x = leftTopPixelData.x;
+                    if (cursor.x == rightBottomPixelData.x) {
+                        cursor.y++;
+                        cursor.x = leftTopPixelData.x;
                     } else {
-                        returnCursor.x++;
+                        cursor.x++;
                     }
                 }
                 return returnCursor;

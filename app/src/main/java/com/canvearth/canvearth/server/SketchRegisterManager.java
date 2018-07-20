@@ -8,6 +8,7 @@ import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
+import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.utils.Constants;
@@ -32,6 +33,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 //TODO delete registered sketch
 public class SketchRegisterManager {
@@ -45,7 +50,7 @@ public class SketchRegisterManager {
     private SketchRegisterManager() {
     }
 
-    private static class RegisterSketchAsyncTask extends AsyncTask<Pair<Uri, PixelDataSquare>, Void, Void> {
+    private class RegisterSketchAsyncTask extends AsyncTask<Pair<Uri, PixelDataSquare>, Void, Void> {
         private Function<Void> callback;
 
         private RegisterSketchAsyncTask(Function<Void> callback) {
@@ -79,7 +84,9 @@ public class SketchRegisterManager {
                     PixelData pixelData = (PixelData) iterator.next();
                     DatabaseUtils.getSketchRootReference().child(pixelData.getFirebaseId())
                             .child(registeredKey).setValue(registeredKey);
+                    Log.i("registring sketch", pixelData.x + ", " + pixelData.y + ", " + pixelData.zoom);
                 }
+                Log.e("registring sketch", "done");
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
@@ -101,46 +108,48 @@ public class SketchRegisterManager {
         new RegisterSketchAsyncTask(callback).execute(new Pair<>(file, pixelDataSquare));
     }
 
-    private static class GetRegisteredSketches extends AsyncTask<PixelData, Void, List<Pair<RegisteredSketch, Uri>>> {
-        private Function<List<Pair<RegisteredSketch, Uri>>> callback;
+    // TODO too many concurrency control - may cause performance issues
+    private class GetRegisteredSketches extends AsyncTask<List<PixelData>, String, List<Pair<Photo, String>>> {
+        private Function<List<Pair<Photo, String>>> callback;
 
-        private GetRegisteredSketches(Function<List<Pair<RegisteredSketch, Uri>>> callback) {
+        private GetRegisteredSketches(Function<List<Pair<Photo, String>>> callback) {
             super();
             this.callback = callback;
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        // TODO consider when duplicate registration occurs at same pixel data
-        @Override
-        protected List<Pair<RegisteredSketch, Uri>> doInBackground(PixelData[] params) {
+        protected List<Pair<Photo, String>> doInBackground(List<PixelData>[] params) {
             try {
-                PixelData pixelData = params[0];
+                List<PixelData> pixelDatas = params[0];
                 final ArrayList<String> registeredSketchKey = new ArrayList<>();
-                final CountDownLatch waitForFinish = new CountDownLatch(1);
-                DatabaseUtils.getSketchPixelReference(pixelData.getFirebaseId())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Iterator registeredKeyIterator = dataSnapshot.getChildren().iterator();
-                                while (registeredKeyIterator.hasNext()) {
-                                    DataSnapshot keyDataSnapShot = (DataSnapshot) registeredKeyIterator.next();
-                                    registeredSketchKey.add(keyDataSnapShot.getKey());
+                final CountDownLatch waitForFinish = new CountDownLatch(pixelDatas.size());
+                final Lock registeredSketchKeyLock = new ReentrantLock();
+                for (PixelData pixelData: pixelDatas) {
+                    DatabaseUtils.getSketchPixelReference(pixelData.getFirebaseId())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Iterator registeredKeyIterator = dataSnapshot.getChildren().iterator();
+                                    while (registeredKeyIterator.hasNext()) {
+                                        DataSnapshot keyDataSnapShot = (DataSnapshot) registeredKeyIterator.next();
+                                        registeredSketchKeyLock.lock();
+                                        registeredSketchKey.add(keyDataSnapShot.getKey());
+                                        registeredSketchKeyLock.unlock();
+                                    }
                                     waitForFinish.countDown();
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                Log.e(TAG, databaseError.getDetails());
-                                waitForFinish.countDown();
-                            }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.e(TAG, databaseError.getDetails());
+                                    waitForFinish.countDown();
+                                }
+                            });
+                }
                 waitForFinish.await();
-                final ArrayList<Pair<RegisteredSketch, Uri>> returnList = new ArrayList<>();
+                publishProgress("got all keys");
+                final ArrayList<Pair<Photo, String>> returnList = new ArrayList<>();
+                final Lock returnListLock = new ReentrantLock();
                 final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchKey.size());
                 for (String key: registeredSketchKey) {
                     DatabaseUtils.getSketchRootReference().child(key).addListenerForSingleValueEvent(
@@ -154,7 +163,9 @@ public class SketchRegisterManager {
                                     }
                                     DatabaseUtils.getSketchReference(key).getDownloadUrl().addOnSuccessListener(
                                                 (Uri uri)->{
-                                                    returnList.add(new Pair<>(registeredSketch, uri));
+                                                    returnListLock.lock();
+                                                    returnList.add(new Pair<>(new Photo(uri), key));
+                                                    returnListLock.unlock();
                                                     waitForAllFinish.countDown();
                                                 }
                                             );
@@ -177,18 +188,20 @@ public class SketchRegisterManager {
         }
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onProgressUpdate(String... values) {
+            Log.i("GetRegisteredSketches", values[0]);
         }
 
         @Override
-        protected void onPostExecute(List<Pair<RegisteredSketch, Uri>> list) {
+        protected void onPostExecute(List<Pair<Photo, String>> list) {
+            Log.i("GetRegisteredSketches", "Post executing");
             callback.run(list);
         }
     }
 
     // get registered sketches inside pixelData
-    public void getRegisteredSketches(PixelData pixelData, Function<List<Pair<RegisteredSketch, Uri>>> callback) {
-        Assert.assertEquals(pixelData.zoom, Constants.RESGISTRATION_ZOOM_LEVEL);
-        new GetRegisteredSketches(callback).execute(pixelData);
+    public void getRegisteredSketches(List<PixelData> pixelDatas, Function<List<Pair<Photo, String>>> callback) {
+        Assert.assertEquals(pixelDatas.get(0).zoom, Constants.RESGISTRATION_ZOOM_LEVEL);
+        new GetRegisteredSketches(callback).execute(pixelDatas);
     }
 }
