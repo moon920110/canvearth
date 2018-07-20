@@ -22,12 +22,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ImageView;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
-import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.server.SketchRegisterManager;
@@ -229,11 +226,11 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void hidePaletteButton() {
-        binding.utilButton.setVisibility(View.GONE);
+        binding.pickerBucketButton.setVisibility(View.GONE);
     }
 
     public void showPaletteButton() {
-        binding.utilButton.setVisibility(View.VISIBLE);
+        binding.pickerBucketButton.setVisibility(View.VISIBLE);
     }
 
     public void hideSketchButton() {
