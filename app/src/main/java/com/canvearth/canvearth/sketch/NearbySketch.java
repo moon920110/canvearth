@@ -14,35 +14,6 @@ import java.util.Map;
  * <p>
  */
 public class NearbySketch {
-
-    /**
-     * An array of sample (dummy) items.
-     */
-    public static final List<Sketch> ITEMS = new ArrayList<Sketch>();
-
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
-    public static final Map<String, Sketch> ITEM_MAP = new HashMap<String, Sketch>();
-
-    private static final int COUNT = 25;
-
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
-        }
-    }
-
-    private static void addItem(Sketch item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
-    }
-
-    private static Sketch createDummyItem(int position) {
-        return new Sketch(String.valueOf(position), new Photo(R.drawable.earth), "dummy_sketch");
-    }
-
     /**
      * A dummy item representing a piece of content.
      */

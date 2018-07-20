@@ -11,6 +11,7 @@ import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
+import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;
@@ -109,16 +110,16 @@ public class SketchRegisterManager {
     }
 
     // TODO too many concurrency control - may cause performance issues
-    private class GetRegisteredSketches extends AsyncTask<List<PixelData>, String, List<Pair<Photo, String>>> {
-        private Function<List<Pair<Photo, String>>> callback;
+    private class GetRegisteredSketches extends AsyncTask<List<PixelData>, String, List<NearbySketch.Sketch>> {
+        private Function<List<NearbySketch.Sketch>> callback;
 
-        private GetRegisteredSketches(Function<List<Pair<Photo, String>>> callback) {
+        private GetRegisteredSketches(Function<List<NearbySketch.Sketch>> callback) {
             super();
             this.callback = callback;
         }
 
         @Override
-        protected List<Pair<Photo, String>> doInBackground(List<PixelData>[] params) {
+        protected List<NearbySketch.Sketch> doInBackground(List<PixelData>[] params) {
             try {
                 List<PixelData> pixelDatas = params[0];
                 final ArrayList<String> registeredSketchKey = new ArrayList<>();
@@ -148,7 +149,7 @@ public class SketchRegisterManager {
                 }
                 waitForFinish.await();
                 publishProgress("got all keys");
-                final ArrayList<Pair<Photo, String>> returnList = new ArrayList<>();
+                final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
                 final Lock returnListLock = new ReentrantLock();
                 final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchKey.size());
                 for (String key: registeredSketchKey) {
@@ -164,7 +165,7 @@ public class SketchRegisterManager {
                                     DatabaseUtils.getSketchReference(key).getDownloadUrl().addOnSuccessListener(
                                                 (Uri uri)->{
                                                     returnListLock.lock();
-                                                    returnList.add(new Pair<>(new Photo(uri), key));
+                                                    returnList.add(new NearbySketch.Sketch(key, new Photo(uri), key));
                                                     returnListLock.unlock();
                                                     waitForAllFinish.countDown();
                                                 }
@@ -193,15 +194,126 @@ public class SketchRegisterManager {
         }
 
         @Override
-        protected void onPostExecute(List<Pair<Photo, String>> list) {
+        protected void onPostExecute(List<NearbySketch.Sketch> list) {
             Log.i("GetRegisteredSketches", "Post executing");
             callback.run(list);
         }
     }
 
     // get registered sketches inside pixelData
-    public void getRegisteredSketches(List<PixelData> pixelDatas, Function<List<Pair<Photo, String>>> callback) {
+    public void getRegisteredSketches(List<PixelData> pixelDatas, Function<List<NearbySketch.Sketch>> callback) {
         Assert.assertEquals(pixelDatas.get(0).zoom, Constants.RESGISTRATION_ZOOM_LEVEL);
         new GetRegisteredSketches(callback).execute(pixelDatas);
+    }
+
+    // TODO too many concurrency control - may cause performance issues
+    private class GetInterestingSketches extends AsyncTask<Void, String, List<NearbySketch.Sketch>> {
+        private Function<List<NearbySketch.Sketch>> callback;
+
+        private GetInterestingSketches(Function<List<NearbySketch.Sketch>> callback) {
+            super();
+            this.callback = callback;
+        }
+
+        @Override
+        protected List<NearbySketch.Sketch> doInBackground(Void[] params) {
+            try {
+                final ArrayList<String> registeredSketchKey = new ArrayList<>();
+                final CountDownLatch waitForFinish = new CountDownLatch(1);
+                final DatabaseReference myInfoReference = DatabaseUtils.getMyInfoReference();
+                if (myInfoReference == null) {
+                    return null;
+                }
+                myInfoReference
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                List<String> keys = (List<String>) dataSnapshot.getValue();
+                                registeredSketchKey.addAll(keys);
+                                waitForFinish.countDown();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.e(TAG, databaseError.getDetails());
+                                waitForFinish.countDown();
+                            }
+                        });
+                waitForFinish.await();
+                publishProgress("got all keys");
+
+                final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
+                final Lock returnListLock = new ReentrantLock();
+                final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchKey.size());
+                for (String key: registeredSketchKey) {
+                    DatabaseUtils.getSketchRootReference().child(key).addListenerForSingleValueEvent(
+                            new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    RegisteredSketch registeredSketch = dataSnapshot.getValue(RegisteredSketch.class);
+                                    if (registeredSketch == null) {
+                                        waitForAllFinish.countDown();
+                                        return;
+                                    }
+                                    DatabaseUtils.getSketchReference(key).getDownloadUrl().addOnSuccessListener(
+                                            (Uri uri)->{
+                                                returnListLock.lock();
+                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri), key));
+                                                returnListLock.unlock();
+                                                waitForAllFinish.countDown();
+                                            }
+                                    );
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.e(TAG, databaseError.getDetails());
+                                    waitForAllFinish.countDown();
+                                }
+                            }
+                    );
+                }
+                waitForAllFinish.await();
+                return returnList;
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            Log.i("GetInterestingSketches", values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<NearbySketch.Sketch> list) {
+            Log.i("GetInterestingSketches", "Post executing");
+            callback.run(list);
+        }
+    }
+
+    public void getInterestingSketches(Function<List<NearbySketch.Sketch>> callback) {
+        new GetInterestingSketches(callback).execute();
+    }
+
+    public void addInterestingSketch(String key) {
+        DatabaseUtils.getMyInfoReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> keys;
+                keys = dataSnapshot.getValue(List.class);
+                if (keys == null) {
+                    keys = new ArrayList<>();
+                }
+                keys.add(key);
+                DatabaseUtils.getMyInfoReference().setValue(keys);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "add canceled " + databaseError.getDetails());
+            }
+        });
     }
 }
