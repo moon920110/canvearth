@@ -2,6 +2,7 @@ package com.canvearth.canvearth;
 
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.client.SketchPlacerFragment;
+import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.databinding.ActivityMapsBinding;
 
 import android.Manifest;
@@ -96,7 +97,6 @@ public class MapsActivity extends AppCompatActivity {
 
         MapScaleView scaleView = findViewById(R.id.scaleView);
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
-
     }
 
     @Override
@@ -170,6 +170,10 @@ public class MapsActivity extends AppCompatActivity {
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    public  void onClickMenuCancel() {
+        VisibilityHandler.handleMenuButton(this);
     }
 
     public void onClickShare() {

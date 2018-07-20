@@ -293,46 +293,6 @@
                 android:visibility="invisible"
                 android:background="@drawable/round_button" />
 
-            <LinearLayout
-                android:id="@+id/menuLayout"
-                android:layout_width="300dp"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:background="@color/white"
-                android:visibility="invisible">
-                <ImageView
-                    android:id="@+id/userPhotoImageView"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/fb_user_profilePic"
-                    android:visibility="visible" />
-
-                <Button
-                    android:id="@+id/shareButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
-                    android:text="Share" />
-
-                <Button
-                    android:id="@+id/myPageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
-                    android:text="MY" />
-
-                <Button
-                    android:id="@+id/showSketchButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
-                    android:text="SHOW" />
-            </LinearLayout>
-
             <Button
                 android:id="@+id/showMeneButton"
                 android:layout_width="wrap_content"
@@ -350,5 +310,51 @@
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
                 android:text="ADD" />
         </FrameLayout>
+        <LinearLayout
+            android:id="@+id/menuLayout"
+            android:layout_width="200dp"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:visibility="invisible">
+            <Button
+                android:id="@+id/menuCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickMenuCancel()}"
+                android:text="Back"/>
+            <ImageView
+                android:id="@+id/userPhotoImageView"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/fb_user_profilePic"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/shareButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
+                android:text="Share" />
+
+            <Button
+                android:id="@+id/myPageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
+                android:text="MY" />
+
+            <Button
+                android:id="@+id/showSketchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
+                android:text="SHOW" />
+        </LinearLayout>
     </FrameLayout>
 </layout>
