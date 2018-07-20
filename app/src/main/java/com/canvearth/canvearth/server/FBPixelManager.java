@@ -47,7 +47,7 @@ public class FBPixelManager {
         return ourInstance;
     }
 
-    private Map<String, WatchingPixel> watchingPixels = new HashMap<>();
+    public Map<String, WatchingPixel> watchingPixels = new HashMap<>();
 
     private FBPixelManager() {
     }
