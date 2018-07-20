@@ -22,7 +22,7 @@ public class OnPickerClickListenerImpl implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        Button button = activity.findViewById(R.id.utilButton);
+        Button button = activity.findViewById(R.id.pickerBucketButton);
         int color;
         switch (view.getId()) {
             case R.id.redPicker:
