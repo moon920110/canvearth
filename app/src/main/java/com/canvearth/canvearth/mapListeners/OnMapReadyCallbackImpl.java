@@ -6,6 +6,7 @@ import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
+import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
@@ -16,7 +17,6 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     private Context context;
     private MapsActivity activity;
     private MapScaleView scaleView;
-
     public OnMapReadyCallbackImpl(Context context, MapsActivity activity, MapScaleView scaleView) {
         super();
         this.context = context;
@@ -41,12 +41,15 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(activity, context, scaleView));
-        googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(context, scaleView));
+        googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context, scaleView));
+        googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(activity, scaleView));
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
         googleMap.setMaxZoomPreference(Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL);
+        googleMap.setOnMapClickListener(new OnMapClickListenerImpl(activity));
         PermissionUtils.enableMyLocation(context, activity);
+
+        VisibilityHandler.init();
 
         OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl(context, activity);
         setPickers(pickerButtons);

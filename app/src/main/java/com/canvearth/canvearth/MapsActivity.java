@@ -2,6 +2,7 @@ package com.canvearth.canvearth;
 
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.client.SketchPlacerFragment;
+import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.databinding.ActivityMapsBinding;
 
 import android.Manifest;
@@ -61,7 +62,6 @@ public class MapsActivity extends AppCompatActivity
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int REQUEST_SELECT_PHOTO = 2;
     private boolean mPermissionDenied = false;
-    private boolean utilVisibility = false;
     private ActivityMapsBinding binding = null;
     private Fragment addSketchFragment = null;
 
@@ -116,7 +116,6 @@ public class MapsActivity extends AppCompatActivity
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -184,6 +183,10 @@ public class MapsActivity extends AppCompatActivity
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 
+    public  void onClickMenuCancel() {
+        VisibilityHandler.handleMenuButton(this);
+    }
+
     public void onClickShare() {
         new ShareInvoker(MapsActivity.this, Map).shareMapSnapshot();
     }
@@ -215,25 +218,6 @@ public class MapsActivity extends AppCompatActivity
     public void showAllComponents() {
         findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
-
-    public void hidePaletteButton() {
-        binding.pickerBucketButton.setVisibility(View.GONE);
-    }
-
-    public void showPaletteButton() {
-        binding.pickerBucketButton.setVisibility(View.VISIBLE);
-    }
-
-    public void hideSketchButton() {
-        binding.addSketchButton.setVisibility(View.GONE);
-        binding.showSketchButton.setVisibility(View.GONE);
-    }
-
-    public void showSketchButton() {
-        binding.addSketchButton.setVisibility(View.VISIBLE);
-        binding.showSketchButton.setVisibility(View.VISIBLE);
-    }
-
     @Override
     public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
         // TODO
