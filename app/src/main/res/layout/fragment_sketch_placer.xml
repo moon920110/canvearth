@@ -1,10 +1,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="handler"
             type="com.canvearth.canvearth.client.SketchPlacerFragment" />
+
         <variable
             name="sketchPhoto"
             type="com.canvearth.canvearth.client.Photo" />
@@ -14,15 +17,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <com.canvearth.canvearth.client.SketchPlacerView
             android:id="@+id/sketch_placer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:visibility="gone"
+            app:sketch_animateOnReset="false"
+            app:sketch_autoCenter="false"
+            app:sketch_autoResetMode="NEVER"
+            app:sketch_maxScale="1"
+            app:sketch_minScale="0.2"
+            app:sketch_restrictBounds="true"
+            app:sketch_translatable="true"
+            app:sketch_zoomable="true" />
 
         <Button
             android:id="@+id/confirm_button"
@@ -30,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|bottom"
             android:onClick="@{(view) -> handler.onClickConfirmButton()}"
-            android:text="Confirm"/>
+            android:text="Confirm" />
 
     </FrameLayout>
 </layout>
