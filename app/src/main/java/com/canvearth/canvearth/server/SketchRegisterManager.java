@@ -30,6 +30,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,7 @@ public class SketchRegisterManager {
         protected List<NearbySketch.Sketch> doInBackground(List<PixelData>[] params) {
             try {
                 List<PixelData> pixelDatas = params[0];
-                final ArrayList<String> registeredSketchKey = new ArrayList<>();
+                final HashSet<String> registeredSketchKey = new HashSet<>();
                 final CountDownLatch waitForFinish = new CountDownLatch(pixelDatas.size());
                 final Lock registeredSketchKeyLock = new ReentrantLock();
                 for (PixelData pixelData: pixelDatas) {
