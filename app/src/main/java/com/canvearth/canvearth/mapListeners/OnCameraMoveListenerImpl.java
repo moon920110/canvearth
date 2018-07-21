@@ -7,20 +7,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 
 public class OnCameraMoveListenerImpl implements GoogleMap.OnCameraMoveListener{
-    private MapScaleView scaleView;
     private MapsActivity activity;
 
-    public OnCameraMoveListenerImpl(MapsActivity activity, MapScaleView scaleView) {
+    public OnCameraMoveListenerImpl(MapsActivity activity) {
         super();
-        this.scaleView = scaleView;
         this.activity = activity;
     }
 
     @Override
     public void onCameraMove() {
-        CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
-
-        scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
         VisibilityHandler.checkAndToggleSouthEastButton(activity);
     }
 }

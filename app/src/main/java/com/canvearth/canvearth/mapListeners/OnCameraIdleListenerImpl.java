@@ -12,19 +12,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 
 public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener {
-    private MapScaleView scaleView;
     private Context context;
 
-    public OnCameraIdleListenerImpl(Context context, MapScaleView scaleView) {
+    public OnCameraIdleListenerImpl(Context context) {
         super();
-        this.scaleView = scaleView;
         this.context = context;
     }
 
     @Override
     public void onCameraIdle() {
         CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
-        scaleView.update(cameraPosition.zoom, cameraPosition.target.latitude);
         ScreenUtils.showToast(context, "zoom: " + Float.toString(cameraPosition.zoom) + "\n" +
                 "grid zoom: " + PixelUtils.getGridZoom(Math.round(cameraPosition.zoom)));
 

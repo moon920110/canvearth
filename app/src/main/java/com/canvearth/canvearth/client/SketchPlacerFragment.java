@@ -3,6 +3,8 @@ package com.canvearth.canvearth.client;
 
 import android.app.Fragment;
 import android.databinding.DataBindingUtil;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,6 @@ import android.view.ViewGroup;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.databinding.FragmentSketchPlacerBinding;
-import com.canvearth.canvearth.utils.DatabaseUtils;
 
 public class SketchPlacerFragment extends Fragment {
     private static final String KEY_PHOTO = "KEY_SKETCH_FRAGMENT_PHOTO";
@@ -44,7 +45,9 @@ public class SketchPlacerFragment extends Fragment {
         Photo photo = getArguments().getParcelable(KEY_PHOTO);
         binding.setSketchPhoto(photo);
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
-        sketchPlacerView.setPhoto(photo);
+        sketchPlacerView.setImageDrawable(photo.getDrawable());
+        sketchPlacerView.setVisibility(View.VISIBLE);
+        binding.cancelButton.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -54,7 +57,16 @@ public class SketchPlacerFragment extends Fragment {
     }
 
     public void onClickConfirmButton() {
-        ((MapsActivity) getActivity()).addSketchFinish(sketchPlacerView.getBound(), sketchPlacerView.getPhoto());
+        RectF bounds = sketchPlacerView.getBounds();
+        Rect rect = new Rect((int) bounds.left,
+                (int) bounds.top,
+                (int) bounds.right,
+                (int) bounds.bottom);
+        ((MapsActivity) getActivity()).addSketchConfirm(rect, binding.getSketchPhoto());
     }
 
+    public void onClickCancelButton() {
+        binding.cancelButton.setVisibility(View.INVISIBLE);
+        ((MapsActivity) getActivity()).addSketchCancel();
+    }
 }

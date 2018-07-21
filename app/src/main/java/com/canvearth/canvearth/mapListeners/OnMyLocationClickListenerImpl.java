@@ -4,20 +4,15 @@ import android.content.Context;
 import android.location.Location;
 import android.support.annotation.NonNull;
 
-import com.canvearth.canvearth.client.Palette;
-import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 
 public class OnMyLocationClickListenerImpl implements GoogleMap.OnMyLocationClickListener {
-    MapScaleView scaleView;
     Context context;
     GoogleMap map;
-    Palette palette = Palette.getInstance();
 
-    public OnMyLocationClickListenerImpl(Context context, MapScaleView scaleView, GoogleMap map) {
+    public OnMyLocationClickListenerImpl(Context context, GoogleMap map) {
         super();
         this.context = context;
-        this.scaleView = scaleView;
         this.map = map;
     }
 

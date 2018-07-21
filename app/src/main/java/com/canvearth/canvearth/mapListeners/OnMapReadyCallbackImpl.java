@@ -21,13 +21,11 @@ import com.google.android.gms.maps.model.LatLng;
 public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     private Context context;
     private MapsActivity activity;
-    private MapScaleView scaleView;
 
-    public OnMapReadyCallbackImpl(Context context, MapsActivity activity, MapScaleView scaleView) {
+    public OnMapReadyCallbackImpl(Context context, MapsActivity activity) {
         super();
         this.context = context;
         this.activity = activity;
-        this.scaleView = scaleView;
     }
 
     /**
@@ -47,10 +45,10 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context, scaleView));
-        googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(activity, scaleView));
-        googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
-        googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
+        googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context));
+        googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(activity));
+        googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context));
+        googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, googleMap));
         googleMap.setMaxZoomPreference(Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL);
         googleMap.setOnMapClickListener(new OnMapClickListenerImpl(activity, googleMap));
         PermissionUtils.enableMyLocation(context, activity);
