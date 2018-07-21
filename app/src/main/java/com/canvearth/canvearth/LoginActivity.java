@@ -1,22 +1,30 @@
 package com.canvearth.canvearth;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
-import com.canvearth.canvearth.authorization.UserInformation;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import com.canvearth.canvearth.databinding.ActivityLoginBinding;
+
+import org.apache.commons.io.IOUtils;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -38,7 +46,30 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+//        View decorView = getWindow().getDecorView();
+//        // Hide the status bar.
+//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//        decorView.setSystemUiVisibility(uiOptions);
+//        // Remember that you should never show the action bar if the
+//        // status bar is hidden, so hide that too if necessary.
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.hide();
+
+        ActivityLoginBinding m_b = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        m_b.setSplash(new SplashForegroundView(this));
+        try {
+            final String pathString = IOUtils.toString(getAssets().open("splash/foreground.path"), "UTF-8");
+            final Path path = PathParser.createPathFromPathData(pathString);
+
+            m_b.splash.setPath(path, 400, 400);
+            m_b.splash.setFillDrawable(R.drawable.splash_fill);
+            //m_b.splash.setOnStateChangeListener(m_onStateChangeListener);
+            m_b.splash.start();
+        } catch (Exception e) {
+            Log.e("ERROR", e.toString());
+            // Nothing
+        }
+
 
         mAuth = FirebaseAuth.getInstance();
 
