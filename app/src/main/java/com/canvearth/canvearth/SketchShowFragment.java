@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class SketchShowFragment extends Fragment {
     private OnSketchShowFragmentInteractionListener mListener;
-    private MysketchShowRecyclerViewAdapter mysketchShowRecyclerViewAdapter = new MysketchShowRecyclerViewAdapter(mListener);
+    private MysketchShowRecyclerViewAdapter mysketchShowRecyclerViewAdapter;
     private FragmentSketchshowListBinding binding = null;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -66,6 +66,7 @@ public class SketchShowFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnSketchShowFragmentInteractionListener) {
             mListener = (OnSketchShowFragmentInteractionListener) context;
+            mysketchShowRecyclerViewAdapter = new MysketchShowRecyclerViewAdapter(mListener);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnSketchShowFragmentInteractionListener");

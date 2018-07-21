@@ -53,7 +53,7 @@ import java.util.Set;
 
 
 public class MapsActivity extends AppCompatActivity
-        implements SketchShowFragment.OnSketchShowFragmentInteractionListener {
+        implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnListFragmentInteractionListener {
     public static GoogleMap Map;
     public static ContentResolver contentResolver;
     public static String PACKAGE_NAME;
@@ -115,6 +115,7 @@ public class MapsActivity extends AppCompatActivity
         MapScaleView scaleView = findViewById(R.id.scaleView);
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
+        findViewById(R.id.my_sketch).setVisibility(View.GONE);
     }
 
     @Override
@@ -192,7 +193,10 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickMyPage() {
-        ScreenUtils.showToast(this, "Not Implemented Yet");
+        MySketchFragment fragment = (MySketchFragment) getFragmentManager().findFragmentById(R.id.my_sketch);
+        processMySketches(fragment);
+        findViewById(R.id.my_sketch).setVisibility(View.VISIBLE);
+        findViewById(R.id.all_components).setVisibility(View.GONE);
     }
 
     public void onClickAddSketch() {
@@ -220,7 +224,13 @@ public class MapsActivity extends AppCompatActivity
     }
     @Override
     public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
-        // TODO
+        SketchRegisterManager.getInstance().addInterestingSketch(sketch.id);
+        Log.i(TAG, "Added Interesting Sketch");
+    }
+
+    @Override
+    public void onListFragmentInteraction(NearbySketch.Sketch sketch) {
+        //TODO
     }
 
     private void processNearbySketches(SketchShowFragment fragment) {
@@ -237,14 +247,28 @@ public class MapsActivity extends AppCompatActivity
             }
         }
         SketchRegisterManager.getInstance().getRegisteredSketches(pixelDatas,
-            (List<Pair<Photo, String>> list) -> {
+            (List<NearbySketch.Sketch> list) -> {
                 ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
-                for (Pair<Photo, String> pair: list) {
-                    sketches.add(new NearbySketch.Sketch(pair.second, pair.first, pair.second));
+                for (NearbySketch.Sketch sketch: list) {
+                    sketches.add(sketch);
                 }
                 fragment.setSketches(sketches);
                 Log.i(TAG, "Done receiving sketches");
             });
+    }
+
+    private void processMySketches(MySketchFragment fragment) {
+        SketchRegisterManager.getInstance().getInterestingSketches(
+                (List<NearbySketch.Sketch> list) -> {
+                    ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
+                    if (list != null) {
+                        for (NearbySketch.Sketch sketch : list) {
+                            sketches.add(sketch);
+                        }
+                    }
+                    fragment.setSketches(sketches);
+                    Log.i(TAG, "Done receiving sketches");
+                });
     }
 
     private void startFragment(int id, Fragment fragment) {

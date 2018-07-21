@@ -36,6 +36,14 @@
             android:layout_gravity="bottom"
             tools:layout="@layout/activity_maps" />
 
+        <fragment
+            android:id="@+id/my_sketch"
+            android:name="com.canvearth.canvearth.MySketchFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            tools:layout="@layout/activity_maps" />
+
         <com.github.pengrad.mapscaleview.MapScaleView
             android:id="@+id/scaleView"
             android:layout_width="wrap_content"
