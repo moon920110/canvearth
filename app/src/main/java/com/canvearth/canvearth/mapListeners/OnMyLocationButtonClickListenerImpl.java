@@ -5,15 +5,14 @@ import android.content.Context;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 
-public class OnMyLocationButtonClickListenerImpl implements GoogleMap.OnMyLocationButtonClickListener{
-    private MapScaleView scaleView;
+public class OnMyLocationButtonClickListenerImpl implements GoogleMap.OnMyLocationButtonClickListener {
     private Context context;
 
-    public OnMyLocationButtonClickListenerImpl(Context context, MapScaleView scaleView) {
+    public OnMyLocationButtonClickListenerImpl(Context context) {
         super();
-        this.scaleView = scaleView;
         this.context = context;
     }
+
     @Override
     public boolean onMyLocationButtonClick() {
         // Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();

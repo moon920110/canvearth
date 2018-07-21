@@ -30,16 +30,12 @@ import android.widget.LinearLayout;
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
-import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.server.SketchRegisterManager;
-import com.canvearth.canvearth.server.WatchingPixel;
 import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
-import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
-import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -47,10 +43,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 
 public class MapsActivity extends AppCompatActivity
         implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnListFragmentInteractionListener {
@@ -112,8 +105,7 @@ public class MapsActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        MapScaleView scaleView = findViewById(R.id.scaleView);
-        mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, scaleView));
+        mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this));
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
         findViewById(R.id.my_sketch).setVisibility(View.GONE);
     }
@@ -167,13 +159,16 @@ public class MapsActivity extends AppCompatActivity
         startFragment(R.id.sketch_placer, addSketchFragment);
     }
 
-    public void addSketchFinish(Rect bound, Photo photo) {
+    public void addSketchConfirm(Rect bound, Photo photo) {
         PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.RESGISTRATION_ZOOM_LEVEL);
-        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj)->{
+        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj) -> {
             Log.i(TAG, "Add Sketch Finished");
         });
         endFragment(addSketchFragment);
-        addSketchFragment = null;
+    }
+
+    public void addSketchCancel() {
+        endFragment(addSketchFragment);
     }
 
     /**
@@ -184,7 +179,7 @@ public class MapsActivity extends AppCompatActivity
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 
-    public  void onClickMenuCancel() {
+    public void onClickMenuCancel() {
         VisibilityHandler.handleMenuButton(this);
     }
 
@@ -222,6 +217,7 @@ public class MapsActivity extends AppCompatActivity
     public void showAllComponents() {
         findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
+
     @Override
     public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
         SketchRegisterManager.getInstance().addInterestingSketch(sketch.id);
@@ -247,14 +243,14 @@ public class MapsActivity extends AppCompatActivity
             }
         }
         SketchRegisterManager.getInstance().getRegisteredSketches(pixelDatas,
-            (List<NearbySketch.Sketch> list) -> {
-                ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
-                for (NearbySketch.Sketch sketch: list) {
-                    sketches.add(sketch);
-                }
-                fragment.setSketches(sketches);
-                Log.i(TAG, "Done receiving sketches");
-            });
+                (List<NearbySketch.Sketch> list) -> {
+                    ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
+                    for (NearbySketch.Sketch sketch : list) {
+                        sketches.add(sketch);
+                    }
+                    fragment.setSketches(sketches);
+                    Log.i(TAG, "Done receiving sketches");
+                });
     }
 
     private void processMySketches(MySketchFragment fragment) {

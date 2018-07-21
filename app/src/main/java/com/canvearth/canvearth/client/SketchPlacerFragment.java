@@ -47,6 +47,7 @@ public class SketchPlacerFragment extends Fragment {
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
         sketchPlacerView.setImageDrawable(photo.getDrawable());
         sketchPlacerView.setVisibility(View.VISIBLE);
+        binding.cancelButton.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -61,7 +62,11 @@ public class SketchPlacerFragment extends Fragment {
                 (int) bounds.top,
                 (int) bounds.right,
                 (int) bounds.bottom);
-        ((MapsActivity) getActivity()).addSketchFinish(rect, binding.getSketchPhoto());
+        ((MapsActivity) getActivity()).addSketchConfirm(rect, binding.getSketchPhoto());
     }
 
+    public void onClickCancelButton() {
+        binding.cancelButton.setVisibility(View.INVISIBLE);
+        ((MapsActivity) getActivity()).addSketchCancel();
+    }
 }

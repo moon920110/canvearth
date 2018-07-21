@@ -40,5 +40,14 @@
             android:onClick="@{(view) -> handler.onClickConfirmButton()}"
             android:text="Confirm" />
 
+        <Button
+            android:id="@+id/cancel_button"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:onClick="@{(view) -> handler.onClickCancelButton()}"
+            android:text="Cancel" />
+
     </FrameLayout>
 </layout>
