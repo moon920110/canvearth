@@ -210,6 +210,12 @@ public class MapsActivity extends AppCompatActivity
             return;
         }
         PermissionUtils.requestPermission(this, requestCodePermission, permissions[0], false);
+        if (PermissionUtils.checkSelfPermissions(this, permissions)) {
+            final Intent intent = SelectPhotoActivity.createIntent(this);
+            startActivityForResult(intent, REQUEST_SELECT_PHOTO);
+        } else {
+            ScreenUtils.showToast(this, "You have to allow permissions!");
+        }
     }
 
     public void onClickShowSketch() {
