@@ -35,6 +35,7 @@ import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
+import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
@@ -233,6 +234,13 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(NearbySketch.Sketch sketch) {
         //TODO
+    }
+
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 
     private void processNearbySketches(SketchShowFragment fragment) {
