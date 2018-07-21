@@ -40,6 +40,7 @@ public class Pixel {
                         new LatLng(bbox.north, bbox.west))
                 .strokeWidth(Constants.PIX_STROKE_WIDTH);
 
+
         if (isVisible) {
             polygonOptions.strokeColor(Constants.PIX_STROKE_VISIBLE_COLOR);
         } else {

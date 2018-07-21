@@ -8,15 +8,15 @@ public class Constants {
     public static String FIREBASE_PROD_PREFIX = "PROD";
 
     /* pixel logic related */
+    public static int BITMAP_CACHE_RESOLUTION_FACTOR = 3;
+    public static int BITMAP_PNG_MAX_BYTES = 1024 * 1024; // 1 megabyte
     public static int LEAF_PIXEL_GRID_ZOOM_LEVEL = 20;
-    public static int BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL = 15;
-    public static int BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL = 13;
+    public static int BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL = LEAF_PIXEL_GRID_ZOOM_LEVEL - BITMAP_CACHE_RESOLUTION_FACTOR;
+    public static int BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL = BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL - 2;
     public static int GRID_SHOW_MAX_CAM_ZOOM_LEVEL = 18;
     public static int GRID_SHOW_MIN_CAM_ZOOM_LEVEL = 13;
     public static int VIEW_GRID_ZOOM_DIFF = 3;
     public static int RESGISTRATION_ZOOM_LEVEL = 14;
-    public static int BITMAP_CACHE_RESOLUTION_FACTOR = 5;
-    public static int BITMAP_PNG_MAX_BYTES = 1024 * 1024; // 1 megabyte
 
     /* color related */
     // we regard a color is transparent when its alpha is lower than below.

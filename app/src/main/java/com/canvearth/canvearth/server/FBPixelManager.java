@@ -168,8 +168,8 @@ public class FBPixelManager {
                 e.printStackTrace();
             }
         });
-       latchForFinish.await();
-       return urlWapper.url;
+        latchForFinish.await();
+        return urlWapper.url;
     }
 
     public void getCachedBitmapDownloadUrl(PixelData pixelData, Function<Uri> callback) {
