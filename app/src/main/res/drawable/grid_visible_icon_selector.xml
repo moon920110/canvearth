@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/visible"
+    <item android:drawable="@drawable/show_grid"
         android:state_checked="true" />
-    <item android:drawable="@drawable/invisible"
+    <item android:drawable="@drawable/hide_grid"
         android:state_checked="false"/>
 </selector>
