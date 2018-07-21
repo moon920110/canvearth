@@ -7,16 +7,22 @@ import android.widget.ToggleButton;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.client.VisibilityHandler;
+import com.canvearth.canvearth.client.GridManager;
+import com.canvearth.canvearth.client.Palette;
+import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
+import com.canvearth.canvearth.utils.PixelUtils;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     private Context context;
     private MapsActivity activity;
     private MapScaleView scaleView;
+
     public OnMapReadyCallbackImpl(Context context, MapsActivity activity, MapScaleView scaleView) {
         super();
         this.context = context;
@@ -46,7 +52,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context, scaleView));
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, scaleView, googleMap));
         googleMap.setMaxZoomPreference(Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL);
-        googleMap.setOnMapClickListener(new OnMapClickListenerImpl(activity));
+        googleMap.setOnMapClickListener(new OnMapClickListenerImpl(activity, googleMap));
         PermissionUtils.enableMyLocation(context, activity);
 
         VisibilityHandler.init();
@@ -56,9 +62,12 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
 
         OnMainButtonsClickListenerImpl mainButtons = new OnMainButtonsClickListenerImpl(context, activity);
         setMainButtons(mainButtons);
+
+        // TODO: calling this once when map ready for now, should be moved to OnMapClickListenerImpl
+        VisibilityHandler.handleMainButtons(activity);
     }
 
-    private void setMainButtons(OnMainButtonsClickListenerImpl mainButtons){
+    private void setMainButtons(OnMainButtonsClickListenerImpl mainButtons) {
         Button menu = activity.findViewById(R.id.showMeneButton);
         menu.setOnClickListener(mainButtons);
         Button pickerBucket = activity.findViewById(R.id.pickerBucketButton);

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GridManager {
+    private static String TAG = "GridManager";
     private static Map<String, Pixel> pixels = new HashMap<>();
     private static FBPixelManager fBPixelManager = FBPixelManager.getInstance();
     private static boolean isVisible = true;
@@ -69,6 +70,7 @@ public class GridManager {
             protected void onProgressUpdate(Pixel... params) {
                 params[0].draw(map, isVisible);
             }
+
             @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
@@ -105,7 +107,7 @@ public class GridManager {
         }
     }
 
-    public static void fillMyPixel(double lat, double lng, int gridZoom, int color) {
+    public static void fillPixel(double lat, double lng, int gridZoom, int color) {
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
 
         pixels.get(pixel.data.getFirebaseId()).fill(color);
