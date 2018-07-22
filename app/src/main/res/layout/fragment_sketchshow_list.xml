@@ -26,5 +26,15 @@
             app:layout_constraintRight_toRightOf="parent"
             android:onClick="@{(view)->handler.onClickHide()}"
             android:text="Hide"/>
+        <Button
+            android:id="@+id/add_interest_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:onClick="@{(view)->handler.onClickAddInterest()}"
+            android:text="Add My Interest"
+            />
     </android.support.constraint.ConstraintLayout>
 </layout>
