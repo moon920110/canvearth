@@ -3,8 +3,6 @@ package com.canvearth.canvearth.server;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.canvearth.canvearth.authorization.UserInformation;
@@ -15,30 +13,22 @@ import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import junit.framework.Assert;
 
 import org.apache.commons.lang3.tuple.Triple;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -109,7 +99,7 @@ public class SketchRegisterManager {
     }
 
     public void registerSketchAsync(Uri file, String sketchName, PixelDataSquare pixelDataSquare, Function<Void> callback) {
-        Assert.assertEquals(pixelDataSquare.zoom(), Constants.RESGISTRATION_ZOOM_LEVEL);
+        Assert.assertEquals(pixelDataSquare.zoom(), Constants.REGISTRATION_ZOOM_LEVEL);
         new RegisterSketchAsyncTask(callback).execute(Triple.of(file, sketchName, pixelDataSquare));
     }
 
@@ -206,7 +196,7 @@ public class SketchRegisterManager {
 
     // get registered sketches inside pixelData
     public void getRegisteredSketches(List<PixelData> pixelDatas, Function<List<NearbySketch.Sketch>> callback) {
-        Assert.assertEquals(pixelDatas.get(0).zoom, Constants.RESGISTRATION_ZOOM_LEVEL);
+        Assert.assertEquals(pixelDatas.get(0).zoom, Constants.REGISTRATION_ZOOM_LEVEL);
         new GetRegisteredSketches(callback).execute(pixelDatas);
     }
 

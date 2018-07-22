@@ -16,7 +16,7 @@ public class Constants {
     public static int GRID_SHOW_MAX_CAM_ZOOM_LEVEL = 18;
     public static int GRID_SHOW_MIN_CAM_ZOOM_LEVEL = 13;
     public static int VIEW_GRID_ZOOM_DIFF = 3;
-    public static int RESGISTRATION_ZOOM_LEVEL = 14;
+    public static int REGISTRATION_ZOOM_LEVEL = 14;
 
     /* color related */
     // we regard a color is transparent when its alpha is lower than below.

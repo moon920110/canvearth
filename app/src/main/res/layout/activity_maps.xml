@@ -307,6 +307,7 @@
                 android:background="@drawable/add_sketch"
                 android:layout_marginLeft="12dp"
                 android:layout_marginBottom="12dp"
+                android:visibility="invisible"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}" />
         </FrameLayout>
         <LinearLayout
