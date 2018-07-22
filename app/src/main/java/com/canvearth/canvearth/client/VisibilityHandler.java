@@ -3,6 +3,7 @@ package com.canvearth.canvearth.client;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
@@ -42,12 +43,12 @@ public class VisibilityHandler {
     }
 
     public static void handlePickerBucketButton(MapsActivity activity){
-        LinearLayout pickerButtonsLayout = activity.findViewById(R.id.pickerBucket);
+        GridView paletteGridView = activity.findViewById(R.id.palette);
         if(pickerBucketVisibility){
-            pickerButtonsLayout.setVisibility(View.INVISIBLE);
+            paletteGridView.setVisibility(View.INVISIBLE);
             pickerBucketVisibility = !pickerBucketVisibility;
         } else {
-            pickerButtonsLayout.setVisibility(View.VISIBLE);
+            paletteGridView.setVisibility(View.VISIBLE);
             pickerBucketVisibility = !pickerBucketVisibility;
 
             if(menuVisibility){
@@ -58,7 +59,7 @@ public class VisibilityHandler {
 
     public static void handleMainButtons(MapsActivity activity){
         Button menuButton = activity.findViewById(R.id.showMenuButton);
-        Button pickerBucketButton = activity.findViewById(R.id.pickerBucketButton);
+//        Button pickerBucketButton = activity.findViewById(R.id.pickerBucketButton);
         Button addSketchButton = activity.findViewById(R.id.addSketchButton);
         ToggleButton gridVisibilityButton = activity.findViewById(R.id.grid_visibility);
 

@@ -3,6 +3,8 @@ package com.canvearth.canvearth;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.canvearth.canvearth.client.Palette;
+import com.canvearth.canvearth.client.PaletteAdapter;
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.client.SketchPlacerFragment;
 import com.canvearth.canvearth.client.VisibilityHandler;
@@ -19,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
@@ -28,9 +31,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
@@ -44,6 +50,7 @@ import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -52,6 +59,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -124,6 +132,23 @@ public class MapsActivity extends AppCompatActivity
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this));
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
         findViewById(R.id.my_sketch).setVisibility(View.GONE);
+
+        GridView gridview = findViewById(R.id.palette);
+        PaletteAdapter paletteAdapter = new PaletteAdapter(this);
+        gridview.setAdapter(paletteAdapter);
+
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                int color = MapsActivity.this.getResources().getColor(paletteAdapter.paletteColors[position]);
+                Palette.getInstance().setColor(color);
+
+                Button brushColor = MapsActivity.this.findViewById(R.id.brushColor);
+                GradientDrawable drawable = (GradientDrawable) brushColor.getBackground();
+                drawable.setColor(color);
+                VisibilityHandler.handlePickerBucketButton(MapsActivity.this);
+            }
+        });
     }
 
     @Override
@@ -236,6 +261,15 @@ public class MapsActivity extends AppCompatActivity
         findViewById(R.id.all_components).setVisibility(View.GONE);
     }
 
+    public void onClickLogout() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.signOut();
+        LoginManager.getInstance().logOut();
+        finish();
+        Intent intent =  new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
     public void showAllComponents() {
         findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
@@ -260,8 +294,6 @@ public class MapsActivity extends AppCompatActivity
                         mSeeingSketch = sketch;
                     }
                 });
-
-        SketchRegisterManager.getInstance().addInterestingSketch(sketch.id, sketch.name);
         Log.i(TAG, "Added Interesting Sketch");
     }
 

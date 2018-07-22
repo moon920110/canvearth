@@ -54,232 +54,40 @@
             android:id="@+id/all_components"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <LinearLayout
-                android:background="@drawable/rounded"
-                android:padding="10dp"
-                android:id="@+id/pickerBucket"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:visibility="invisible">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="5dp">
-                    <Button
-                        android:id="@+id/redPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:background="@color/red"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/pinkPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/pink"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/purplePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/purple"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/deepPurplePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/deep_purple"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/indigoPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/indigo"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="5dp">
-                    <Button
-                        android:id="@+id/bluePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:background="@color/blue"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/lightBluePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/light_blue"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/cyanPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/cyan"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/tealPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/teal"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/greenPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/green"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="5dp">
-                    <Button
-                        android:id="@+id/lightGreenPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:background="@color/light_green"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/limePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/lime"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/yellowPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/yellow"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/amberPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/amber"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/orangePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/orange"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center">
-                    <Button
-                        android:id="@+id/deepOrangePicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:background="@color/deep_orange"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/brownPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/brown"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/greyPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/grey"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/blueGreyPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@color/blue_grey"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                    <Button
-                        android:id="@+id/defaultColorPicker"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@drawable/default_color_button"
-                        style="?android:attr/buttonBarButtonStyle"/>
-                </LinearLayout>
-            </LinearLayout>
+            <GridView
+                android:id="@+id/palette"
+                android:background="@drawable/rounded"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:columnWidth="40dp"
+                android:numColumns="5"
+                android:verticalSpacing="5dp"
+                android:horizontalSpacing="5dp"
+                android:stretchMode="columnWidth"
+                android:layout_gravity="center"
+                android:visibility="invisible"/>
 
             <ToggleButton
                 android:id="@+id/grid_visibility"
                 android:layout_width="41dp"
                 android:layout_height="41dp"
                 android:layout_gravity="top|right"
-                android:layout_marginTop="95dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginTop="55dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/grid_visible_icon_selector"
                 android:visibility="invisible"
                 android:textOff=""
                 android:textOn="" />
 
             <Button
-                android:id="@+id/pickerBucketButton"
+                android:id="@+id/brushColor"
                 android:layout_width="62dp"
                 android:layout_height="62dp"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="15dp"
-                android:background="@drawable/round_button" />
+                android:background="@drawable/rounded_brush_color" />
 
             <Button
                 android:id="@+id/brushButton"
@@ -296,8 +104,8 @@
                 android:layout_gravity="start|top"
                 android:visibility="invisible"
                 android:background="@drawable/menu"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="12dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp" />
 
             <Button
                 android:id="@+id/addSketchButton"
@@ -305,7 +113,7 @@
                 android:layout_height="49dp"
                 android:layout_gravity="start|bottom"
                 android:background="@drawable/add_sketch"
-                android:layout_marginLeft="12dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginBottom="12dp"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}" />
         </FrameLayout>
@@ -354,6 +162,14 @@
                 android:layout_gravity="center"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
                 android:text="SHOW" />
+
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickLogout()}"
+                android:text="Logout" />
         </LinearLayout>
     </FrameLayout>
 </layout>
