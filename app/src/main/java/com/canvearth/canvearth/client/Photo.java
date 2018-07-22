@@ -92,19 +92,6 @@ public final class Photo implements Parcelable, Comparable<Photo>
         m_dateTaken = dateTaken;
     }
 
-    public Drawable getDrawable() {
-        if (m_uri == null) {
-            return null;
-        }
-        try {
-            InputStream inputStream = new URL(m_uri.toString()).openStream();// MapsActivity.contentResolver.openInputStream(m_uri);
-            return Drawable.createFromStream(inputStream, m_uri.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     //=========================================================================
     // Variables
     //=========================================================================
