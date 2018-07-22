@@ -81,14 +81,14 @@ public class SketchRegisterManager {
                 }
                 UserInformation userInformation = UserInformation.getInstance();
                 String userToken = userInformation.getToken();
-                RegisteredSketch newSketch = new RegisteredSketch(userToken, new Date(), sketchName); // TODO consider when timezone differs, or abusing current datetime
+                RegisteredSketch newSketch = new RegisteredSketch(userToken, new Date(), sketchName, pixelDataSquare.toFB()); // TODO consider when timezone differs, or abusing current datetime
                 sketchDatabaseReference.child(registeredKey).setValue(newSketch);
                 DatabaseUtils.getSketchReference(registeredKey).putFile(file);
                 Iterator iterator = pixelDataSquare.pixelDataIterator();
                 while (iterator.hasNext()) {
                     PixelData pixelData = (PixelData) iterator.next();
                     DatabaseUtils.getSketchRootReference().child(pixelData.getFirebaseId())
-                            .child(registeredKey).setValue(sketchName);
+                            .child(registeredKey).setValue(newSketch);
                     Log.i("registring sketch", pixelData.x + ", " + pixelData.y + ", " + pixelData.zoom);
                 }
                 Log.e("registring sketch", "done");
@@ -126,10 +126,10 @@ public class SketchRegisterManager {
         protected List<NearbySketch.Sketch> doInBackground(List<PixelData>[] params) {
             try {
                 List<PixelData> pixelDatas = params[0];
-                final HashMap<String, String> registeredSketchKey = new HashMap<>();
+                final HashMap<String, RegisteredSketch> registeredSketchKey = new HashMap<>();
                 final CountDownLatch waitForFinish = new CountDownLatch(pixelDatas.size());
                 final Lock registeredSketchKeyLock = new ReentrantLock();
-                for (PixelData pixelData: pixelDatas) {
+                for (PixelData pixelData : pixelDatas) {
                     DatabaseUtils.getSketchPixelReference(pixelData.getFirebaseId())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -138,7 +138,7 @@ public class SketchRegisterManager {
                                     while (registeredKeyIterator.hasNext()) {
                                         DataSnapshot keyDataSnapShot = (DataSnapshot) registeredKeyIterator.next();
                                         registeredSketchKeyLock.lock();
-                                        registeredSketchKey.put(keyDataSnapShot.getKey(), keyDataSnapShot.getValue(String.class));
+                                        registeredSketchKey.put(keyDataSnapShot.getKey(), keyDataSnapShot.getValue(RegisteredSketch.class));
                                         registeredSketchKeyLock.unlock();
                                     }
                                     waitForFinish.countDown();
@@ -156,7 +156,7 @@ public class SketchRegisterManager {
                 final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
                 final Lock returnListLock = new ReentrantLock();
                 final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchKey.size());
-                for (String key: registeredSketchKey.keySet()) {
+                for (String key : registeredSketchKey.keySet()) {
                     DatabaseUtils.getSketchRootReference().child(key).addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
@@ -167,13 +167,16 @@ public class SketchRegisterManager {
                                         return;
                                     }
                                     DatabaseUtils.getSketchReference(key).getDownloadUrl().addOnSuccessListener(
-                                                (Uri uri)->{
-                                                    returnListLock.lock();
-                                                    returnList.add(new NearbySketch.Sketch(key, new Photo(uri), registeredSketchKey.get(key)));
-                                                    returnListLock.unlock();
-                                                    waitForAllFinish.countDown();
-                                                }
-                                            );
+                                            (Uri uri) -> {
+                                                returnListLock.lock();
+                                                String sketchName = registeredSketchKey.get(key).sketchName;
+                                                PixelDataSquare boundingPixelDataSquare = registeredSketchKey.get(key).fbPixelDataSquare.toPixelDataSquare();
+                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri),
+                                                        sketchName, boundingPixelDataSquare));
+                                                returnListLock.unlock();
+                                                waitForAllFinish.countDown();
+                                            }
+                                    );
                                 }
 
                                 @Override
@@ -249,7 +252,7 @@ public class SketchRegisterManager {
                 final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
                 final Lock returnListLock = new ReentrantLock();
                 final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchs.size());
-                for (String key: registeredSketchs.keySet()) {
+                for (String key : registeredSketchs.keySet()) {
                     DatabaseUtils.getSketchRootReference().child(key).addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
@@ -260,9 +263,12 @@ public class SketchRegisterManager {
                                         return;
                                     }
                                     DatabaseUtils.getSketchReference(key).getDownloadUrl().addOnSuccessListener(
-                                            (Uri uri)->{
+                                            (Uri uri) -> {
                                                 returnListLock.lock();
-                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri), registeredSketchs.get(key)));
+                                                String sketchName = registeredSketch.sketchName;
+                                                PixelDataSquare boundingPixelDataSquare = registeredSketch.fbPixelDataSquare.toPixelDataSquare();
+                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri),
+                                                        sketchName, boundingPixelDataSquare));
                                                 returnListLock.unlock();
                                                 waitForAllFinish.countDown();
                                             }
@@ -306,7 +312,7 @@ public class SketchRegisterManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, String> sketches;
-                sketches = dataSnapshot.getValue(Map.class);
+                sketches = (Map<String, String>) dataSnapshot.getValue();
                 if (sketches == null) {
                     sketches = new HashMap<>();
                 }

@@ -38,9 +38,13 @@ public class PixelUtils {
 
 
     public static BoundingBox pix2bbox(Pixel pixel) {
-        final int x = pixel.data.x;
-        final int y = pixel.data.y;
-        final int zoom = pixel.data.zoom;
+        return pixdata2bbox(pixel.data);
+    }
+
+    public static BoundingBox pixdata2bbox(PixelData pixelData) {
+        final int x = pixelData.x;
+        final int y = pixelData.y;
+        final int zoom = pixelData.zoom;
         BoundingBox bb = new BoundingBox();
         bb.north = pix2lat(y, zoom);
         bb.south = pix2lat(y + 1, zoom);

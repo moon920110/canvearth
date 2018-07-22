@@ -3,6 +3,8 @@ package com.canvearth.canvearth.pixel;
 import android.util.Log;
 
 import com.canvearth.canvearth.utils.Constants;
+import com.canvearth.canvearth.utils.PixelUtils;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -61,4 +63,29 @@ public class PixelData implements Cloneable {
         }
         return null;
     }
+
+    public FBPixelData toFB() {
+        return new FBPixelData(this);
+    }
+
+    public double getSouth() {
+        BoundingBox bbox = PixelUtils.pixdata2bbox(this);
+        return bbox.south;
+    }
+
+    public double getNorth() {
+        BoundingBox bbox = PixelUtils.pixdata2bbox(this);
+        return bbox.north;
+    }
+
+    public double getEast() {
+        BoundingBox bbox = PixelUtils.pixdata2bbox(this);
+        return bbox.east;
+    }
+
+    public double getWest() {
+        BoundingBox bbox = PixelUtils.pixdata2bbox(this);
+        return bbox.west;
+    }
+
 }
