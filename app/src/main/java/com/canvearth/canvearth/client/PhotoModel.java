@@ -62,7 +62,7 @@ public class PhotoModel {
             {
                 try
                 {
-                    return MediaResolver.getPhotos(m_context);
+                    return MediaResolver.getPhotos(m_context, 50);
                 }
                 catch (Exception e)
                 {

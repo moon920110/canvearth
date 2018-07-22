@@ -17,6 +17,7 @@ import java.util.List;
 public class Pixel {
     public PixelData data;
     private Polygon polygon;
+    private boolean deleted = false;
 
     public Pixel(int x, int y, int zoom) {
         this.data = new PixelData(x, y, zoom);
@@ -50,6 +51,8 @@ public class Pixel {
     }
 
     public void draw(GoogleMap map, boolean isVisible) {
+        if (deleted)
+            return;
         PolygonOptions polygonOptions = getPolygonOptions(isVisible);
         Polygon polygon = map.addPolygon(polygonOptions);
         this.polygon = polygon;
@@ -60,7 +63,10 @@ public class Pixel {
     }
 
     public void erase() {
-        this.polygon.remove();
+        deleted = true;
+        if (this.polygon != null) {
+            this.polygon.remove();
+        }
     }
 
     public void changeVisibility(boolean isVisible) {

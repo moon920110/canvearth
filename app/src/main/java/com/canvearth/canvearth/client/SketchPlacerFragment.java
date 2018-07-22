@@ -48,7 +48,7 @@ public class SketchPlacerFragment extends Fragment {
         binding.setSketchPhoto(photo);
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
 
-        Glide.with(sketchPlacerView).load(photo.getUri()).into(sketchPlacerView);
+        Glide.with(view).load(photo.getUri()).into(sketchPlacerView);
 
         sketchPlacerView.setVisibility(View.VISIBLE);
         binding.cancelButton.setVisibility(View.VISIBLE);
