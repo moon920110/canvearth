@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
@@ -38,10 +39,10 @@ public class SketchPlacerFragment extends Fragment {
 
         View view = binding.getRoot();
         if (getArguments() == null) {
-            binding.confirmButton.setVisibility(View.GONE);
+            binding.confirmContainer.setVisibility(View.GONE);
             return view;
         }
-        binding.confirmButton.setVisibility(View.VISIBLE);
+        binding.confirmContainer.setVisibility(View.VISIBLE);
         Photo photo = getArguments().getParcelable(KEY_PHOTO);
         binding.setSketchPhoto(photo);
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
@@ -62,7 +63,9 @@ public class SketchPlacerFragment extends Fragment {
                 (int) bounds.top,
                 (int) bounds.right,
                 (int) bounds.bottom);
-        ((MapsActivity) getActivity()).addSketchConfirm(rect, binding.getSketchPhoto());
+        EditText editText = binding.sketchName;
+        String sketchName = editText.getText().toString();
+        ((MapsActivity) getActivity()).addSketchConfirm(rect, sketchName, binding.getSketchPhoto());
     }
 
     public void onClickCancelButton() {
