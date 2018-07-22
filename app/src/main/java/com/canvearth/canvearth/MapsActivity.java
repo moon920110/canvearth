@@ -37,10 +37,12 @@ import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -219,6 +221,15 @@ public class MapsActivity extends AppCompatActivity
         processNearbySketches(fragment);
         findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
         findViewById(R.id.all_components).setVisibility(View.GONE);
+    }
+
+    public void onClickLogout() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.signOut();
+        LoginManager.getInstance().logOut();
+        finish();
+        Intent intent =  new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     public void showAllComponents() {

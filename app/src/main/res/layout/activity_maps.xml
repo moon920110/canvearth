@@ -354,6 +354,14 @@
                 android:layout_gravity="center"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
                 android:text="SHOW" />
+
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickLogout()}"
+                android:text="Logout" />
         </LinearLayout>
     </FrameLayout>
 </layout>

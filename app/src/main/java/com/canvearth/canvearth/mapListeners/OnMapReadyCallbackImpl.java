@@ -40,7 +40,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsActivity.Map = googleMap;
-        googleMap.setPadding(20, 150, 20, 150);
+//        googleMap.setPadding(20, 150, 20, 150);
         // TODO: Enable tilt gesture when performance issue is resolved
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
