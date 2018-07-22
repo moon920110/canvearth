@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="mapsActivityHandler"
             type="com.canvearth.canvearth.MapsActivity" />
