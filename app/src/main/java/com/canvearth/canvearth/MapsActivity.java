@@ -282,7 +282,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
-        CameraUpdateFactory.zoomTo(Constants.RESGISTRATION_ZOOM_LEVEL);
+        CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL);
 
         Glide.with(getApplicationContext()).asBitmap().load(sketch.photo.getUri())
                 .into(new SimpleTarget<Bitmap>() {
