@@ -232,7 +232,7 @@ public class MapsActivity extends AppCompatActivity
         MySketchFragment fragment = (MySketchFragment) getFragmentManager().findFragmentById(R.id.my_sketch);
         processMySketches(fragment);
         findViewById(R.id.my_sketch).setVisibility(View.VISIBLE);
-        findViewById(R.id.all_components).setVisibility(View.GONE);
+        hideAllComponents();
     }
 
     public void onClickAddSketch() {
@@ -260,7 +260,7 @@ public class MapsActivity extends AppCompatActivity
         SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
         processNearbySketches(fragment);
         findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
-        findViewById(R.id.all_components).setVisibility(View.GONE);
+        hideAllComponents();
     }
 
     public void onClickLogout() {
@@ -274,6 +274,10 @@ public class MapsActivity extends AppCompatActivity
 
     public void showAllComponents() {
         findViewById(R.id.all_components).setVisibility(View.VISIBLE);
+    }
+
+    public void hideAllComponents() {
+        findViewById(R.id.all_components).setVisibility(View.GONE);
     }
 
     @Override
@@ -304,6 +308,7 @@ public class MapsActivity extends AppCompatActivity
         mGroundOverlay.remove();
         mGroundOverlay = null;
         mSeeingSketch = null;
+        showAllComponents();
     }
 
     @Override
@@ -361,7 +366,7 @@ public class MapsActivity extends AppCompatActivity
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(id, fragment);
         fragmentTransaction.commit();
-        findViewById(R.id.all_components).setVisibility(View.GONE);
+        hideAllComponents();
     }
 
     private void endFragment(Fragment fragment) {
@@ -370,6 +375,6 @@ public class MapsActivity extends AppCompatActivity
         fragmentTransaction.remove(fragment);
         addSketchFragment = null;
         fragmentTransaction.commit();
-        findViewById(R.id.all_components).setVisibility(View.VISIBLE);
+        showAllComponents();
     }
 }
