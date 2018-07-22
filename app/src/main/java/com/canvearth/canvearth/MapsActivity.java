@@ -16,18 +16,16 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
-import android.support.v4.util.Pair;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+
+import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -46,6 +44,7 @@ import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -182,13 +181,14 @@ public class MapsActivity extends AppCompatActivity
             Log.e(TAG, "something wrong");
             return;
         }
+
         Photo photo = data.getParcelableExtra("photo");
         addSketchFragment = SketchPlacerFragment.newInstance(photo);
         startFragment(R.id.sketch_placer, addSketchFragment);
     }
 
     public void addSketchConfirm(Rect bound, String sketchName, Photo photo) {
-        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.RESGISTRATION_ZOOM_LEVEL);
+        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.REGISTRATION_ZOOM_LEVEL);
         SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), sketchName, pixelDataSquare, (obj) -> {
             Log.i(TAG, "Add Sketch Finished");
         });
@@ -228,12 +228,14 @@ public class MapsActivity extends AppCompatActivity
         };
         final int requestCodePermission = 2000;
         if (PermissionUtils.checkSelfPermissions(this, permissions)) {
+            Map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
             return;
         }
         PermissionUtils.requestPermission(this, requestCodePermission, permissions[0], false);
         if (PermissionUtils.checkSelfPermissions(this, permissions)) {
+            Map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
         } else {
@@ -283,13 +285,13 @@ public class MapsActivity extends AppCompatActivity
         Projection projection = Map.getProjection();
         LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
         PixelData northeastPixelData = PixelUtils.latlng2pix(
-                bounds.northeast, Constants.RESGISTRATION_ZOOM_LEVEL).data;
+                bounds.northeast, Constants.REGISTRATION_ZOOM_LEVEL).data;
         PixelData southwestPixelData = PixelUtils.latlng2pix(
-                bounds.southwest, Constants.RESGISTRATION_ZOOM_LEVEL).data;
+                bounds.southwest, Constants.REGISTRATION_ZOOM_LEVEL).data;
         ArrayList<PixelData> pixelDatas = new ArrayList<>();
         for (int y = northeastPixelData.y; y <= southwestPixelData.y; y++) {
             for (int x = southwestPixelData.x; x <= northeastPixelData.x; x++) {
-                pixelDatas.add(new PixelData(x, y, Constants.RESGISTRATION_ZOOM_LEVEL));
+                pixelDatas.add(new PixelData(x, y, Constants.REGISTRATION_ZOOM_LEVEL));
             }
         }
         SketchRegisterManager.getInstance().getRegisteredSketches(pixelDatas,
