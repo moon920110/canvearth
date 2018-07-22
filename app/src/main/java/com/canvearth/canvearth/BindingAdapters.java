@@ -45,7 +45,7 @@ public final class BindingAdapters
                 .placeholder(placeHolder)
                 .signature(createDensitySignature(view));
 
-        Glide.with(view.getContext())
+        Glide.with(view)
                 .load(photo.getUri())
                 .apply(requestOptions)
                 .into(view);
