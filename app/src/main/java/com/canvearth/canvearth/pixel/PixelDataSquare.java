@@ -1,5 +1,9 @@
 package com.canvearth.canvearth.pixel;
 
+import com.canvearth.canvearth.utils.PixelUtils;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
 import junit.framework.Assert;
 
 import java.util.Iterator;
@@ -58,5 +62,15 @@ public class PixelDataSquare {
                 return returnCursor;
             }
         };
+    }
+
+    public FBPixelDataSquare toFB() {
+        return new FBPixelDataSquare(new FBPixelData(leftTopPixelData), new FBPixelData(rightBottomPixelData));
+    }
+
+    public LatLngBounds getLatLngBounds() {
+        LatLng southWest = new LatLng(rightBottomPixelData.getSouth(), leftTopPixelData.getWest());
+        LatLng northEast = new LatLng(leftTopPixelData.getNorth(), rightBottomPixelData.getEast());
+        return new LatLngBounds(southWest, northEast);
     }
 }

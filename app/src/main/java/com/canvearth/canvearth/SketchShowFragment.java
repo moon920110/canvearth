@@ -88,6 +88,11 @@ public class SketchShowFragment extends Fragment {
         ((MapsActivity)getActivity()).showAllComponents();
     }
 
+    public void onClickAddInterest() {
+        getView().setVisibility(View.GONE);
+        ((MapsActivity)getActivity()).addSelectedToMyInterest();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
