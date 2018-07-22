@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.bumptech.glide.Glide;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.databinding.FragmentSketchPlacerBinding;
@@ -46,7 +47,9 @@ public class SketchPlacerFragment extends Fragment {
         Photo photo = getArguments().getParcelable(KEY_PHOTO);
         binding.setSketchPhoto(photo);
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
-        sketchPlacerView.setImageDrawable(photo.getDrawable());
+
+        Glide.with(sketchPlacerView).load(photo.getUri()).into(sketchPlacerView);
+
         sketchPlacerView.setVisibility(View.VISIBLE);
         binding.cancelButton.setVisibility(View.VISIBLE);
         return view;
