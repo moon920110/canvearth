@@ -1,6 +1,7 @@
 package com.canvearth.canvearth.mapListeners;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ToggleButton;
 
@@ -40,7 +41,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsActivity.Map = googleMap;
-        googleMap.setPadding(20, 150, 20, 150);
+//        googleMap.setPadding(20, 150, 20, 150);
         // TODO: Enable tilt gesture when performance issue is resolved
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
@@ -55,8 +56,13 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
 
         VisibilityHandler.init();
 
-        OnPickerClickListenerImpl pickerButtons = new OnPickerClickListenerImpl(context, activity);
-        setPickers(pickerButtons);
+        ToggleButton gridVisibilityButton = activity.findViewById(R.id.grid_visibility);
+        gridVisibilityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GridManager.toggleVisibility();
+            }
+        });
 
         OnMainButtonsClickListenerImpl mainButtons = new OnMainButtonsClickListenerImpl(context, activity);
         setMainButtons(mainButtons);
@@ -70,51 +76,5 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         menu.setOnClickListener(mainButtons);
         Button brushButton = activity.findViewById(R.id.brushButton);
         brushButton.setOnClickListener(mainButtons);
-    }
-
-    private void setPickers(OnPickerClickListenerImpl pickerButtons) {
-        Button redPicker = activity.findViewById(R.id.redPicker);
-        redPicker.setOnClickListener(pickerButtons);
-        Button pinkPicker = activity.findViewById(R.id.pinkPicker);
-        pinkPicker.setOnClickListener(pickerButtons);
-        Button purplePicker = activity.findViewById(R.id.purplePicker);
-        purplePicker.setOnClickListener(pickerButtons);
-        Button deepPurplePicker = activity.findViewById(R.id.deepPurplePicker);
-        deepPurplePicker.setOnClickListener(pickerButtons);
-        Button indigoPicker = activity.findViewById(R.id.indigoPicker);
-        indigoPicker.setOnClickListener(pickerButtons);
-        Button bluePicker = activity.findViewById(R.id.bluePicker);
-        bluePicker.setOnClickListener(pickerButtons);
-        Button lightBluePicker = activity.findViewById(R.id.lightBluePicker);
-        lightBluePicker.setOnClickListener(pickerButtons);
-        Button cyanPicker = activity.findViewById(R.id.cyanPicker);
-        cyanPicker.setOnClickListener(pickerButtons);
-        Button tealPicker = activity.findViewById(R.id.tealPicker);
-        tealPicker.setOnClickListener(pickerButtons);
-        Button greenPicker = activity.findViewById(R.id.greenPicker);
-        greenPicker.setOnClickListener(pickerButtons);
-        Button lightGreenPicker = activity.findViewById(R.id.lightGreenPicker);
-        lightGreenPicker.setOnClickListener(pickerButtons);
-        Button limePicker = activity.findViewById(R.id.limePicker);
-        limePicker.setOnClickListener(pickerButtons);
-        Button yellowPicker = activity.findViewById(R.id.yellowPicker);
-        yellowPicker.setOnClickListener(pickerButtons);
-        Button amberPicker = activity.findViewById(R.id.amberPicker);
-        amberPicker.setOnClickListener(pickerButtons);
-        Button orangePicker = activity.findViewById(R.id.orangePicker);
-        orangePicker.setOnClickListener(pickerButtons);
-        Button deepOrangePicker = activity.findViewById(R.id.deepOrangePicker);
-        deepOrangePicker.setOnClickListener(pickerButtons);
-        Button brownPicker = activity.findViewById(R.id.brownPicker);
-        brownPicker.setOnClickListener(pickerButtons);
-        Button greyPicker = activity.findViewById(R.id.greyPicker);
-        greyPicker.setOnClickListener(pickerButtons);
-        Button blueGreyPicker = activity.findViewById(R.id.blueGreyPicker);
-        blueGreyPicker.setOnClickListener(pickerButtons);
-        Button defaultPicker = activity.findViewById(R.id.defaultColorPicker);
-        defaultPicker.setOnClickListener(pickerButtons);
-
-        ToggleButton gridVisibilityButton = activity.findViewById(R.id.grid_visibility);
-        gridVisibilityButton.setOnClickListener(pickerButtons);
     }
 }
