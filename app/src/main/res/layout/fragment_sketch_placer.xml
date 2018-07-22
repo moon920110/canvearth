@@ -32,13 +32,25 @@
             app:sketch_translatable="true"
             app:sketch_zoomable="true" />
 
-        <Button
-            android:id="@+id/confirm_button"
+        <LinearLayout
+            android:id="@+id/confirm_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:onClick="@{(view) -> handler.onClickConfirmButton()}"
-            android:text="Confirm" />
+            android:orientation="horizontal"
+            android:layout_gravity="start|bottom">
+            <EditText
+                android:id="@+id/sketch_name"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:hint="sketch name"
+                android:inputType="text"/>
+            <Button
+                android:id="@+id/confirm_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> handler.onClickConfirmButton()}"
+                android:text="Confirm" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/cancel_button"

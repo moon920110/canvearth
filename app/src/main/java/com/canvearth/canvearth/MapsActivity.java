@@ -162,9 +162,9 @@ public class MapsActivity extends AppCompatActivity
         startFragment(R.id.sketch_placer, addSketchFragment);
     }
 
-    public void addSketchConfirm(Rect bound, Photo photo) {
+    public void addSketchConfirm(Rect bound, String sketchName, Photo photo) {
         PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.RESGISTRATION_ZOOM_LEVEL);
-        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), pixelDataSquare, (obj) -> {
+        SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), sketchName, pixelDataSquare, (obj) -> {
             Log.i(TAG, "Add Sketch Finished");
         });
         endFragment(addSketchFragment);
@@ -229,7 +229,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
-        SketchRegisterManager.getInstance().addInterestingSketch(sketch.id);
+        SketchRegisterManager.getInstance().addInterestingSketch(sketch.id, sketch.name);
         Log.i(TAG, "Added Interesting Sketch");
     }
 
