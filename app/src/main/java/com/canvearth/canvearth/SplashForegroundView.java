@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.canvearth.canvearth.client.UI;
+
 import org.apache.commons.lang3.RandomUtils;
 
 public final class SplashForegroundView extends View
@@ -165,7 +167,7 @@ public final class SplashForegroundView extends View
 		m_dashPaint.setStrokeCap(Paint.Cap.ROUND);
 		m_dashPaint.setStrokeJoin(Paint.Join.ROUND);
 
-		m_strokeWidth = DisplayManager.getInstance().getPixelFromDp(context, 5);
+		m_strokeWidth = UI.getPixelFromDp(context, 5);
 		m_dashPaint.setStrokeWidth(m_strokeWidth);
 
 		m_dashPaint.setColor(0xFF000000);
