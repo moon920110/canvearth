@@ -25,6 +25,7 @@ import org.apache.commons.lang3.RandomUtils;
 
 public final class SplashForegroundView extends View
 {
+	private final int lineColor = 0xFF101010;
 	//=========================================================================
 	// Constructors
 	//=========================================================================
@@ -158,8 +159,8 @@ public final class SplashForegroundView extends View
 	{
 		ViewCompat.setLayerType(this, ViewCompat.LAYER_TYPE_SOFTWARE, null);
 
-		m_startDelay = 500;
-		m_strokeDuration = 1000;
+		m_startDelay = 300;
+		m_strokeDuration = 2500;
 		m_fillDuration = 3000;
 
 		m_dashPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -218,13 +219,13 @@ public final class SplashForegroundView extends View
 		final PathEffect pathEffect1 = new DashPathEffect(new float[] { m_pathMaxLength * interpolation, m_pathMaxLength }, 0);
 		m_dashPaint.setPathEffect(pathEffect1);
 
-		m_dashPaint.setColor(0xFFFFFFFF);
+		m_dashPaint.setColor(lineColor);
 		canvas.drawPath(m_path, m_dashPaint);
 
 		final PathEffect pathEffect2 = new DashPathEffect(new float[] { 0, m_pathMaxLength * interpolation - m_strokeWidth / 2f, m_strokeWidth / 2f, m_pathMaxLength }, 0);
 		m_dashPaint.setPathEffect(pathEffect2);
 
-		m_dashPaint.setColor(0xFFFFFFFF);
+		m_dashPaint.setColor(lineColor);
 		canvas.drawPath(m_path, m_dashPaint);
 	}
 
