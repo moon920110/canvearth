@@ -116,6 +116,25 @@
                 android:layout_marginBottom="12dp"
                 android:visibility="invisible"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}" />
+
+            <LinearLayout
+                android:id="@+id/mysketch_thumbnail_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+                <com.canvearth.canvearth.views.MySketchThumbnailView
+                    android:id="@+id/mysketch_thumbnail"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{(view) -> mapsActivityHandler.onClickHideInterestThumbnail()}"
+                    android:text="Hide"/>
+            </LinearLayout>
         </FrameLayout>
         <LinearLayout
             android:id="@+id/menuLayout"
