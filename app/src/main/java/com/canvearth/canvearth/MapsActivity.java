@@ -33,9 +33,6 @@ import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
@@ -44,15 +41,12 @@ import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
-import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
-import com.canvearth.canvearth.utils.concurrency.Function;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -65,7 +59,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -87,6 +80,9 @@ public class MapsActivity extends AppCompatActivity
     private GroundOverlay mGroundOverlay = null;
     private NearbySketch.Sketch mSeeingSketch = null;
     private Disposable mDisposableNearbySketch = null;
+
+    // Used in my interesing sketches
+    private Disposable mDisposableMySketch = null;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -160,6 +156,10 @@ public class MapsActivity extends AppCompatActivity
             mDisposableNearbySketch.dispose();
             mDisposableNearbySketch = null;
         }
+        if (mDisposableMySketch != null && mDisposableMySketch.isDisposed() == false) {
+            mDisposableMySketch.dispose();
+            mDisposableMySketch = null;
+        }
     }
 
     @Override
@@ -169,6 +169,11 @@ public class MapsActivity extends AppCompatActivity
             mDisposableNearbySketch.dispose();
             mDisposableNearbySketch = null;
         }
+        if (mDisposableMySketch != null && mDisposableMySketch.isDisposed() == false) {
+            mDisposableMySketch.dispose();
+            mDisposableMySketch = null;
+        }
+
     }
 
     @Override
@@ -378,17 +383,22 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void processMySketches(MySketchFragment fragment) {
-        SketchRegisterManager.getInstance().getInterestingSketches(
-                (List<NearbySketch.Sketch> list) -> {
-                    ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
-                    if (list != null) {
-                        for (NearbySketch.Sketch sketch : list) {
-                            sketches.add(sketch);
-                        }
-                    }
-                    fragment.setSketches(sketches);
-                    Log.i(TAG, "Done receiving sketches");
+        final Consumer<Pair<String, RegisteredSketch>> onNext = new Consumer<Pair<String, RegisteredSketch>>() {
+            @Override
+            public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
+                String key = stringRegisteredSketchPair.first;
+                RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
+                NearbySketch.Sketch emptySketch = new NearbySketch.Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
+                fragment.removeProgressForAll();
+                int idx = fragment.addSketch(emptySketch);
+
+                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (NearbySketch.Sketch sketch) -> {
+                    fragment.changeSketch(idx, sketch);
                 });
+            }
+        };
+        mDisposableMySketch = SketchRegisterManager.getInstance().processInterestingSketchesMetas(onNext);
+
     }
 
     private void startFragment(int id, Fragment fragment) {

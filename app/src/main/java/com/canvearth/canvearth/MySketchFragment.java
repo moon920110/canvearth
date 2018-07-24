@@ -25,7 +25,7 @@ import java.util.List;
 public class MySketchFragment extends Fragment {
 
     private OnListFragmentInteractionListener mListener;
-    private MyMySketchRecyclerViewAdapter myMySketchRecyclerViewAdapter = new MyMySketchRecyclerViewAdapter(mListener);
+    private MyMySketchRecyclerViewAdapter myMySketchRecyclerViewAdapter;
     private FragmentMysketchListBinding binding = null;
 
     public MySketchFragment() {
@@ -56,6 +56,7 @@ public class MySketchFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
+            myMySketchRecyclerViewAdapter = new MyMySketchRecyclerViewAdapter(mListener);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
@@ -72,9 +73,21 @@ public class MySketchFragment extends Fragment {
         myMySketchRecyclerViewAdapter.setSketches(sketches);
     }
 
+    public int addSketch(NearbySketch.Sketch sketch) {
+        return myMySketchRecyclerViewAdapter.addSketch(sketch);
+    }
+
+    public void changeSketch(int idx, NearbySketch.Sketch sketch) {
+        myMySketchRecyclerViewAdapter.changeSketch(idx ,sketch);
+    }
+
     public void onClickHide() {
         getView().setVisibility(View.GONE);
         ((MapsActivity)getActivity()).showAllComponents();
+    }
+
+    public void removeProgressForAll() {
+        binding.sketchShowProgressBarForMyInterest.setVisibility(View.GONE);
     }
 
     /**

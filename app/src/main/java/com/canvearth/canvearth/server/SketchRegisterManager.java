@@ -201,98 +201,67 @@ public class SketchRegisterManager {
         new GetSketchImage(callback).execute(sketch);
     }
 
-    // TODO too many concurrency control - may cause performance issues
-    private class GetInterestingSketches extends AsyncTask<Void, String, List<NearbySketch.Sketch>> {
-        private Function<List<NearbySketch.Sketch>> callback;
-
-        private GetInterestingSketches(Function<List<NearbySketch.Sketch>> callback) {
-            super();
-            this.callback = callback;
-        }
-
-        @Override
-        protected List<NearbySketch.Sketch> doInBackground(Void[] params) {
-            try {
-                final Map<String, String> registeredSketchs = new HashMap<>();
-                final CountDownLatch waitForFinish = new CountDownLatch(1);
-                final DatabaseReference myInfoReference = DatabaseUtils.getMyInfoReference();
-                if (myInfoReference == null) {
-                    return null;
-                }
-                myInfoReference
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Map<String, String> keys = (Map<String, String>) dataSnapshot.getValue();
-                                registeredSketchs.putAll(keys);
-                                waitForFinish.countDown();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                Log.e(TAG, databaseError.getDetails());
-                                waitForFinish.countDown();
-                            }
-                        });
-                waitForFinish.await();
-                publishProgress("got all keys");
-
-                final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
-                final Lock returnListLock = new ReentrantLock();
-                final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchs.size());
-                for (String key : registeredSketchs.keySet()) {
-                    DatabaseUtils.getSketchRootReference().child(key).addListenerForSingleValueEvent(
-                            new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    RegisteredSketch registeredSketch = dataSnapshot.getValue(RegisteredSketch.class);
-                                    if (registeredSketch == null) {
-                                        waitForAllFinish.countDown();
-                                        return;
+    public Disposable processInterestingSketchesMetas(Consumer<Pair<String, RegisteredSketch>> onNext) {
+        final io.reactivex.functions.Function<String, Observable<Pair<String, RegisteredSketch>>> getRegistedSketch
+                = new io.reactivex.functions.Function<String, Observable<Pair<String, RegisteredSketch>>>()
+        {
+            @Override
+            public Observable<Pair<String, RegisteredSketch>> apply(final String key)
+            {
+                return Observable.create(new ObservableOnSubscribe<Pair<String, RegisteredSketch>>()
+                {
+                    @Override
+                    public void subscribe(ObservableEmitter<Pair<String, RegisteredSketch>> emitter) throws Exception
+                    {
+                        DatabaseUtils.getSketchPixelReference(key)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        emitter.onNext(new Pair<>(key, dataSnapshot.getValue(RegisteredSketch.class)));
+                                        emitter.onComplete();
                                     }
-                                    DatabaseUtils.getSketchReference(key).getDownloadUrl().addOnSuccessListener(
-                                            (Uri uri) -> {
-                                                returnListLock.lock();
-                                                String sketchName = registeredSketch.sketchName;
-                                                PixelDataSquare boundingPixelDataSquare = registeredSketch.fbPixelDataSquare.toPixelDataSquare();
-                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri),
-                                                        sketchName, boundingPixelDataSquare));
-                                                returnListLock.unlock();
-                                                waitForAllFinish.countDown();
-                                            }
-                                    );
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    Log.e(TAG, databaseError.getDetails());
-                                    waitForAllFinish.countDown();
-                                }
-                            }
-                    );
-                }
-                waitForAllFinish.await();
-                return returnList;
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        Log.e(TAG, databaseError.getDetails());
+                                        emitter.onComplete();
+                                    }
+                                });
+                    }
+                });
             }
-            return null;
-        }
+        };
 
-        @Override
-        protected void onProgressUpdate(String... values) {
-            Log.i("GetInterestingSketches", values[0]);
-        }
+        return Observable.create((ObservableEmitter<String> emitter) -> {
+            final DatabaseReference myInfoReference = DatabaseUtils.getMyInfoReference();
+            if (myInfoReference == null) {
+                emitter.onComplete();
+            }
+            myInfoReference
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Map<String, String> keys = (Map<String, String>) dataSnapshot.getValue();
+                            if (keys == null) {
+                                emitter.onComplete();
+                            }
+                            for (String key : keys.keySet()) {
+                                emitter.onNext(key);
+                            }
+                            emitter.onComplete();
+                        }
 
-        @Override
-        protected void onPostExecute(List<NearbySketch.Sketch> list) {
-            Log.i("GetInterestingSketches", "Post executing");
-            callback.run(list);
-        }
-    }
-
-    public void getInterestingSketches(Function<List<NearbySketch.Sketch>> callback) {
-        new GetInterestingSketches(callback).execute();
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, databaseError.getDetails());
+                            emitter.onComplete();
+                        }
+                    });
+        }).flatMap(getRegistedSketch)
+                .distinct((Pair<String, RegisteredSketch> pair) -> pair.first)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNext);
     }
 
     public void addInterestingSketch(String key, String name) {
