@@ -83,6 +83,14 @@ public class SketchShowFragment extends Fragment {
         mysketchShowRecyclerViewAdapter.setSketches(sketches);
     }
 
+    public int addSketch(Sketch sketch) {
+        return mysketchShowRecyclerViewAdapter.addSketch(sketch);
+    }
+
+    public void changeSketch(int idx, Sketch sketch) {
+        mysketchShowRecyclerViewAdapter.changeSketch(idx ,sketch);
+    }
+
     public void onClickHide() {
         getView().setVisibility(View.GONE);
         ((MapsActivity)getActivity()).showAllComponents();
@@ -91,6 +99,10 @@ public class SketchShowFragment extends Fragment {
     public void onClickAddInterest() {
         getView().setVisibility(View.GONE);
         ((MapsActivity)getActivity()).addSelectedToMyInterest();
+    }
+
+    public void removeProgressForAll() {
+        binding.sketchShowProgressBarForAll.setVisibility(View.GONE);
     }
 
     /**

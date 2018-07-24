@@ -1,8 +1,10 @@
 package com.canvearth.canvearth;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.canvearth.canvearth.sketch.NearbySketch.Sketch;
 
 import java.util.ArrayList;
@@ -33,6 +39,17 @@ public class MysketchShowRecyclerViewAdapter extends RecyclerView.Adapter<Mysket
         notifyDataSetChanged();
     }
 
+    public int addSketch(Sketch sketch) {
+        mValues.add(sketch);
+        notifyDataSetChanged();
+        return mValues.size() - 1;
+    }
+
+    public void changeSketch(int idx, Sketch sketch) {
+        mValues.set(idx, sketch);
+        notifyDataSetChanged();
+    }
+
     @Override
     public @NonNull ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -45,20 +62,36 @@ public class MysketchShowRecyclerViewAdapter extends RecyclerView.Adapter<Mysket
         holder.mItem = mValues.get(position);
 //        holder.mSketchView.setImageDrawable(mValues.get(position).photo.getDrawable());
         Uri uri = mValues.get(position).photo.getUri();
-        Glide.with(holder.mSketchView).load(uri).into(holder.mSketchView);
         holder.mSketchName.setText(mValues.get(position).name);
+        if (uri != null) {
+            Glide.with(holder.mSketchView)
+                    .load(uri)
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            Log.e("Glide", e.getMessage());
+                            return false;
+                        }
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onSketchShowFragmentInteraction(holder.mItem);
-                    holder.mView.getRootView().findViewById(R.id.add_interest_button).setVisibility(View.VISIBLE);
+                        @Override
+                        public boolean onResourceReady(Drawable resouorce, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            holder.mView.findViewById(R.id.sketchShowProgressBarForItem).setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(holder.mSketchView);
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (null != mListener) {
+                        // Notify the active callbacks interface (the activity, if the
+                        // fragment is attached to one) that an item has been selected.
+                        mListener.onSketchShowFragmentInteraction(holder.mItem);
+                        holder.mView.getRootView().findViewById(R.id.add_interest_button).setVisibility(View.VISIBLE);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override

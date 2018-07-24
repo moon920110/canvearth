@@ -24,6 +24,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
+import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.NearbySketch;
 import com.canvearth.canvearth.utils.Constants;
@@ -47,6 +49,7 @@ import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
+import com.canvearth.canvearth.utils.concurrency.Function;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,6 +67,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+
 public class MapsActivity extends AppCompatActivity
         implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnListFragmentInteractionListener {
     public static GoogleMap Map;
@@ -80,6 +86,7 @@ public class MapsActivity extends AppCompatActivity
     // Used in showing nearby sketches
     private GroundOverlay mGroundOverlay = null;
     private NearbySketch.Sketch mSeeingSketch = null;
+    private Disposable mDisposableNearbySketch = null;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -148,6 +155,20 @@ public class MapsActivity extends AppCompatActivity
                 VisibilityHandler.handlePickerBucketButton(MapsActivity.this);
             }
         });
+
+        if (mDisposableNearbySketch != null && mDisposableNearbySketch.isDisposed() == false) {
+            mDisposableNearbySketch.dispose();
+            mDisposableNearbySketch = null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mDisposableNearbySketch != null && mDisposableNearbySketch.isDisposed() == false) {
+            mDisposableNearbySketch.dispose();
+            mDisposableNearbySketch = null;
+        }
     }
 
     @Override
@@ -336,15 +357,24 @@ public class MapsActivity extends AppCompatActivity
                 pixelDatas.add(new PixelData(x, y, Constants.REGISTRATION_ZOOM_LEVEL));
             }
         }
-        SketchRegisterManager.getInstance().getRegisteredSketches(pixelDatas,
-                (List<NearbySketch.Sketch> list) -> {
-                    ArrayList<NearbySketch.Sketch> sketches = new ArrayList<>();
-                    for (NearbySketch.Sketch sketch : list) {
-                        sketches.add(sketch);
-                    }
-                    fragment.setSketches(sketches);
-                    Log.i(TAG, "Done receiving sketches");
+
+        final Consumer<Pair<String, RegisteredSketch>> onNext = new Consumer<Pair<String, RegisteredSketch>>() {
+            @Override
+            public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
+                String key = stringRegisteredSketchPair.first;
+                RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
+                NearbySketch.Sketch emptySketch = new NearbySketch.Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
+                fragment.removeProgressForAll();
+                int idx = fragment.addSketch(emptySketch);
+
+                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (NearbySketch.Sketch sketch) -> {
+                    fragment.changeSketch(idx, sketch);
                 });
+            }
+        };
+        mDisposableNearbySketch
+                = SketchRegisterManager.getInstance()
+                .processRegisteredSketchMetas(pixelDatas, onNext);
     }
 
     private void processMySketches(MySketchFragment fragment) {

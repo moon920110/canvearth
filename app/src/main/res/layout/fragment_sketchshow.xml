@@ -14,6 +14,16 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:orientation="vertical">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:id="@+id/sketchShowProgressBarForItem"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center" />
+
         <ImageView
             android:id="@+id/sketch_view"
             android:layout_width="100dp"
