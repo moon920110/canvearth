@@ -91,12 +91,12 @@ public class SketchShowFragment extends Fragment {
     }
 
     public void onClickHide() {
-        getView().setVisibility(View.GONE);
+        getView().setVisibility(View.INVISIBLE);
         ((MapsActivity)getActivity()).showAllComponents();
     }
 
     public void onClickAddInterest() {
-        getView().setVisibility(View.GONE);
+        getView().setVisibility(View.INVISIBLE);
         ((MapsActivity)getActivity()).addSelectedToMyInterest();
     }
 

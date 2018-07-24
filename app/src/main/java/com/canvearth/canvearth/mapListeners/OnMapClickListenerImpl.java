@@ -3,7 +3,6 @@ package com.canvearth.canvearth.mapListeners;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.client.Palette;
-import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;

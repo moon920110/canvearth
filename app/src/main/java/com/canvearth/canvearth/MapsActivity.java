@@ -7,7 +7,6 @@ import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.client.PaletteAdapter;
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.client.SketchPlacerFragment;
-import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.databinding.ActivityMapsBinding;
 
 import android.Manifest;
@@ -20,13 +19,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
@@ -37,10 +35,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import android.widget.ImageView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.net.Uri;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
@@ -54,6 +53,7 @@ import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
+import com.canvearth.canvearth.utils.VisibilityUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,14 +65,23 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+
 
 public class MapsActivity extends AppCompatActivity
         implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnMySketchFragmentInteractionListener {
@@ -86,6 +95,7 @@ public class MapsActivity extends AppCompatActivity
     private boolean mPermissionDenied = false;
     private ActivityMapsBinding binding = null;
     private Fragment addSketchFragment = null;
+    private Drawer navigationDrawer = null;
 
     // Used in showing nearby sketches
     private GroundOverlay mGroundOverlay = null;
@@ -99,31 +109,6 @@ public class MapsActivity extends AppCompatActivity
     private LocationListener locationListener;
     private Disposable mDisposableMySketch = null;
 
-    protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public DownloadImageTask(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String url = urls[0];
-            Bitmap bitmap = null;
-            try {
-                InputStream in = new java.net.URL(url).openStream();
-                bitmap = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,17 +117,10 @@ public class MapsActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
         binding.setMapsActivityHandler(this);
 
-        locationReady();
-
-        String userName = getIntent().getExtras().getString("userName");
-        Log.d(TAG, "userName: " + userName);
-
-        String userPhotoUrlString = getIntent().getExtras().getString("userPhotoUrl");
-        Log.d(TAG, "userPhotoUriString: " + userPhotoUrlString);
-
-        ImageView photoImageView = findViewById(R.id.userPhotoImageView);
-        DownloadImageTask photoImageDonwloadTask = new DownloadImageTask(photoImageView);
-        photoImageDonwloadTask.execute(userPhotoUrlString);
+        addNavigationDrawer();
+        setupPalette();
+        findViewById(R.id.sketch_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.my_sketch).setVisibility(View.INVISIBLE);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -165,7 +143,7 @@ public class MapsActivity extends AppCompatActivity
                 Button brushColor = MapsActivity.this.findViewById(R.id.brushColor);
                 GradientDrawable drawable = (GradientDrawable) brushColor.getBackground();
                 drawable.setColor(color);
-                VisibilityHandler.handlePickerBucketButton(MapsActivity.this);
+                VisibilityUtils.toggleViewVisibility(gridview);
             }
         });
 
@@ -193,8 +171,9 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
+
     public void locationReady() {
-        locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
             @Override
@@ -220,9 +199,9 @@ public class MapsActivity extends AppCompatActivity
         };
     }
 
-    public void requestLocationUpate () {
+    public void requestLocationUpdate() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT < 23 ){
+            if (Build.VERSION.SDK_INT < 23) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
             } else {
@@ -230,7 +209,7 @@ public class MapsActivity extends AppCompatActivity
 
                 Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-                mLocation= new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                mLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
 
             }
@@ -301,10 +280,6 @@ public class MapsActivity extends AppCompatActivity
         endFragment(addSketchFragment);
     }
 
-    public void setLocation(LatLng location) {
-        this.mLocation = location;
-    }
-
     /**
      * Displays a dialog with error message explaining that the location permission is missing.
      */
@@ -313,19 +288,31 @@ public class MapsActivity extends AppCompatActivity
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 
-    public void onClickMenuCancel() {
-        VisibilityHandler.handleMenuButton(this);
-    }
-
     public void onClickShare() {
         new ShareInvoker(MapsActivity.this, Map).shareMapSnapshot();
     }
 
-    public void onClickMyPage() {
+    public void onClickStarredSketches() {
         MySketchFragment fragment = (MySketchFragment) getFragmentManager().findFragmentById(R.id.my_sketch);
         processMySketches(fragment);
         findViewById(R.id.my_sketch).setVisibility(View.VISIBLE);
         hideAllComponents();
+    }
+
+    public void onClickShowSketch() {
+        SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
+        processNearbySketches(fragment);
+        findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
+        hideAllComponents();
+    }
+
+    public void onClickSignout() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.signOut();
+        LoginManager.getInstance().logOut();
+        finish();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     public void onClickAddSketch() {
@@ -349,28 +336,13 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-    public void onClickShowSketch() {
-        SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
-        processNearbySketches(fragment);
-        findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
-        hideAllComponents();
-    }
-
-    public void onClickLogout() {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signOut();
-        LoginManager.getInstance().logOut();
-        finish();
-        Intent intent =  new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
 
     public void showAllComponents() {
         findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
 
     public void hideAllComponents() {
-        findViewById(R.id.all_components).setVisibility(View.GONE);
+        findViewById(R.id.all_components).setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -418,7 +390,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickHideInterestThumbnail() {
-        binding.mysketchThumbnailContainer.setVisibility(View.GONE);
+        binding.mysketchThumbnailContainer.setVisibility(View.INVISIBLE);
     }
 
     public void onBackPressed() {
@@ -447,9 +419,100 @@ public class MapsActivity extends AppCompatActivity
         return (mLocation.latitude - bottomLat) / (topLat - bottomLat);
     }
 
-    //////
-    // private methods
-    //////
+    private void addNavigationDrawer() {
+
+        //initialize and create the image loader logic
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Picasso.get().load(uri).placeholder(placeholder).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                Picasso.get().cancelRequest(imageView);
+            }
+        });
+
+
+        Bundle bundle = getIntent().getExtras();
+        String userName = bundle.getString(Constants.userName);
+        String userPhotoUrlString = bundle.getString(Constants.userPhotoUrl);
+        String userEmail = bundle.getString(Constants.userEmail);
+
+        AccountHeader header = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withCompactStyle(true)
+                .withHeaderBackground(R.drawable.header)
+                .addProfiles(
+                        new ProfileDrawerItem()
+                                .withName(userName)
+                                .withTextColor(getResources().getColor(R.color.material_drawer_primary_text))
+                                .withEmail(userEmail)
+                                .withTextColor(getResources().getColor(R.color.material_drawer_primary_text))
+                                .withIcon(Uri.decode(userPhotoUrlString)))
+                .withSelectionListEnabledForSingleProfile(false)
+                .build();
+
+
+        //if you want to update the items at a later time it is recommended to keep it in a variable
+        SecondaryDrawerItem share = new SecondaryDrawerItem()
+                .withIdentifier(Constants.DRAWER_ID_SHARE)
+                .withIcon(FontAwesome.Icon.faw_facebook)
+                .withName(Constants.DRAWER_TEXT_SHARE);
+        SecondaryDrawerItem starredSketches = new SecondaryDrawerItem()
+                .withIdentifier(Constants.DRAWER_ID_STARRED_SKETCHES)
+                .withIcon(FontAwesome.Icon.faw_star)
+                .withName(Constants.DRAWER_TEXT_STARRED_SKETCHES);
+        SecondaryDrawerItem nearbySketches = new SecondaryDrawerItem()
+                .withIdentifier(Constants.DRAWER_ID_NEARBY_SKETCHES)
+                .withIcon(FontAwesome.Icon.faw_images)
+                .withName(Constants.DRAWER_TEXT_NEARBY_SKETCHES);
+        SecondaryDrawerItem logout = new SecondaryDrawerItem()
+                .withIdentifier(Constants.DRAWER_ID_SIGNOUT)
+                .withIcon(FontAwesome.Icon.faw_sign_out_alt)
+                .withName(Constants.DRAWER_TEXT_SIGNOUT);
+
+
+        //create the navigationDrawer and remember the `Drawer` result object
+        navigationDrawer = new DrawerBuilder()
+                .withAccountHeader(header)
+                .withActivity(this)
+                .withSelectedItem(-1)
+                .addDrawerItems(
+                        share,
+                        starredSketches,
+                        nearbySketches,
+                        logout
+                )
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    switch (position) {
+                        case Constants.DRAWER_ID_SHARE:
+                            onClickShare();
+                            break;
+                        case Constants.DRAWER_ID_STARRED_SKETCHES:
+                            onClickStarredSketches();
+                            break;
+                        case Constants.DRAWER_ID_NEARBY_SKETCHES:
+                            onClickShowSketch();
+                            break;
+                        case Constants.DRAWER_ID_SIGNOUT:
+                            onClickSignout();
+                            break;
+                        default:
+                            break;
+                    }
+                    navigationDrawer.setSelection(-1);
+                    navigationDrawer.closeDrawer();
+                    return true;
+                })
+                .build();
+
+        Button menu = findViewById(R.id.showMenuButton);
+        menu.setOnClickListener(view -> {
+            navigationDrawer.openDrawer();
+        });
+    }
 
     private void processNearbySketches(SketchShowFragment fragment) {
         Projection projection = Map.getProjection();
@@ -522,5 +585,24 @@ public class MapsActivity extends AppCompatActivity
         addSketchFragment = null;
         fragmentTransaction.commit();
         showAllComponents();
+    }
+
+    private void setupPalette() {
+        GridView paletteGridView = findViewById(R.id.palette);
+        PaletteAdapter paletteAdapter = new PaletteAdapter(this);
+        paletteGridView.setAdapter(paletteAdapter);
+
+        paletteGridView.setOnItemClickListener((parent, v, position, id) -> {
+            int color = MapsActivity.this.getResources().getColor(paletteAdapter.paletteColors[position]);
+            Palette.getInstance().setColor(color);
+
+            Button brushColor = MapsActivity.this.findViewById(R.id.brushColor);
+            GradientDrawable drawable = (GradientDrawable) brushColor.getBackground();
+            drawable.setColor(color);
+            VisibilityUtils.toggleViewVisibility(paletteGridView);
+        });
+        findViewById(R.id.brushButton).setOnClickListener(view -> {
+            VisibilityUtils.toggleViewVisibility(paletteGridView);
+        });
     }
 }
