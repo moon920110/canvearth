@@ -322,6 +322,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickMyPage() {
+        VisibilityHandler.handleMenuButton(this);
         MySketchFragment fragment = (MySketchFragment) getFragmentManager().findFragmentById(R.id.my_sketch);
         processMySketches(fragment);
         findViewById(R.id.my_sketch).setVisibility(View.VISIBLE);
@@ -350,6 +351,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickShowSketch() {
+        VisibilityHandler.handleMenuButton(this);
         SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
         processNearbySketches(fragment);
         findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
@@ -357,6 +359,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickLogout() {
+        VisibilityHandler.handleMenuButton(this);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signOut();
         LoginManager.getInstance().logOut();
