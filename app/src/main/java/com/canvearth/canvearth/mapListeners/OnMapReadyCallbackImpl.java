@@ -1,8 +1,8 @@
 package com.canvearth.canvearth.mapListeners;
 
 import android.content.Context;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.content.res.Resources;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ToggleButton;
@@ -11,15 +11,11 @@ import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.client.GridManager;
-import com.canvearth.canvearth.client.Palette;
-import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
-import com.canvearth.canvearth.utils.PixelUtils;
-import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     private Context context;
@@ -46,7 +42,20 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         activity.locationReady();
         activity.requestLocationUpate();
         MapsActivity.Map = googleMap;
-//        googleMap.setPadding(20, 150, 20, 150);
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            context, R.raw.style_json));
+
+            if (!success) {
+                Log.e("CUSTOM", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("CUSTOM", "Can't find style. Error: ", e);
+        }
         // TODO: Enable tilt gesture when performance issue is resolved
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
