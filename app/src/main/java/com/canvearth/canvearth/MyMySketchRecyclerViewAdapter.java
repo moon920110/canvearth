@@ -15,7 +15,6 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.canvearth.canvearth.MySketchFragment.OnListFragmentInteractionListener;
 import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
     private List<Sketch> mValues = new ArrayList<>();
     private final MySketchFragment.OnMySketchFragmentInteractionListener mListener;
 
-    public MyMySketchRecyclerViewAdapter(OnMySketchFragmentInteractionListener listener) {
+    public MyMySketchRecyclerViewAdapter(MySketchFragment.OnMySketchFragmentInteractionListener listener) {
         mListener = listener;
     }
 
@@ -75,6 +74,7 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
                         }
                     })
                     .into(holder.mSketchView);
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
