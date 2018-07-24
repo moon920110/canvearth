@@ -2,6 +2,7 @@ package com.canvearth.canvearth.pixel;
 
 import android.graphics.Point;
 
+import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
@@ -13,11 +14,14 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Pixel {
     public PixelData data;
     private Polygon polygon;
     private boolean deleted = false;
+    private Lock lock = new ReentrantLock();
 
     public Pixel(int x, int y, int zoom) {
         this.data = new PixelData(x, y, zoom);
@@ -53,27 +57,43 @@ public class Pixel {
     public void draw(GoogleMap map, boolean isVisible) {
         if (deleted)
             return;
-        PolygonOptions polygonOptions = getPolygonOptions(isVisible);
-        Polygon polygon = map.addPolygon(polygonOptions);
-        this.polygon = polygon;
+        lock.lock();
+        if (polygon == null) {
+            PolygonOptions polygonOptions = getPolygonOptions(isVisible);
+            polygon = MapsActivity.Map.addPolygon(polygonOptions);
+        }
+        lock.unlock();
     }
 
-    public void fill(int color) {
+    public void fill(int color, boolean isVisible) {
+        if (deleted)
+            return;
+        lock.lock();
+        if (polygon == null) {
+            PolygonOptions polygonOptions = getPolygonOptions(isVisible);
+            polygon = MapsActivity.Map.addPolygon(polygonOptions);
+        }
+        lock.unlock();
         polygon.setFillColor(color);
     }
 
     public void erase() {
         deleted = true;
+        lock.lock();
         if (this.polygon != null) {
             this.polygon.remove();
         }
+        lock.unlock();
     }
 
     public void changeVisibility(boolean isVisible) {
+        lock.lock();
         if (!isVisible) {
             this.polygon.setStrokeColor(Constants.PIX_STROKE_INVISIBLE_COLOR);
         } else {
             this.polygon.setStrokeColor(Constants.PIX_STROKE_VISIBLE_COLOR);
         }
+
+        lock.unlock();
     }
 }
