@@ -12,8 +12,7 @@ import android.view.ViewGroup;
 
 import com.canvearth.canvearth.databinding.FragmentSketchPlacerBinding;
 import com.canvearth.canvearth.databinding.FragmentSketchshowListBinding;
-import com.canvearth.canvearth.sketch.NearbySketch;
-import com.canvearth.canvearth.sketch.NearbySketch.Sketch;
+import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.List;
 

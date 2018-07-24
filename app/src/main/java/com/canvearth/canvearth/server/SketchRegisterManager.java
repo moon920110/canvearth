@@ -10,7 +10,7 @@ import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
-import com.canvearth.canvearth.sketch.NearbySketch;
+import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;

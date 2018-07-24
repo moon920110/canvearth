@@ -1,6 +1,8 @@
 package com.canvearth.canvearth.mapListeners;
 
 import android.content.Context;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ToggleButton;
@@ -23,6 +25,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     private Context context;
     private MapsActivity activity;
 
+
     public OnMapReadyCallbackImpl(Context context, MapsActivity activity) {
         super();
         this.context = context;
@@ -40,6 +43,8 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        activity.locationReady();
+        activity.requestLocationUpate();
         MapsActivity.Map = googleMap;
 //        googleMap.setPadding(20, 150, 20, 150);
         // TODO: Enable tilt gesture when performance issue is resolved

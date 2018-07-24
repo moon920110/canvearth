@@ -15,16 +15,24 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -39,7 +47,7 @@ import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
-import com.canvearth.canvearth.sketch.NearbySketch;
+import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
@@ -54,7 +62,9 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
@@ -64,7 +74,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MapsActivity extends AppCompatActivity
-        implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnListFragmentInteractionListener {
+        implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnMySketchFragmentInteractionListener {
     public static GoogleMap Map;
     public static ContentResolver contentResolver;
     public static String PACKAGE_NAME;
@@ -78,10 +88,14 @@ public class MapsActivity extends AppCompatActivity
 
     // Used in showing nearby sketches
     private GroundOverlay mGroundOverlay = null;
-    private NearbySketch.Sketch mSeeingSketch = null;
+    private Sketch mSeeingNearbySketch = null;
     private Disposable mDisposableNearbySketch = null;
 
-    // Used in my interesing sketches
+    // Used in my interesting sketches
+    private Sketch mSeeingMySketch = null;
+    private LatLng mLocation;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
     private Disposable mDisposableMySketch = null;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -116,6 +130,8 @@ public class MapsActivity extends AppCompatActivity
         contentResolver = this.getContentResolver();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
         binding.setMapsActivityHandler(this);
+
+        locationReady();
 
         String userName = getIntent().getExtras().getString("userName");
         Log.d(TAG, "userName: " + userName);
@@ -174,6 +190,52 @@ public class MapsActivity extends AppCompatActivity
             mDisposableMySketch = null;
         }
 
+    }
+
+    public void locationReady() {
+        locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+    }
+
+    public void requestLocationUpate () {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT < 23 ){
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+            } else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                mLocation= new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+
+            }
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
     }
 
     @Override
@@ -236,6 +298,10 @@ public class MapsActivity extends AppCompatActivity
 
     public void addSketchCancel() {
         endFragment(addSketchFragment);
+    }
+
+    public void setLocation(LatLng location) {
+        this.mLocation = location;
     }
 
     /**
@@ -307,10 +373,10 @@ public class MapsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSketchShowFragmentInteraction(NearbySketch.Sketch sketch) {
+    public void onSketchShowFragmentInteraction(Sketch sketch) {
         CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL);
 
-        Glide.with(getApplicationContext()).asBitmap().load(sketch.photo.getUri())
+        Glide.with(this).asBitmap().load(sketch.photo.getUri())
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
@@ -323,23 +389,35 @@ public class MapsActivity extends AppCompatActivity
                         groundOverlayOptions.image(bitmapDescriptor);
                         groundOverlayOptions.transparency(0.5f);
                         mGroundOverlay = Map.addGroundOverlay(groundOverlayOptions);
-                        mSeeingSketch = sketch;
+                        mSeeingNearbySketch = sketch;
                     }
                 });
         Log.i(TAG, "Added Interesting Sketch");
     }
 
     public void addSelectedToMyInterest() {
-        SketchRegisterManager.getInstance().addInterestingSketch(mSeeingSketch.id, mSeeingSketch.name);
+        SketchRegisterManager.getInstance().addInterestingSketch(mSeeingNearbySketch.id, mSeeingNearbySketch.name);
         mGroundOverlay.remove();
         mGroundOverlay = null;
-        mSeeingSketch = null;
+        mSeeingNearbySketch = null;
         showAllComponents();
     }
 
+    /////////
+    // My Interest related methods
+    /////////
+
     @Override
-    public void onListFragmentInteraction(NearbySketch.Sketch sketch) {
-        //TODO
+    public void onMySketchFragmentInteraction(Sketch sketch) {
+        binding.mysketchThumbnailContainer.setVisibility(View.VISIBLE);
+        mSeeingMySketch = sketch;
+        Glide.with(this).asBitmap().load(sketch.photo.getUri())
+                .into(binding.mysketchThumbnail);
+        Log.i(TAG, "Showing my sketch");
+    }
+
+    public void onClickHideInterestThumbnail() {
+        binding.mysketchThumbnailContainer.setVisibility(View.GONE);
     }
 
     public void onBackPressed() {
@@ -348,6 +426,29 @@ public class MapsActivity extends AppCompatActivity
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
     }
+
+    public boolean isInSeeingSketch() {
+        LatLngBounds bounds = mSeeingMySketch.pixelDataSquare.getLatLngBounds();
+        return bounds.contains(mLocation);
+    }
+
+    public double getXFractionInSeeingSketch() {
+        LatLngBounds bounds = mSeeingMySketch.pixelDataSquare.getLatLngBounds();
+        double leftLng = bounds.southwest.longitude;
+        double rightLng = bounds.northeast.longitude;
+        return (mLocation.longitude - leftLng) / (rightLng - leftLng);
+    }
+
+    public double getYFractionInSeeingSketch() {
+        LatLngBounds bounds = mSeeingMySketch.pixelDataSquare.getLatLngBounds();
+        double bottomLat = bounds.southwest.latitude;
+        double topLat = bounds.northeast.latitude;
+        return (mLocation.latitude - bottomLat) / (topLat - bottomLat);
+    }
+
+    //////
+    // private methods
+    //////
 
     private void processNearbySketches(SketchShowFragment fragment) {
         Projection projection = Map.getProjection();
@@ -368,11 +469,11 @@ public class MapsActivity extends AppCompatActivity
             public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
                 String key = stringRegisteredSketchPair.first;
                 RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
-                NearbySketch.Sketch emptySketch = new NearbySketch.Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
+                Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
                 fragment.removeProgressForAll();
                 int idx = fragment.addSketch(emptySketch);
 
-                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (NearbySketch.Sketch sketch) -> {
+                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
                     fragment.changeSketch(idx, sketch);
                 });
             }
@@ -388,11 +489,11 @@ public class MapsActivity extends AppCompatActivity
             public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
                 String key = stringRegisteredSketchPair.first;
                 RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
-                NearbySketch.Sketch emptySketch = new NearbySketch.Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
+                Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
                 fragment.removeProgressForAll();
                 int idx = fragment.addSketch(emptySketch);
 
-                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (NearbySketch.Sketch sketch) -> {
+                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
                     fragment.changeSketch(idx, sketch);
                 });
             }

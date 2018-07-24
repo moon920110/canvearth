@@ -16,32 +16,32 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.canvearth.canvearth.MySketchFragment.OnListFragmentInteractionListener;
-import com.canvearth.canvearth.sketch.NearbySketch;
+import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySketchRecyclerViewAdapter.ViewHolder> {
 
-    private List<NearbySketch.Sketch> mValues = new ArrayList<>();
-    private final OnListFragmentInteractionListener mListener;
+    private List<Sketch> mValues = new ArrayList<>();
+    private final MySketchFragment.OnMySketchFragmentInteractionListener mListener;
 
-    public MyMySketchRecyclerViewAdapter(OnListFragmentInteractionListener listener) {
+    public MyMySketchRecyclerViewAdapter(OnMySketchFragmentInteractionListener listener) {
         mListener = listener;
     }
 
-    public void setSketches(List<NearbySketch.Sketch> sketches) {
+    public void setSketches(List<Sketch> sketches) {
         mValues = sketches;
         notifyDataSetChanged();
     }
 
-    public int addSketch(NearbySketch.Sketch sketch) {
+    public int addSketch(Sketch sketch) {
         mValues.add(sketch);
         notifyDataSetChanged();
         return mValues.size() - 1;
     }
 
-    public void changeSketch(int idx, NearbySketch.Sketch sketch) {
+    public void changeSketch(int idx, Sketch sketch) {
         mValues.set(idx, sketch);
         notifyDataSetChanged();
     }
@@ -76,17 +76,16 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
                     })
                     .into(holder.mSketchView);
 
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (null != mListener) {
-                        // Notify the active callbacks interface (the activity, if the
-                        // fragment is attached to one) that an item has been selected.
-                        mListener.onListFragmentInteraction(holder.mItem);
-                    }
+        holder.mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onMySketchFragmentInteraction(holder.mItem);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -98,7 +97,7 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
         public final View mView;
         public final ImageView mSketchView;
         public final TextView mSketchName;
-        public NearbySketch.Sketch mItem;
+        public Sketch mItem;
 
         public ViewHolder(View view) {
             super(view);

@@ -16,7 +16,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.canvearth.canvearth.sketch.NearbySketch.Sketch;
+import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.ArrayList;
 import java.util.List;
