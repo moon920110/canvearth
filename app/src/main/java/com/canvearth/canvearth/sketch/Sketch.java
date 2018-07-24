@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class Sketch {
     public final String id;
-    public final Photo photo;
+    public Photo photo;
     public final String name;
     public final PixelDataSquare pixelDataSquare;
 

@@ -7,6 +7,7 @@ import android.widget.Button;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.client.GridManager;
+import com.canvearth.canvearth.server.BitmapDrawer;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;

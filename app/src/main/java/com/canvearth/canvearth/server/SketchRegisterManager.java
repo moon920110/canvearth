@@ -157,18 +157,18 @@ public class SketchRegisterManager {
                 .subscribe(onNext);
     }
 
-    private class GetSketchImage extends AsyncTask<NearbySketch.Sketch, String, NearbySketch.Sketch> {
-        private Function<NearbySketch.Sketch> callback;
+    private class GetSketchImage extends AsyncTask<Sketch, String, Sketch> {
+        private Function<Sketch> callback;
 
-        private GetSketchImage(Function<NearbySketch.Sketch> callback) {
+        private GetSketchImage(Function<Sketch> callback) {
             super();
             this.callback = callback;
         }
 
         @Override
-        protected NearbySketch.Sketch doInBackground(NearbySketch.Sketch[] params) {
+        protected Sketch doInBackground(Sketch[] params) {
             try {
-                NearbySketch.Sketch emptySketch = params[0];
+                Sketch emptySketch = params[0];
 
                 final CountDownLatch waitForAllFinish = new CountDownLatch(1);
                 DatabaseUtils.getSketchReference(emptySketch.id).getDownloadUrl().addOnSuccessListener(
@@ -191,13 +191,13 @@ public class SketchRegisterManager {
         }
 
         @Override
-        protected void onPostExecute(NearbySketch.Sketch sketch) {
+        protected void onPostExecute(Sketch sketch) {
             Log.i("GetSketchImage", "Post executing");
             callback.run(sketch);
         }
     }
 
-    public void getSketchImage(NearbySketch.Sketch sketch, Function<NearbySketch.Sketch> callback) {
+    public void getSketchImage(Sketch sketch, Function<Sketch> callback) {
         new GetSketchImage(callback).execute(sketch);
     }
 
@@ -236,14 +236,16 @@ public class SketchRegisterManager {
             final DatabaseReference myInfoReference = DatabaseUtils.getMyInfoReference();
             if (myInfoReference == null) {
                 emitter.onComplete();
+                return;
             }
             myInfoReference
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Map<String, String> keys = (Map<String, String>) dataSnapshot.getValue();
-                            if (keys == null) {
+                            if (keys == null || keys.isEmpty()) {
                                 emitter.onComplete();
+                                return;
                             }
                             for (String key : keys.keySet()) {
                                 emitter.onNext(key);
