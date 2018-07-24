@@ -9,22 +9,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.canvearth.canvearth.MySketchFragment.OnListFragmentInteractionListener;
-import com.canvearth.canvearth.sketch.NearbySketch;
+import com.canvearth.canvearth.MySketchFragment.OnMySketchFragmentInteractionListener;
+import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySketchRecyclerViewAdapter.ViewHolder> {
 
-    private List<NearbySketch.Sketch> mValues = new ArrayList<>();
-    private final OnListFragmentInteractionListener mListener;
+    private List<Sketch> mValues = new ArrayList<>();
+    private final MySketchFragment.OnMySketchFragmentInteractionListener mListener;
 
-    public MyMySketchRecyclerViewAdapter(OnListFragmentInteractionListener listener) {
+    public MyMySketchRecyclerViewAdapter(OnMySketchFragmentInteractionListener listener) {
         mListener = listener;
     }
 
-    public void setSketches(List<NearbySketch.Sketch> sketches) {
+    public void setSketches(List<Sketch> sketches) {
         mValues = sketches;
         notifyDataSetChanged();
     }
@@ -49,7 +49,7 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onMySketchFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -64,7 +64,7 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
         public final View mView;
         public final ImageView mSketchView;
         public final TextView mSketchName;
-        public NearbySketch.Sketch mItem;
+        public Sketch mItem;
 
         public ViewHolder(View view) {
             super(view);

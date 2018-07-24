@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.canvearth.canvearth.sketch.NearbySketch.Sketch;
+import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.ArrayList;
 import java.util.List;

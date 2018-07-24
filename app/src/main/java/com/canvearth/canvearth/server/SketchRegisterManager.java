@@ -9,7 +9,7 @@ import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
-import com.canvearth.canvearth.sketch.NearbySketch;
+import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.concurrency.Function;
@@ -104,16 +104,16 @@ public class SketchRegisterManager {
     }
 
     // TODO too many concurrency control - may cause performance issues
-    private class GetRegisteredSketches extends AsyncTask<List<PixelData>, String, List<NearbySketch.Sketch>> {
-        private Function<List<NearbySketch.Sketch>> callback;
+    private class GetRegisteredSketches extends AsyncTask<List<PixelData>, String, List<Sketch>> {
+        private Function<List<Sketch>> callback;
 
-        private GetRegisteredSketches(Function<List<NearbySketch.Sketch>> callback) {
+        private GetRegisteredSketches(Function<List<Sketch>> callback) {
             super();
             this.callback = callback;
         }
 
         @Override
-        protected List<NearbySketch.Sketch> doInBackground(List<PixelData>[] params) {
+        protected List<Sketch> doInBackground(List<PixelData>[] params) {
             try {
                 List<PixelData> pixelDatas = params[0];
                 final HashMap<String, RegisteredSketch> registeredSketchKey = new HashMap<>();
@@ -143,7 +143,7 @@ public class SketchRegisterManager {
                 }
                 waitForFinish.await();
                 publishProgress("got all keys");
-                final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
+                final ArrayList<Sketch> returnList = new ArrayList<>();
                 final Lock returnListLock = new ReentrantLock();
                 final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchKey.size());
                 for (String key : registeredSketchKey.keySet()) {
@@ -161,7 +161,7 @@ public class SketchRegisterManager {
                                                 returnListLock.lock();
                                                 String sketchName = registeredSketchKey.get(key).sketchName;
                                                 PixelDataSquare boundingPixelDataSquare = registeredSketchKey.get(key).fbPixelDataSquare.toPixelDataSquare();
-                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri),
+                                                returnList.add(new Sketch(key, new Photo(uri),
                                                         sketchName, boundingPixelDataSquare));
                                                 returnListLock.unlock();
                                                 waitForAllFinish.countDown();
@@ -191,29 +191,29 @@ public class SketchRegisterManager {
         }
 
         @Override
-        protected void onPostExecute(List<NearbySketch.Sketch> list) {
+        protected void onPostExecute(List<Sketch> list) {
             Log.i("GetRegisteredSketches", "Post executing");
             callback.run(list);
         }
     }
 
     // get registered sketches inside pixelData
-    public void getRegisteredSketches(List<PixelData> pixelDatas, Function<List<NearbySketch.Sketch>> callback) {
+    public void getRegisteredSketches(List<PixelData> pixelDatas, Function<List<Sketch>> callback) {
         Assert.assertEquals(pixelDatas.get(0).zoom, Constants.REGISTRATION_ZOOM_LEVEL);
         new GetRegisteredSketches(callback).execute(pixelDatas);
     }
 
     // TODO too many concurrency control - may cause performance issues
-    private class GetInterestingSketches extends AsyncTask<Void, String, List<NearbySketch.Sketch>> {
-        private Function<List<NearbySketch.Sketch>> callback;
+    private class GetInterestingSketches extends AsyncTask<Void, String, List<Sketch>> {
+        private Function<List<Sketch>> callback;
 
-        private GetInterestingSketches(Function<List<NearbySketch.Sketch>> callback) {
+        private GetInterestingSketches(Function<List<Sketch>> callback) {
             super();
             this.callback = callback;
         }
 
         @Override
-        protected List<NearbySketch.Sketch> doInBackground(Void[] params) {
+        protected List<Sketch> doInBackground(Void[] params) {
             try {
                 final Map<String, String> registeredSketchs = new HashMap<>();
                 final CountDownLatch waitForFinish = new CountDownLatch(1);
@@ -239,7 +239,7 @@ public class SketchRegisterManager {
                 waitForFinish.await();
                 publishProgress("got all keys");
 
-                final ArrayList<NearbySketch.Sketch> returnList = new ArrayList<>();
+                final ArrayList<Sketch> returnList = new ArrayList<>();
                 final Lock returnListLock = new ReentrantLock();
                 final CountDownLatch waitForAllFinish = new CountDownLatch(registeredSketchs.size());
                 for (String key : registeredSketchs.keySet()) {
@@ -257,7 +257,7 @@ public class SketchRegisterManager {
                                                 returnListLock.lock();
                                                 String sketchName = registeredSketch.sketchName;
                                                 PixelDataSquare boundingPixelDataSquare = registeredSketch.fbPixelDataSquare.toPixelDataSquare();
-                                                returnList.add(new NearbySketch.Sketch(key, new Photo(uri),
+                                                returnList.add(new Sketch(key, new Photo(uri),
                                                         sketchName, boundingPixelDataSquare));
                                                 returnListLock.unlock();
                                                 waitForAllFinish.countDown();
@@ -287,13 +287,13 @@ public class SketchRegisterManager {
         }
 
         @Override
-        protected void onPostExecute(List<NearbySketch.Sketch> list) {
+        protected void onPostExecute(List<Sketch> list) {
             Log.i("GetInterestingSketches", "Post executing");
             callback.run(list);
         }
     }
 
-    public void getInterestingSketches(Function<List<NearbySketch.Sketch>> callback) {
+    public void getInterestingSketches(Function<List<Sketch>> callback) {
         new GetInterestingSketches(callback).execute();
     }
 

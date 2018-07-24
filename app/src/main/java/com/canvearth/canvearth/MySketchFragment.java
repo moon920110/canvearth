@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,20 +11,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.canvearth.canvearth.databinding.FragmentMysketchListBinding;
-import com.canvearth.canvearth.sketch.NearbySketch;
+import com.canvearth.canvearth.sketch.Sketch;
 
 import java.util.List;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnMySketchFragmentInteractionListener}
  * interface.
  */
 public class MySketchFragment extends Fragment {
 
-    private OnListFragmentInteractionListener mListener;
-    private MyMySketchRecyclerViewAdapter myMySketchRecyclerViewAdapter = new MyMySketchRecyclerViewAdapter(mListener);
+    private OnMySketchFragmentInteractionListener mListener;
+    private MyMySketchRecyclerViewAdapter myMySketchRecyclerViewAdapter;
     private FragmentMysketchListBinding binding = null;
 
     public MySketchFragment() {
@@ -54,11 +53,12 @@ public class MySketchFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OnMySketchFragmentInteractionListener) {
+            mListener = (OnMySketchFragmentInteractionListener) context;
+            myMySketchRecyclerViewAdapter = new MyMySketchRecyclerViewAdapter(mListener);
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnMySketchFragmentInteractionListener");
         }
     }
 
@@ -68,7 +68,7 @@ public class MySketchFragment extends Fragment {
         mListener = null;
     }
 
-    public void setSketches(List<NearbySketch.Sketch> sketches) {
+    public void setSketches(List<Sketch> sketches) {
         myMySketchRecyclerViewAdapter.setSketches(sketches);
     }
 
@@ -87,7 +87,7 @@ public class MySketchFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(NearbySketch.Sketch item);
+    public interface OnMySketchFragmentInteractionListener {
+        void onMySketchFragmentInteraction(Sketch item);
     }
 }
