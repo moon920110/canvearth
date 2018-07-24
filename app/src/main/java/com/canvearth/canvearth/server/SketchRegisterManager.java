@@ -217,7 +217,9 @@ public class SketchRegisterManager {
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        emitter.onNext(new Pair<>(key, dataSnapshot.getValue(RegisteredSketch.class)));
+                                        RegisteredSketch registeredSketch = dataSnapshot.getValue(RegisteredSketch.class);
+                                        if (registeredSketch != null)
+                                            emitter.onNext(new Pair<>(key, registeredSketch));
                                         emitter.onComplete();
                                     }
 
