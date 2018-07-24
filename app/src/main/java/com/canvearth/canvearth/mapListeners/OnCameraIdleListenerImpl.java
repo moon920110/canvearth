@@ -39,8 +39,6 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
             addSketchButton.setVisibility(View.VISIBLE);
         }
 
-        GridManager.cleanup();
-
         if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_CAM_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL) {
             GridManager.draw(MapsActivity.Map, Math.round(cameraPosition.zoom));
         }

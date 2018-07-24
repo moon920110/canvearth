@@ -4,6 +4,7 @@ package com.canvearth.canvearth.client;
 import android.graphics.Point;
 
 import android.os.AsyncTask;
+import android.support.v4.util.Pair;
 
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelColor;
@@ -16,8 +17,10 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GridManager {
     private static String TAG = "GridManager";
@@ -34,36 +37,57 @@ public class GridManager {
         double maxY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.northeast.latitude) / pixSideLen) + 5 * (pixSideLen / 2);
         double maxX = -180 + pixSideLen * (int) (SphericalMercator.scaleLongitude(bounds.northeast.longitude) / pixSideLen) + 5 * (pixSideLen / 2);
 
-        new AsyncTask<Object, Pixel, Object>() {
+        new AsyncTask<Object, Pixel, Set<String>>() {
             @Override
-            protected Object doInBackground(Object... object) {
+            protected Set<String> doInBackground(Object... object) {
+
+                Set<String> pixelsToErase = new HashSet<>(pixels.keySet());
+                Set<String> pixelsToAdd = new HashSet<>();
 
                 for (double y = minY; y < maxY; y += pixSideLen) {
                     if (minX <= maxX) {
                         for (double x = minX; x < maxX; x += pixSideLen) {
                             Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                            pixels.put(pixel.data.getFirebaseId(), pixel);
+                            String key = pixel.data.getFirebaseId();
+                            if (!pixels.containsKey(key)) {
+                                pixels.put(key, pixel);
+                                pixelsToAdd.add(key);
+                            } else {
+                                pixelsToErase.remove(key);
+                            }
                         }
                     } else {
                         for (double x = -180; x < minX; x += pixSideLen) {
                             Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                            pixels.put(pixel.data.getFirebaseId(), pixel);
+                            String key = pixel.data.getFirebaseId();
+                            if (!pixels.containsKey(key)) {
+                                pixels.put(key, pixel);
+                                pixelsToAdd.add(key);
+                            } else {
+                                pixelsToErase.remove(key);
+                            }
                         }
                         for (double x = maxX; x < 180; x += pixSideLen) {
                             Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, gridZoom);
-                            pixels.put(pixel.data.getFirebaseId(), pixel);
+                            String key = pixel.data.getFirebaseId();
+                            if (!pixels.containsKey(key)) {
+                                pixels.put(key, pixel);
+                                pixelsToAdd.add(key);
+                            } else {
+                                pixelsToErase.remove(key);
+                            }
                         }
                     }
                 }
 
-                for (Map.Entry<String, Pixel> entry : pixels.entrySet()) {
-                    Pixel pix = entry.getValue();
+                for (String key : pixelsToAdd) {
+                    Pixel pix = pixels.get(key);
                     if (shouldWatchPixel) {
                         fBPixelManager.watchPixel(pix.data);
                     }
                     publishProgress(pix);
                 }
-                return new Object();
+                return pixelsToErase;
             }
 
             @Override
@@ -72,8 +96,14 @@ public class GridManager {
             }
 
             @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
+            protected void onPostExecute(Set<String> pixelsToErase) {
+                super.onPostExecute(pixelsToErase);
+                for (String key: pixelsToErase) {
+                    Pixel pixelToErase = pixels.get(key);
+                    fBPixelManager.unwatchPixel(pixelToErase.data);
+                    pixelToErase.erase();
+                    pixels.remove(key);
+                }
             }
         }.execute();
     }
@@ -110,14 +140,14 @@ public class GridManager {
     public static void fillPixel(double lat, double lng, int gridZoom, int color) {
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
 
-        pixels.get(pixel.data.getFirebaseId()).fill(color);
+        pixels.get(pixel.data.getFirebaseId()).fill(color, isVisible);
         FBPixelManager.getInstance().writePixelAsync(pixel.data, new PixelColor(color));
     }
 
     public static void changePixelColor(String firebaseId, int color) {
         Pixel pixel = pixels.get(firebaseId);
         if (pixel != null) {
-            pixel.fill(color);
+            pixel.fill(color, isVisible);
         }
     }
 }
