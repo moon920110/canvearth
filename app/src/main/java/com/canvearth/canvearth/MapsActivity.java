@@ -472,7 +472,9 @@ public class MapsActivity extends AppCompatActivity
                 Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
                 fragment.removeProgressForAll();
                 int idx = fragment.addSketch(emptySketch);
-
+                if (idx == -1) {
+                    return;
+                }
                 SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
                     fragment.changeSketch(idx, sketch);
                 });
@@ -492,7 +494,9 @@ public class MapsActivity extends AppCompatActivity
                 Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
                 fragment.removeProgressForAll();
                 int idx = fragment.addSketch(emptySketch);
-
+                if (idx == -1) {
+                    return;
+                }
                 SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
                     fragment.changeSketch(idx, sketch);
                 });
