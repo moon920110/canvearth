@@ -72,9 +72,21 @@ public class MySketchFragment extends Fragment {
         myMySketchRecyclerViewAdapter.setSketches(sketches);
     }
 
+    public int addSketch(Sketch sketch) {
+        return myMySketchRecyclerViewAdapter.addSketch(sketch);
+    }
+
+    public void changeSketch(int idx, Sketch sketch) {
+        myMySketchRecyclerViewAdapter.changeSketch(idx ,sketch);
+    }
+
     public void onClickHide() {
         getView().setVisibility(View.GONE);
         ((MapsActivity)getActivity()).showAllComponents();
+    }
+
+    public void removeProgressForAll() {
+        binding.sketchShowProgressBarForMyInterest.setVisibility(View.GONE);
     }
 
     /**

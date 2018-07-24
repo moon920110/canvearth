@@ -96,7 +96,7 @@ public final class Photo implements Parcelable, Comparable<Photo>
     // Variables
     //=========================================================================
 
-    private Uri m_uri;
+    private Uri m_uri = null;
     private long m_dateTaken;
 
     //=========================================================================

@@ -30,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,7 @@ import android.widget.GridView;
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.pixel.PixelDataSquare;
+import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
@@ -67,7 +69,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class MapsActivity extends AppCompatActivity
         implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnMySketchFragmentInteractionListener {
@@ -85,12 +89,14 @@ public class MapsActivity extends AppCompatActivity
     // Used in showing nearby sketches
     private GroundOverlay mGroundOverlay = null;
     private Sketch mSeeingNearbySketch = null;
+    private Disposable mDisposableNearbySketch = null;
 
     // Used in my interesting sketches
     private Sketch mSeeingMySketch = null;
     private LatLng mLocation;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Disposable mDisposableMySketch = null;
 
     protected class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -161,6 +167,29 @@ public class MapsActivity extends AppCompatActivity
                 VisibilityHandler.handlePickerBucketButton(MapsActivity.this);
             }
         });
+
+        if (mDisposableNearbySketch != null && mDisposableNearbySketch.isDisposed() == false) {
+            mDisposableNearbySketch.dispose();
+            mDisposableNearbySketch = null;
+        }
+        if (mDisposableMySketch != null && mDisposableMySketch.isDisposed() == false) {
+            mDisposableMySketch.dispose();
+            mDisposableMySketch = null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mDisposableNearbySketch != null && mDisposableNearbySketch.isDisposed() == false) {
+            mDisposableNearbySketch.dispose();
+            mDisposableNearbySketch = null;
+        }
+        if (mDisposableMySketch != null && mDisposableMySketch.isDisposed() == false) {
+            mDisposableMySketch.dispose();
+            mDisposableMySketch = null;
+        }
+
     }
 
     public void locationReady() {
@@ -434,29 +463,43 @@ public class MapsActivity extends AppCompatActivity
                 pixelDatas.add(new PixelData(x, y, Constants.REGISTRATION_ZOOM_LEVEL));
             }
         }
-        SketchRegisterManager.getInstance().getRegisteredSketches(pixelDatas,
-                (List<Sketch> list) -> {
-                    ArrayList<Sketch> sketches = new ArrayList<>();
-                    for (Sketch sketch : list) {
-                        sketches.add(sketch);
-                    }
-                    fragment.setSketches(sketches);
-                    Log.i(TAG, "Done receiving sketches");
+
+        final Consumer<Pair<String, RegisteredSketch>> onNext = new Consumer<Pair<String, RegisteredSketch>>() {
+            @Override
+            public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
+                String key = stringRegisteredSketchPair.first;
+                RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
+                Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
+                fragment.removeProgressForAll();
+                int idx = fragment.addSketch(emptySketch);
+
+                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
+                    fragment.changeSketch(idx, sketch);
                 });
+            }
+        };
+        mDisposableNearbySketch
+                = SketchRegisterManager.getInstance()
+                .processRegisteredSketchMetas(pixelDatas, onNext);
     }
 
     private void processMySketches(MySketchFragment fragment) {
-        SketchRegisterManager.getInstance().getInterestingSketches(
-                (List<Sketch> list) -> {
-                    ArrayList<Sketch> sketches = new ArrayList<>();
-                    if (list != null) {
-                        for (Sketch sketch : list) {
-                            sketches.add(sketch);
-                        }
-                    }
-                    fragment.setSketches(sketches);
-                    Log.i(TAG, "Done receiving sketches");
+        final Consumer<Pair<String, RegisteredSketch>> onNext = new Consumer<Pair<String, RegisteredSketch>>() {
+            @Override
+            public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
+                String key = stringRegisteredSketchPair.first;
+                RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
+                Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
+                fragment.removeProgressForAll();
+                int idx = fragment.addSketch(emptySketch);
+
+                SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
+                    fragment.changeSketch(idx, sketch);
                 });
+            }
+        };
+        mDisposableMySketch = SketchRegisterManager.getInstance().processInterestingSketchesMetas(onNext);
+
     }
 
     private void startFragment(int id, Fragment fragment) {
