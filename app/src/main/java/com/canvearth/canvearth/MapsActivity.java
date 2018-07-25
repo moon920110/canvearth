@@ -174,9 +174,7 @@ public class MapsActivity extends AppCompatActivity
             mDisposableMySketch.dispose();
             mDisposableMySketch = null;
         }
-
     }
-
 
     public void locationReady() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -213,8 +211,6 @@ public class MapsActivity extends AppCompatActivity
                 Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 mLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-
             }
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -420,6 +416,7 @@ public class MapsActivity extends AppCompatActivity
 
     public void onClickHideInterestThumbnail() {
         binding.mysketchThumbnailContainer.setVisibility(View.GONE);
+        binding.allComponents.setVisibility(View.VISIBLE);
     }
 
     public void onBackPressed() {
