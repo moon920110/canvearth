@@ -3,6 +3,7 @@ package com.canvearth.canvearth;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.client.PaletteAdapter;
 import com.canvearth.canvearth.client.Photo;
@@ -636,8 +637,13 @@ public class MapsActivity extends AppCompatActivity
             drawable.setColor(color);
             VisibilityUtils.toggleViewVisibility(paletteGridView);
         });
-        findViewById(R.id.brushButton).setOnClickListener(view -> {
+        Button brushButton = findViewById(R.id.brushButton);
+
+        brushButton.setOnClickListener(view -> {
+            requestLocationUpdate();
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
             VisibilityUtils.toggleViewVisibility(paletteGridView);
         });
+
     }
 }
