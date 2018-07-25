@@ -26,6 +26,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
@@ -48,6 +49,7 @@ import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
+import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
@@ -111,6 +113,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DatabaseUtils.clearDev();
         PACKAGE_NAME = this.getPackageName();
         contentResolver = this.getContentResolver();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
