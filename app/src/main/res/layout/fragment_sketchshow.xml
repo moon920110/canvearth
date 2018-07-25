@@ -3,21 +3,25 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
-        android:id="@+id/sketchShowProgressBarForItem"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:id="@+id/sketchShowProgressBarForItem"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center" />
 
-    <ImageView
-        android:id="@+id/sketch_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center"/>
+        <ImageView
+            android:id="@+id/sketch_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"/>
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/sketch_name"
