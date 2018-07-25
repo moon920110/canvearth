@@ -161,7 +161,7 @@ public final class SplashForegroundView extends View
 
 		m_startDelay = 300;
 		m_strokeDuration = 2500;
-		m_fillDuration = 3000;
+		m_fillDuration = 4000;
 
 		m_dashPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		m_dashPaint.setStyle(Paint.Style.STROKE);

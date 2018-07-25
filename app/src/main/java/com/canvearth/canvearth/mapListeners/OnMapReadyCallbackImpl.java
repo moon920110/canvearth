@@ -89,7 +89,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
 
         // Extract My Location View from maps fragment
         locationButton = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-        locationButton.callOnClick();
+
         // Change the visibility of my location button
         if (locationButton != null)
             locationButton.setVisibility(View.GONE);
