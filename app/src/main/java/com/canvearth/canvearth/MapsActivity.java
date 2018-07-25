@@ -113,7 +113,6 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DatabaseUtils.clearDev();
         PACKAGE_NAME = this.getPackageName();
         contentResolver = this.getContentResolver();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
