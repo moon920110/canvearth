@@ -2,7 +2,6 @@ package com.canvearth.canvearth.server;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Camera;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
@@ -12,10 +11,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.canvearth.canvearth.MapsActivity;
-import com.canvearth.canvearth.client.Photo;
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelData;
-import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.MathUtils;
@@ -28,25 +25,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
-import com.google.android.gms.maps.model.UrlTileProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import junit.framework.Assert;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -95,7 +79,7 @@ public class BitmapDrawer {
                                 GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
                                 groundOverlayOptions.positionFromBounds(param.first);
                                 groundOverlayOptions.image(bitmapDescriptor);
-                                GroundOverlay groundOverlay = MapsActivity.Map.addGroundOverlay(groundOverlayOptions);
+                                GroundOverlay groundOverlay = MapsActivity.map.addGroundOverlay(groundOverlayOptions);
                                 groundOverlays.add(groundOverlay);
                             }
                         });
@@ -156,7 +140,7 @@ public class BitmapDrawer {
             }
         };
 
-        final Projection projection = MapsActivity.Map.getProjection();
+        final Projection projection = MapsActivity.map.getProjection();
         final LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
         final int bitmapTargetZoomLevel = showingZoomLevel - Constants.BITMAP_CACHE_RESOLUTION_FACTOR;
         final double pixSideLen = PixelUtils.latlng2bbox(currentPosition.target, bitmapTargetZoomLevel).getSideLength();

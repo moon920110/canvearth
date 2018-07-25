@@ -1,22 +1,13 @@
 package com.canvearth.canvearth.pixel;
 
-import android.graphics.Point;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.canvearth.canvearth.MapsActivity;
-import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
-import com.canvearth.canvearth.utils.ScreenUtils;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -63,7 +54,7 @@ public class Pixel {
         lock.lock();
         if (polygon == null) {
             PolygonOptions polygonOptions = getPolygonOptions(isVisible);
-            polygon = MapsActivity.Map.addPolygon(polygonOptions);
+            polygon = MapsActivity.map.addPolygon(polygonOptions);
         }
         lock.unlock();
     }
@@ -74,7 +65,7 @@ public class Pixel {
         lock.lock();
         if (polygon == null) {
             PolygonOptions polygonOptions = getPolygonOptions(isVisible);
-            polygon = MapsActivity.Map.addPolygon(polygonOptions);
+            polygon = MapsActivity.map.addPolygon(polygonOptions);
         }
         lock.unlock();
         polygon.setFillColor(color);

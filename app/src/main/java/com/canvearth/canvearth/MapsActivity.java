@@ -26,7 +26,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
@@ -49,7 +48,6 @@ import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
-import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
@@ -86,7 +84,7 @@ import io.reactivex.disposables.Disposable;
 
 public class MapsActivity extends AppCompatActivity
         implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnMySketchFragmentInteractionListener {
-    public static GoogleMap Map;
+    public static GoogleMap map;
     public static ContentResolver contentResolver;
     public static String PACKAGE_NAME;
 
@@ -270,7 +268,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void addSketchConfirm(Rect bound, String sketchName, Photo photo) {
-        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.REGISTRATION_GRID_ZOOM_LEVEL);
+        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(map, bound, Constants.REGISTRATION_GRID_ZOOM_LEVEL);
         SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), sketchName, pixelDataSquare, (obj) -> {
             Log.i(TAG, "Add Sketch Finished");
         });
@@ -290,7 +288,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickShare() {
-        new ShareInvoker(MapsActivity.this, Map).shareMapSnapshot();
+        new ShareInvoker(MapsActivity.this, map).shareMapSnapshot();
     }
 
     public void onClickStarredSketches() {
@@ -323,14 +321,14 @@ public class MapsActivity extends AppCompatActivity
         };
         final int requestCodePermission = 2000;
         if (PermissionUtils.checkSelfPermissions(this, permissions)) {
-            Map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
+            map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
             return;
         }
         PermissionUtils.requestPermission(this, requestCodePermission, permissions[0], false);
         if (PermissionUtils.checkSelfPermissions(this, permissions)) {
-            Map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
+            map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
         } else {
@@ -362,7 +360,7 @@ public class MapsActivity extends AppCompatActivity
                         groundOverlayOptions.positionFromBounds(sketch.pixelDataSquare.getLatLngBounds());
                         groundOverlayOptions.image(bitmapDescriptor);
                         groundOverlayOptions.transparency(0.5f);
-                        mGroundOverlay = Map.addGroundOverlay(groundOverlayOptions);
+                        mGroundOverlay = map.addGroundOverlay(groundOverlayOptions);
                         mSeeingNearbySketch = sketch;
                     }
                 });
@@ -522,7 +520,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void processNearbySketches(SketchShowFragment fragment) {
-        Projection projection = Map.getProjection();
+        Projection projection = map.getProjection();
         LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
         PixelData northeastPixelData = PixelUtils.latlng2pix(
                 bounds.northeast, Constants.REGISTRATION_GRID_ZOOM_LEVEL).data;
