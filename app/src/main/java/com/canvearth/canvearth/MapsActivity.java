@@ -201,7 +201,7 @@ public class MapsActivity extends AppCompatActivity
 
     public void requestLocationUpdate() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT < 23) {
+            if (Build.VERSION.SDK_INT <= 23) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
             } else {
