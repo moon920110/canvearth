@@ -277,7 +277,6 @@ public class FBPixelManager {
 
                 final CountUpDownLatch latchForAllFinish = new CountUpDownLatch(1);
                 final CountDownLatch latchForCurrentUpdateFinish = new CountDownLatch(1);
-                final FBPixel originalPixel = new FBPixel();
                 final FBPixel newPixel = new FBPixel();
                 // TODO need to check again for transaction logic
                 DatabaseUtils.getPixelReference(firebaseId).runTransaction(new Transaction.Handler() {
@@ -289,7 +288,6 @@ public class FBPixelManager {
                             if (serverOriginPixel == null) {
                                 serverOriginPixel = FBPixel.emptyPixel();
                             }
-                            serverOriginPixel.copyTo(originalPixel);
                             UserInformation userInformation = UserInformation.getInstance();
                             String userToken = userInformation.getToken();
                             LeafFBPixel newPixel = new LeafFBPixel(pixelColor, userToken, new Date()); // TODO consider when timezone differs, or abusing current datetime
@@ -314,7 +312,7 @@ public class FBPixelManager {
                     }
                 });
                 latchForCurrentUpdateFinish.await();
-                final PixelData lastUpdatedPixelData = updateParent(originalPixel, newPixel, pixelData, latchForAllFinish);
+                final PixelData lastUpdatedPixelData = updateParent(newPixel, pixelData, latchForAllFinish);
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
@@ -324,7 +322,7 @@ public class FBPixelManager {
     }
 
     // returns last updated pixel
-    private PixelData updateParent(FBPixel childOriginPixel, FBPixel childNewPixel,
+    private PixelData updateParent(FBPixel childNewPixel,
                                    PixelData childPixelData, final CountUpDownLatch latchForAllFinish) {
         if (childPixelData.isRoot()) {
             return childPixelData;
@@ -348,12 +346,13 @@ public class FBPixelManager {
                         }
                         serverParentFBPixel.copyTo(parentFBPixel);
                         parentFBPixel.copyTo(newParentFBPixel);
-                        newParentFBPixel.futurePixelColor.replaceColorPortion(childOriginPixel.pixelColor, childNewPixel.pixelColor, 0.25);
-                        needUpdate.setSucceed(ColorUtils.areDifferent(newParentFBPixel.pixelColor, newParentFBPixel.futurePixelColor));
-                        if (needUpdate.getSucceed()) {
-                            newParentFBPixel.pixelColor = newParentFBPixel.futurePixelColor.clone();
+                        if (Math.random() < 0.25) {
+                            newParentFBPixel.pixelColor = childNewPixel.pixelColor.clone();
+                            mutableData.setValue(newParentFBPixel);
+                            needUpdate.setSucceed(true);
+                        } else {
+                            needUpdate.setSucceed(false);
                         }
-                        mutableData.setValue(newParentFBPixel);
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
                     }
@@ -374,7 +373,7 @@ public class FBPixelManager {
             });
             latchForCurrentUpdateFinish.await();
             if (needUpdate.getSucceed()) {
-                return updateParent(parentFBPixel, newParentFBPixel, parentPixelData, latchForAllFinish);
+                return updateParent(newParentFBPixel, parentPixelData, latchForAllFinish);
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());

@@ -68,20 +68,4 @@ public class PixelColor implements Cloneable {
     public String toString() {
         return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
     }
-
-    // TODO consider this one more time -- related Issue #19
-    // Let's consider the situation when parent pixel's pixelColor A is composed of its children's pixelColor B,C,D,E.
-    // When B is changed to B', A have to be changed accordingly.
-    // In this situation, we have to call A.replaceColorPortion(B, B', 0.25) (0.25 is because B contributes 0.25 for A)
-    public void replaceColorPortion(PixelColor originPixelColor, PixelColor newPixelColor, double portion) {
-        long newA = this.a + (long) (portion * (newPixelColor.a - originPixelColor.a));
-        if (newA == 0) {
-            this.a = newA;
-            return;
-        }
-        this.r = (this.r * this.a + (long) (portion * (newPixelColor.a * newPixelColor.r - originPixelColor.a * originPixelColor.r))) / newA;
-        this.g = (this.g * this.a + (long) (portion * (newPixelColor.a * newPixelColor.g - originPixelColor.a * originPixelColor.g))) / newA;
-        this.b = (this.b * this.a + (long) (portion * (newPixelColor.a * newPixelColor.b - originPixelColor.a * originPixelColor.b))) / newA;
-        this.a = newA;
-    }
 }
