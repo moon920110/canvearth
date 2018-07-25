@@ -3,7 +3,6 @@ package com.canvearth.canvearth;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.client.PaletteAdapter;
 import com.canvearth.canvearth.client.Photo;
@@ -36,11 +35,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.net.Uri;
+import android.widget.TextView;
 
 import com.canvearth.canvearth.mapListeners.OnMapReadyCallbackImpl;
 import com.canvearth.canvearth.pixel.PixelData;
@@ -83,7 +83,6 @@ import java.util.ArrayList;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-
 
 public class MapsActivity extends AppCompatActivity
         implements SketchShowFragment.OnSketchShowFragmentInteractionListener, MySketchFragment.OnMySketchFragmentInteractionListener {
@@ -134,23 +133,6 @@ public class MapsActivity extends AppCompatActivity
 
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
         findViewById(R.id.my_sketch).setVisibility(View.GONE);
-
-        GridView gridview = findViewById(R.id.palette);
-        PaletteAdapter paletteAdapter = new PaletteAdapter(this);
-        gridview.setAdapter(paletteAdapter);
-
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                int color = MapsActivity.this.getResources().getColor(paletteAdapter.paletteColors[position]);
-                Palette.getInstance().setColor(color);
-
-                Button brushColor = MapsActivity.this.findViewById(R.id.brushColor);
-                GradientDrawable drawable = (GradientDrawable) brushColor.getBackground();
-                drawable.setColor(color);
-                VisibilityUtils.toggleViewVisibility(gridview);
-            }
-        });
 
         if (mDisposableNearbySketch != null && mDisposableNearbySketch.isDisposed() == false) {
             mDisposableNearbySketch.dispose();
@@ -644,7 +626,14 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void setupPalette() {
+        FrameLayout paletteLayout = findViewById(R.id.palette_layout);
+        TextView outsidePalette = findViewById(R.id.outside_palette);
         GridView paletteGridView = findViewById(R.id.palette);
+
+        outsidePalette.setOnClickListener(view -> {
+            VisibilityUtils.toggleViewVisibility(paletteLayout);
+        });
+
         PaletteAdapter paletteAdapter = new PaletteAdapter(this);
         paletteGridView.setAdapter(paletteAdapter);
 
@@ -655,7 +644,7 @@ public class MapsActivity extends AppCompatActivity
             Button brushColor = MapsActivity.this.findViewById(R.id.brushColor);
             GradientDrawable drawable = (GradientDrawable) brushColor.getBackground();
             drawable.setColor(color);
-            VisibilityUtils.toggleViewVisibility(paletteGridView);
+            VisibilityUtils.toggleViewVisibility(paletteLayout);
         });
         Button brushButton = findViewById(R.id.brushButton);
 
@@ -664,7 +653,7 @@ public class MapsActivity extends AppCompatActivity
                 requestLocationUpdate();
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
             }
-            VisibilityUtils.toggleViewVisibility(paletteGridView);
+            VisibilityUtils.toggleViewVisibility(paletteLayout);
         });
 
     }

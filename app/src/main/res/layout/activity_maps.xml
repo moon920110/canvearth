@@ -50,20 +50,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <GridView
-                android:id="@+id/palette"
-                android:layout_width="240dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/rounded"
-                android:columnWidth="40dp"
-                android:horizontalSpacing="5dp"
-                android:numColumns="5"
-                android:padding="10dp"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="5dp"
-                android:visibility="gone" />
-
             <Button
                 android:id="@+id/myLocation"
                 android:layout_width="41dp"
@@ -139,6 +125,33 @@
                 android:background="@drawable/add_sketch"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
                 android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/palette_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/outside_palette"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#55000000" />
+
+                <GridView
+                    android:id="@+id/palette"
+                    android:layout_width="240dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/rounded"
+                    android:columnWidth="40dp"
+                    android:horizontalSpacing="5dp"
+                    android:numColumns="5"
+                    android:padding="10dp"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="5dp" />
+
+            </FrameLayout>
 
         </FrameLayout>
         <LinearLayout

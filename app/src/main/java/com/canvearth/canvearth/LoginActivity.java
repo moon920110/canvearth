@@ -6,10 +6,8 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.utils.Constants;
