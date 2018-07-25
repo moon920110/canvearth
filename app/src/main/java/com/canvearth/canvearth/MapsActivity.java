@@ -300,6 +300,7 @@ public class MapsActivity extends AppCompatActivity
 
     public void onClickShowSketch() {
         SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
+        findViewById(R.id.add_interest_button).setVisibility(View.INVISIBLE);
         processNearbySketches(fragment);
         findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
         hideAllComponents();
