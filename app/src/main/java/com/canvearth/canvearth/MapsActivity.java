@@ -411,6 +411,7 @@ public class MapsActivity extends AppCompatActivity
 
     public void onClickHideInterestThumbnail() {
         binding.mysketchThumbnailContainer.setVisibility(View.GONE);
+        binding.allComponents.setVisibility(View.VISIBLE);
     }
 
     public void onBackPressed() {
