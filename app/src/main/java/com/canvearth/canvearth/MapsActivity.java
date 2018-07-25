@@ -375,6 +375,12 @@ public class MapsActivity extends AppCompatActivity
         showAllComponents();
     }
 
+    public void detachSelectedShowingSketch() {
+        mGroundOverlay.remove();
+        mGroundOverlay = null;
+        mSeeingNearbySketch = null;
+    }
+
     /////////
     // My Interest related methods
     /////////
