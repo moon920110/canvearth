@@ -118,8 +118,8 @@ public class MapsActivity extends AppCompatActivity
 
         addNavigationDrawer();
         setupPalette();
-        findViewById(R.id.sketch_view).setVisibility(View.INVISIBLE);
-        findViewById(R.id.my_sketch).setVisibility(View.INVISIBLE);
+        findViewById(R.id.sketch_view).setVisibility(View.GONE);
+        findViewById(R.id.my_sketch).setVisibility(View.GONE);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -341,7 +341,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void hideAllComponents() {
-        findViewById(R.id.all_components).setVisibility(View.INVISIBLE);
+        findViewById(R.id.all_components).setVisibility(View.GONE);
     }
 
     @Override
@@ -395,7 +395,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickHideInterestThumbnail() {
-        binding.mysketchThumbnailContainer.setVisibility(View.INVISIBLE);
+        binding.mysketchThumbnailContainer.setVisibility(View.GONE);
     }
 
     public void onBackPressed() {

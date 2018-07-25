@@ -88,7 +88,7 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     mListener.onMySketchFragmentInteraction(holder.mItem);
-                    v.getRootView().findViewById(R.id.my_sketch).setVisibility(View.INVISIBLE);
+                    v.getRootView().findViewById(R.id.my_sketch).setVisibility(View.GONE);
                 }
             }
         });

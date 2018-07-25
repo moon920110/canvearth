@@ -62,7 +62,7 @@
                 android:padding="10dp"
                 android:stretchMode="columnWidth"
                 android:verticalSpacing="5dp"
-                android:visibility="invisible" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/myLocation"
@@ -83,7 +83,7 @@
                 android:background="@drawable/grid_visible_icon_selector"
                 android:textOff=""
                 android:textOn=""
-                android:visibility="invisible" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/zoomIn"
@@ -127,7 +127,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/menu"
-                android:visibility="invisible" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/addSketchButton"
@@ -138,7 +138,7 @@
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/add_sketch"
                 android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
-                android:visibility="invisible" />
+                android:visibility="gone" />
 
         </FrameLayout>
         <LinearLayout
