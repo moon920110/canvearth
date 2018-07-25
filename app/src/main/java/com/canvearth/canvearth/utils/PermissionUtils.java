@@ -132,7 +132,7 @@ public abstract class PermissionUtils {
             // Permission to access the location is missing.
             PermissionUtils.requestPermission(activity, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, false);
-        } else if (MapsActivity.Map != null) {
+        } else if (MapsActivity.map != null) {
             // Access to the location has been granted to the app.
             MapsActivity.map.setMyLocationEnabled(true);
         }

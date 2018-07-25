@@ -88,6 +88,7 @@ public class MapsActivity extends AppCompatActivity
     public static GoogleMap map;
     public static ContentResolver contentResolver;
     public static String PACKAGE_NAME;
+    public LatLng mLocation;
 
     private static final String TAG = "Maps";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -104,7 +105,6 @@ public class MapsActivity extends AppCompatActivity
 
     // Used in my interesting sketches
     private Sketch mSeeingMySketch = null;
-    private LatLng mLocation;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Disposable mDisposableMySketch = null;
@@ -183,8 +183,6 @@ public class MapsActivity extends AppCompatActivity
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
-
             }
 
             @Override
@@ -299,10 +297,10 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickShowSketch() {
-        if (Map.getCameraPosition().zoom < 16){
+        if (map.getCameraPosition().zoom < 16){
             requestLocationUpdate();
             CameraUpdate update = CameraUpdateFactory.newLatLngZoom(mLocation, 16);
-            Map.animateCamera(update, new GoogleMap.CancelableCallback() {
+            map.animateCamera(update, new GoogleMap.CancelableCallback() {
                 @Override
                 public void onFinish() {
                     SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
