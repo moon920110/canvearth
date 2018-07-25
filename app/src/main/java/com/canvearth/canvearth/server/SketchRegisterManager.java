@@ -133,7 +133,9 @@ public class SketchRegisterManager {
                                         Iterator registeredKeyIterator = dataSnapshot.getChildren().iterator();
                                         while (registeredKeyIterator.hasNext()) {
                                             DataSnapshot keyDataSnapShot = (DataSnapshot) registeredKeyIterator.next();
-                                            emitter.onNext(new Pair<>(keyDataSnapShot.getKey(), keyDataSnapShot.getValue(RegisteredSketch.class)));
+                                            RegisteredSketch registeredSketch = keyDataSnapShot.getValue(RegisteredSketch.class);
+                                            if (registeredSketch != null)
+                                                emitter.onNext(new Pair<>(keyDataSnapShot.getKey(), registeredSketch));
                                         }
                                         emitter.onComplete();
                                     }
@@ -217,7 +219,9 @@ public class SketchRegisterManager {
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        emitter.onNext(new Pair<>(key, dataSnapshot.getValue(RegisteredSketch.class)));
+                                        RegisteredSketch registeredSketch = dataSnapshot.getValue(RegisteredSketch.class);
+                                        if (registeredSketch != null)
+                                            emitter.onNext(new Pair<>(key, registeredSketch));
                                         emitter.onComplete();
                                     }
 

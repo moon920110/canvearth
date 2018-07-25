@@ -49,6 +49,7 @@ import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
+import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
@@ -472,7 +473,9 @@ public class MapsActivity extends AppCompatActivity
                 Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
                 fragment.removeProgressForAll();
                 int idx = fragment.addSketch(emptySketch);
-
+                if (idx == -1) {
+                    return;
+                }
                 SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
                     fragment.changeSketch(idx, sketch);
                 });
@@ -492,7 +495,9 @@ public class MapsActivity extends AppCompatActivity
                 Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
                 fragment.removeProgressForAll();
                 int idx = fragment.addSketch(emptySketch);
-
+                if (idx == -1) {
+                    return;
+                }
                 SketchRegisterManager.getInstance().getSketchImage(emptySketch, (Sketch sketch) -> {
                     fragment.changeSketch(idx, sketch);
                 });

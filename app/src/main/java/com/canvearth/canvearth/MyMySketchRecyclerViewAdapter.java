@@ -35,6 +35,11 @@ public class MyMySketchRecyclerViewAdapter extends RecyclerView.Adapter<MyMySket
     }
 
     public int addSketch(Sketch sketch) {
+        for (Sketch value: mValues) {
+            if (value.id.equals(sketch.id)) {
+                return -1;
+            }
+        }
         mValues.add(sketch);
         notifyDataSetChanged();
         return mValues.size() - 1;
