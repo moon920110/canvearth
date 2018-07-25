@@ -28,6 +28,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.OnScaleGestureListener;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.canvearth.canvearth.R;
@@ -690,5 +691,12 @@ public class SketchPlacerView extends AppCompatImageView implements OnScaleGestu
 
     public RectF getBounds() {
         return bounds;
+    }
+
+    public void show() {
+        Matrix matrix = new Matrix();
+        matrix.setScale(0.5f, 0.5f);
+        this.setVisibility(View.VISIBLE);
+        this.setImageMatrix(matrix);
     }
 }
