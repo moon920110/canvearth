@@ -6,8 +6,10 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.support.v4.util.Pair;
 
+import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.pixel.Pixel;
 import com.canvearth.canvearth.pixel.PixelColor;
+import com.canvearth.canvearth.server.BitmapDrawer;
 import com.canvearth.canvearth.server.FBPixelManager;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
@@ -29,7 +31,7 @@ public class GridManager {
     private static boolean isVisible = true;
 
 
-    private static void addPixels(GoogleMap map, double pixSideLen, int gridZoom, boolean shouldWatchPixel) {
+    private static void addPixels(GoogleMap map, double pixSideLen, int gridZoom) {
         Projection projection = map.getProjection();
         LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
         double minY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.southwest.latitude) / pixSideLen) - 5 * (pixSideLen / 2);
@@ -82,9 +84,7 @@ public class GridManager {
 
                 for (String key : pixelsToAdd) {
                     Pixel pix = pixels.get(key);
-                    if (shouldWatchPixel) {
-                        fBPixelManager.watchPixel(pix.data);
-                    }
+                    fBPixelManager.watchPixel(pix.data);
                     publishProgress(pix);
                 }
                 return pixelsToErase;
@@ -98,7 +98,7 @@ public class GridManager {
             @Override
             protected void onPostExecute(Set<String> pixelsToErase) {
                 super.onPostExecute(pixelsToErase);
-                for (String key: pixelsToErase) {
+                for (String key : pixelsToErase) {
                     Pixel pixelToErase = pixels.get(key);
                     fBPixelManager.unwatchPixel(pixelToErase.data);
                     pixelToErase.erase();
@@ -109,13 +109,20 @@ public class GridManager {
     }
 
 
-    public static void draw(GoogleMap map, int zoom) {
+    public static void draw(GoogleMap map, int zoom, MapsActivity activity) {
         int gridZoom = PixelUtils.getGridZoom(zoom);
         double pixSideLen = PixelUtils.latlng2bbox(map.getCameraPosition().target, gridZoom).getSideLength();
 
-        boolean shouldWatchPixel = gridZoom > Constants.BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL;
 
-        addPixels(map, pixSideLen, gridZoom, shouldWatchPixel);
+        if (gridZoom > Constants.BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL) {
+            addPixels(map, pixSideLen, gridZoom);
+        } else if (gridZoom >= Constants.BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL - 1) {
+            cleanup();
+            BitmapDrawer.getInstance().drawBitmap(Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL, map.getCameraPosition(), activity);
+        } else if (gridZoom >= Constants.BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL) {
+            cleanup();
+            BitmapDrawer.getInstance().drawBitmap(Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL-1, map.getCameraPosition(), activity);
+        }
     }
 
     public static void cleanup() {
