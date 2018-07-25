@@ -100,7 +100,8 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
                 locationButton.callOnClick();
         });
 
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.481222, -122.170964), 20));
+        activity.requestLocationUpdate();
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(activity.mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
     }
 
 }
