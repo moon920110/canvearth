@@ -7,11 +7,9 @@ import android.widget.Button;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.client.GridManager;
-import com.canvearth.canvearth.server.BitmapDrawer;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
-import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 
@@ -27,7 +25,7 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
 
     @Override
     public void onCameraIdle() {
-        CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
+        CameraPosition cameraPosition = MapsActivity.map.getCameraPosition();
         int gridZoom = PixelUtils.getGridZoom(Math.round(cameraPosition.zoom));
         ScreenUtils.showToast(context, "zoom: " + Float.toString(cameraPosition.zoom) + "\n" +
                 "grid zoom: " + gridZoom);
@@ -41,7 +39,7 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
         }
 
         if (cameraPosition.zoom >= Constants.GRID_SHOW_MIN_CAM_ZOOM_LEVEL && cameraPosition.zoom <= Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL) {
-            GridManager.draw(MapsActivity.Map, Math.round(cameraPosition.zoom), activity);
+            GridManager.draw(MapsActivity.map, Math.round(cameraPosition.zoom), activity);
         }
     }
 }
