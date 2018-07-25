@@ -403,6 +403,7 @@ public class FBPixelManager {
                     Log.e(TAG, "Firebase storage upload failed");
                 }).addOnSuccessListener((UploadTask.TaskSnapshot taskSnapshot) -> {
                     Log.v(TAG, "Firebase storage upload succeed");
+                    DatabaseUtils.getBitmapExistReference().child(ancestorPixelData.getFirebaseId()).setValue(true);
                     callback.run(taskSnapshot.getMetadata());
                 });
             }).start();

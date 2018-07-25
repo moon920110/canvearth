@@ -52,6 +52,15 @@ public class DatabaseUtils {
         }
     }
 
+    public static DatabaseReference getBitmapExistReference() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        if (Configs.TESTING) {
+            return database.child(Constants.FIREBASE_DEV_PREFIX).child("Bitmap");
+        } else {
+            return database.child(Constants.FIREBASE_PROD_PREFIX).child("Bitmap");
+        }
+    }
+
     public static DatabaseReference getUserInfoReference() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         if (Configs.TESTING) {

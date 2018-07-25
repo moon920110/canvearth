@@ -8,7 +8,7 @@ public class Constants {
     public final static String FIREBASE_PROD_PREFIX = "PROD";
 
     /* pixel logic related */
-    public final static int BITMAP_CACHE_RESOLUTION_FACTOR = 4;
+    public final static int BITMAP_CACHE_RESOLUTION_FACTOR = 5;
     public final static int BITMAP_PNG_MAX_BYTES = 1024 * 1024; // 1 megabyte
     public final static int LEAF_PIXEL_GRID_ZOOM_LEVEL = 20;
     public final static int BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL = 19;

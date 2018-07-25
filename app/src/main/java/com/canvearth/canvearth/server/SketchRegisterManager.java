@@ -155,7 +155,7 @@ public class SketchRegisterManager {
         Observable.fromIterable(pixelDatas)
                 .flatMap(flatMapFunc)
                 .distinct((Pair<String, RegisteredSketch> pair) -> pair.first)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
@@ -266,7 +266,7 @@ public class SketchRegisterManager {
                     });
         }).flatMap(getRegistedSketch)
                 .distinct((Pair<String, RegisteredSketch> pair) -> pair.first)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }

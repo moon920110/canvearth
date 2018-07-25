@@ -120,6 +120,35 @@ public class BitmapDrawer {
                 }
             };
 
+            final io.reactivex.functions.Function<PixelData, Observable<PixelData>> getExistPixel
+                    = new io.reactivex.functions.Function<PixelData, Observable<PixelData>>() {
+                @Override
+                public Observable<PixelData> apply(final PixelData pixelData) {
+                    return Observable.create(new ObservableOnSubscribe<PixelData>() {
+                        @Override
+                        public void subscribe(ObservableEmitter<PixelData> emitter) throws Exception {
+                            DatabaseUtils
+                                    .getBitmapExistReference().child(pixelData.getFirebaseId())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            Boolean exist = dataSnapshot.getValue(Boolean.class);
+                                            if (exist != null) {
+                                                emitter.onNext(pixelData);
+                                            }
+                                            emitter.onComplete();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            emitter.onComplete();
+                                        }
+                                    });
+                        }
+                    });
+                }
+            };
+
             final io.reactivex.functions.Function<PixelData, Observable<Pair<LatLngBounds, Uri>>> getBitmapUri
                     = new io.reactivex.functions.Function<PixelData, Observable<Pair<LatLngBounds, Uri>>>() {
                 @Override
@@ -140,8 +169,6 @@ public class BitmapDrawer {
                                         Log.i(TAG, "Not exist " + pixelData.getFirebaseId());
                                         emitter.onComplete();
                                     });
-//                        emitter.onNext(new Pair<LatLngBounds, Uri>(latLngBounds, Uri.parse("https://firebasestorage.googleapis.com/v0/b/canvearth.appspot.com/o/DEV%2FUoQDJ.jpg?alt=media&token=3730b964-5f57-47a8-918b-21a6459cb14d")));
-//                        emitter.onComplete();
                         }
                     });
                 }
@@ -178,8 +205,9 @@ public class BitmapDrawer {
                 }
                 emitter.onComplete();
             })
+                    .flatMap(getExistPixel)
                     .flatMap(getBitmapUri)
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(drawBitmap);
 
