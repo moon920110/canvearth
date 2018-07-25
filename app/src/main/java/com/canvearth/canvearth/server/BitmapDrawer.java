@@ -18,6 +18,7 @@ import com.canvearth.canvearth.pixel.PixelData;
 import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.DatabaseUtils;
+import com.canvearth.canvearth.utils.MathUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.SphericalMercator;
 import com.google.android.gms.maps.Projection;
@@ -84,7 +85,9 @@ public class BitmapDrawer {
                             public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
 
                                 // To prevent anti-alias
-                                resource = Bitmap.createScaledBitmap(resource, resource.getWidth()* 16, resource.getHeight()*16, false);
+                                resource = Bitmap.createScaledBitmap(resource,
+                                        resource.getWidth()* MathUtils.intPow(2, 7 - Constants.BITMAP_CACHE_RESOLUTION_FACTOR),
+                                        resource.getHeight()* MathUtils.intPow(2, 7 - Constants.BITMAP_CACHE_RESOLUTION_FACTOR), false);
 
                                 BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(resource);
                                 GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
