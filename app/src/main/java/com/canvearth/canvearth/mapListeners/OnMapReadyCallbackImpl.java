@@ -66,7 +66,7 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         map.getUiSettings().setTiltGesturesEnabled(false);
         map.getUiSettings().setRotateGesturesEnabled(false);
         map.getUiSettings().setZoomControlsEnabled(false);
-        map.getUiSettings().setZoomGesturesEnabled(false);
+        map.getUiSettings().setZoomGesturesEnabled(true);
         map.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context, activity));
         map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context));
         map.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, map));
