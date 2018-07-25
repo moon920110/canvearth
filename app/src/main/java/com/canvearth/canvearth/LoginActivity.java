@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.canvearth.canvearth.utils.Constants;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -37,8 +38,9 @@ public class LoginActivity extends AppCompatActivity {
 
             Bundle bundle = new Bundle();
             @NonNull String urlString = user.getPhotoUrl().toString();
-            bundle.putString("userPhotoUrl", urlString);
-            bundle.putString("userName", user.getDisplayName());
+            bundle.putString(Constants.userPhotoUrl, urlString);
+            bundle.putString(Constants.userName, user.getDisplayName());
+            bundle.putString(Constants.userEmail, user.getEmail());
             this.putExtras(bundle);
         }
     }
@@ -46,14 +48,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        View decorView = getWindow().getDecorView();
-//        // Hide the status bar.
-//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//        decorView.setSystemUiVisibility(uiOptions);
-//        // Remember that you should never show the action bar if the
-//        // status bar is hidden, so hide that too if necessary.
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.hide();
 
         ActivityLoginBinding m_b = DataBindingUtil.setContentView(this, R.layout.activity_login);
         m_b.setSplash(new SplashForegroundView(this));
@@ -63,11 +57,9 @@ public class LoginActivity extends AppCompatActivity {
 
             m_b.splash.setPath(path, 400, 400);
             m_b.splash.setFillDrawable(R.drawable.splash_fill);
-            //m_b.splash.setOnStateChangeListener(m_onStateChangeListener);
             m_b.splash.start();
         } catch (Exception e) {
             Log.e("ERROR", e.toString());
-            // Nothing
         }
 
 

@@ -40,7 +40,7 @@ public class SketchPlacerFragment extends Fragment {
 
         View view = binding.getRoot();
         if (getArguments() == null) {
-            binding.confirmContainer.setVisibility(View.GONE);
+            binding.confirmContainer.setVisibility(View.INVISIBLE);
             return view;
         }
         binding.confirmContainer.setVisibility(View.VISIBLE);
