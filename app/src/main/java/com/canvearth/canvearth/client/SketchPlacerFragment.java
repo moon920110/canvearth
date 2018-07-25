@@ -61,11 +61,7 @@ public class SketchPlacerFragment extends Fragment {
     }
 
     public void onClickConfirmButton() {
-        RectF bounds = sketchPlacerView.getBounds();
-        Rect rect = new Rect((int) bounds.left,
-                (int) bounds.top,
-                (int) bounds.right,
-                (int) bounds.bottom);
+        Rect rect = sketchPlacerView.getDrawable().getBounds();
         EditText editText = binding.sketchName;
         String sketchName = editText.getText().toString();
         ((MapsActivity) getActivity()).addSketchConfirm(rect, sketchName, binding.getSketchPhoto());
