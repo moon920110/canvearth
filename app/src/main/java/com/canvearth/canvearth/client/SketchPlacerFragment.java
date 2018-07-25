@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.databinding.FragmentSketchPlacerBinding;
+import com.canvearth.canvearth.utils.BitmapUtils;
 
 public class SketchPlacerFragment extends Fragment {
     private static final String KEY_PHOTO = "KEY_SKETCH_FRAGMENT_PHOTO";
@@ -62,11 +63,10 @@ public class SketchPlacerFragment extends Fragment {
     }
 
     public void onClickConfirmButton() {
-        RectF bounds = sketchPlacerView.getBounds();
-        Rect rect = new Rect((int) bounds.left,
-                (int) bounds.top,
-                (int) bounds.right,
-                (int) bounds.bottom);
+        Rect rect = sketchPlacerView.getDrawable().getBounds();
+        rect.set((int)sketchPlacerView.matrixValues[Matrix.MTRANS_X], (int)sketchPlacerView.matrixValues[Matrix.MTRANS_Y],
+                (int)(rect.width() * sketchPlacerView.matrixValues[Matrix.MSCALE_X]), (int)(rect.height() * sketchPlacerView.matrixValues[Matrix.MSCALE_Y]));
+
         EditText editText = binding.sketchName;
         String sketchName = editText.getText().toString();
         ((MapsActivity) getActivity()).addSketchConfirm(rect, sketchName, binding.getSketchPhoto());

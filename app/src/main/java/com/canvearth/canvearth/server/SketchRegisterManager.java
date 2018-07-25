@@ -110,7 +110,7 @@ public class SketchRegisterManager {
     }
 
     public void registerSketchAsync(Uri file, String sketchName, PixelDataSquare pixelDataSquare, Function<Void> callback) {
-        Assert.assertEquals(pixelDataSquare.zoom(), Constants.REGISTRATION_ZOOM_LEVEL);
+        Assert.assertEquals(pixelDataSquare.zoom(), Constants.REGISTRATION_GRID_ZOOM_LEVEL);
         new RegisterSketchAsyncTask(callback).execute(Triple.of(file, sketchName, pixelDataSquare));
     }
 
