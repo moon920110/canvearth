@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -113,7 +114,7 @@ public class SketchRegisterManager {
         new RegisterSketchAsyncTask(callback).execute(Triple.of(file, sketchName, pixelDataSquare));
     }
 
-    public Disposable processRegisteredSketchMetas(List<PixelData> pixelDatas, Consumer<Pair<String, RegisteredSketch>> onNext) {
+    public void processRegisteredSketchMetas(List<PixelData> pixelDatas, io.reactivex.Observer<Pair<String, RegisteredSketch>> observer) {
         final io.reactivex.functions.Function<PixelData, Observable<Pair<String, RegisteredSketch>>> flatMapFunc
                 = new io.reactivex.functions.Function<PixelData, Observable<Pair<String, RegisteredSketch>>>()
         {
@@ -151,12 +152,12 @@ public class SketchRegisterManager {
             }
         };
 
-        return Observable.fromIterable(pixelDatas)
+        Observable.fromIterable(pixelDatas)
                 .flatMap(flatMapFunc)
                 .distinct((Pair<String, RegisteredSketch> pair) -> pair.first)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onNext);
+                .subscribe(observer);
     }
 
     private class GetSketchImage extends AsyncTask<Sketch, String, Sketch> {
@@ -203,7 +204,7 @@ public class SketchRegisterManager {
         new GetSketchImage(callback).execute(sketch);
     }
 
-    public Disposable processInterestingSketchesMetas(Consumer<Pair<String, RegisteredSketch>> onNext) {
+    public void processInterestingSketchesMetas(io.reactivex.Observer<Pair<String, RegisteredSketch>> observer) {
         final io.reactivex.functions.Function<String, Observable<Pair<String, RegisteredSketch>>> getRegistedSketch
                 = new io.reactivex.functions.Function<String, Observable<Pair<String, RegisteredSketch>>>()
         {
@@ -236,7 +237,7 @@ public class SketchRegisterManager {
             }
         };
 
-        return Observable.create((ObservableEmitter<String> emitter) -> {
+        Observable.create((ObservableEmitter<String> emitter) -> {
             final DatabaseReference myInfoReference = DatabaseUtils.getMyInfoReference();
             if (myInfoReference == null) {
                 emitter.onComplete();
@@ -267,7 +268,7 @@ public class SketchRegisterManager {
                 .distinct((Pair<String, RegisteredSketch> pair) -> pair.first)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onNext);
+                .subscribe(observer);
     }
 
     public void addInterestingSketch(String key, String name) {

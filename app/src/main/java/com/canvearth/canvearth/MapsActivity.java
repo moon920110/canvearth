@@ -79,6 +79,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -527,9 +528,14 @@ public class MapsActivity extends AppCompatActivity
             }
         }
 
-        final Consumer<Pair<String, RegisteredSketch>> onNext = new Consumer<Pair<String, RegisteredSketch>>() {
+        final Observer<Pair<String, RegisteredSketch>> observer = new Observer<Pair<String, RegisteredSketch>>() {
             @Override
-            public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
+            public void onSubscribe(Disposable d) {
+                mDisposableNearbySketch = d;
+            }
+
+            @Override
+            public void onNext(Pair<String, RegisteredSketch> stringRegisteredSketchPair) {
                 String key = stringRegisteredSketchPair.first;
                 RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
                 Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
@@ -542,16 +548,32 @@ public class MapsActivity extends AppCompatActivity
                     fragment.changeSketch(idx, sketch);
                 });
             }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                fragment.removeProgressForAll();
+            }
         };
-        mDisposableNearbySketch
-                = SketchRegisterManager.getInstance()
-                .processRegisteredSketchMetas(pixelDatas, onNext);
+
+        SketchRegisterManager.getInstance()
+                .processRegisteredSketchMetas(pixelDatas, observer);
     }
 
     private void processMySketches(MySketchFragment fragment) {
-        final Consumer<Pair<String, RegisteredSketch>> onNext = new Consumer<Pair<String, RegisteredSketch>>() {
+
+        Observer<Pair<String, RegisteredSketch>> observer = new Observer<Pair<String, RegisteredSketch>>() {
             @Override
-            public void accept(Pair<String, RegisteredSketch> stringRegisteredSketchPair) throws Exception {
+            public void onSubscribe(Disposable d) {
+                mDisposableMySketch = d;
+            }
+
+            @Override
+            public void onNext(Pair<String, RegisteredSketch> stringRegisteredSketchPair) {
                 String key = stringRegisteredSketchPair.first;
                 RegisteredSketch registeredSketch = stringRegisteredSketchPair.second;
                 Sketch emptySketch = new Sketch(key, new Photo(), registeredSketch.sketchName, registeredSketch.fbPixelDataSquare.toPixelDataSquare());
@@ -564,9 +586,18 @@ public class MapsActivity extends AppCompatActivity
                     fragment.changeSketch(idx, sketch);
                 });
             }
-        };
-        mDisposableMySketch = SketchRegisterManager.getInstance().processInterestingSketchesMetas(onNext);
 
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                fragment.removeProgressForAll();
+            }
+        };
+        SketchRegisterManager.getInstance().processInterestingSketchesMetas(observer);
     }
 
     private void startFragment(int id, Fragment fragment) {
