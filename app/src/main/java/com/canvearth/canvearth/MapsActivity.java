@@ -48,7 +48,6 @@ import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.Sketch;
 import com.canvearth.canvearth.utils.Constants;
-import com.canvearth.canvearth.utils.DatabaseUtils;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
@@ -81,7 +80,6 @@ import java.util.ArrayList;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 
 public class MapsActivity extends AppCompatActivity
@@ -127,7 +125,7 @@ public class MapsActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this));
+        mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, mapFragment));
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
         findViewById(R.id.my_sketch).setVisibility(View.GONE);
 
