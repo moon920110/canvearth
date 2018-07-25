@@ -12,7 +12,7 @@ public class Constants {
     public final static int BITMAP_PNG_MAX_BYTES = 1024 * 1024; // 1 megabyte
     public final static int LEAF_PIXEL_GRID_ZOOM_LEVEL = 20;
     public final static int BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL = 19;
-    public final static int BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL = 16;
+    public final static int BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL = 17;
     public final static int GRID_SHOW_MAX_CAM_ZOOM_LEVEL = 18;
     public final static int GRID_SHOW_MIN_CAM_ZOOM_LEVEL = 13;
     public final static int VIEW_GRID_ZOOM_DIFF = 3;

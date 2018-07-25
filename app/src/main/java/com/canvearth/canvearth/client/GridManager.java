@@ -1,10 +1,7 @@
 package com.canvearth.canvearth.client;
 
 
-import android.graphics.Point;
-
 import android.os.AsyncTask;
-import android.support.v4.util.Pair;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.pixel.Pixel;
@@ -20,7 +17,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,12 +112,13 @@ public class GridManager {
 
         if (gridZoom > Constants.BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL) {
             addPixels(map, pixSideLen, gridZoom);
-        } else if (gridZoom >= Constants.BITMAP_SHOW_MAX_GRID_ZOOM_LEVEL - 1) {
-            cleanup();
-            BitmapDrawer.getInstance().drawBitmap(Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL, map.getCameraPosition(), activity);
         } else if (gridZoom >= Constants.BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL) {
             cleanup();
-            BitmapDrawer.getInstance().drawBitmap(Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL-1, map.getCameraPosition(), activity);
+            BitmapDrawer.getInstance().drawBitmap(
+                    Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL,
+                    map.getCameraPosition(),
+                    activity
+            );
         }
     }
 

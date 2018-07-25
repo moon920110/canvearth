@@ -134,7 +134,7 @@ public abstract class PermissionUtils {
                     Manifest.permission.ACCESS_FINE_LOCATION, false);
         } else if (MapsActivity.Map != null) {
             // Access to the location has been granted to the app.
-            MapsActivity.Map.setMyLocationEnabled(true);
+            MapsActivity.map.setMyLocationEnabled(true);
         }
     }
 
