@@ -53,6 +53,7 @@ import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
 import com.canvearth.canvearth.utils.ShareInvoker;
 import com.canvearth.canvearth.utils.VisibilityUtils;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.GoogleMap;
@@ -188,7 +189,6 @@ public class MapsActivity extends AppCompatActivity
 
             @Override
             public void onProviderEnabled(String provider) {
-
             }
 
             @Override
@@ -299,11 +299,30 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickShowSketch() {
-        SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
-        findViewById(R.id.add_interest_button).setVisibility(View.INVISIBLE);
-        processNearbySketches(fragment);
-        findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
-        hideAllComponents();
+        if (Map.getCameraPosition().zoom < 16){
+            requestLocationUpdate();
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(mLocation, 16);
+            Map.animateCamera(update, new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
+                    findViewById(R.id.add_interest_button).setVisibility(View.INVISIBLE);
+                    processNearbySketches(fragment);
+                    findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
+                    hideAllComponents();
+                }
+                @Override
+                public void onCancel() {
+                    Log.e(TAG, "onClickShowSketch: Camera move is canceled");
+                }
+            });
+        } else {
+            SketchShowFragment fragment = (SketchShowFragment) getFragmentManager().findFragmentById(R.id.sketch_view);
+            findViewById(R.id.add_interest_button).setVisibility(View.INVISIBLE);
+            processNearbySketches(fragment);
+            findViewById(R.id.sketch_view).setVisibility(View.VISIBLE);
+            hideAllComponents();
+        }
     }
 
     public void onClickSignout() {
