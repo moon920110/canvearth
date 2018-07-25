@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="handler"
             type="com.canvearth.canvearth.client.SketchPlacerFragment" />
@@ -13,16 +12,46 @@
             type="com.canvearth.canvearth.client.Photo" />
     </data>
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/sketch_placer_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:gravity="right|center_vertical"
+                android:background="#fcfcfc">
+
+                <Button
+                    android:id="@+id/cancel_button"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/cancel"
+                    android:onClick="@{(view) -> handler.onClickCancelButton()}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/shadow_below" />
+
+        </LinearLayout>
 
         <com.canvearth.canvearth.client.SketchPlacerView
             android:id="@+id/sketch_placer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone"
             android:scaleType="matrix"
             app:sketch_animateOnReset="false"
             app:sketch_autoCenter="false"
@@ -34,33 +63,32 @@
             app:sketch_zoomable="true" />
 
         <LinearLayout
-            android:id="@+id/confirm_container"
-            android:layout_width="wrap_content"
+            android:id="@+id/sketch_placer_bottom_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="start|bottom">
-            <EditText
-                android:id="@+id/sketch_name"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:hint="sketch name"
-                android:inputType="text"/>
-            <Button
-                android:id="@+id/confirm_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{(view) -> handler.onClickConfirmButton()}"
-                android:text="Confirm" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/shadow_above" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:gravity="right|center_vertical"
+                android:background="#fcfcfc">
+
+                <Button
+                    android:id="@+id/confirm_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/confirm"
+                    android:onClick="@{(view) -> handler.onClickConfirmButton()}" />
+            </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/cancel_button"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:onClick="@{(view) -> handler.onClickCancelButton()}"
-            android:text="Cancel" />
-
-    </FrameLayout>
+    </LinearLayout>
 </layout>

@@ -34,7 +34,7 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
 
         if (cameraPosition.zoom < Constants.REGISTRATION_ZOOM_LEVEL) {
             Button addSketchButton = activity.findViewById(R.id.addSketchButton);
-            addSketchButton.setVisibility(View.INVISIBLE);
+            addSketchButton.setVisibility(View.GONE);
         } else {
             Button addSketchButton = activity.findViewById(R.id.addSketchButton);
             addSketchButton.setVisibility(View.VISIBLE);

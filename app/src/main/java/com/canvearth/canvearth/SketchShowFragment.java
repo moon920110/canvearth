@@ -91,7 +91,7 @@ public class SketchShowFragment extends Fragment {
     }
 
     public void onClickHide() {
-        getView().setVisibility(View.INVISIBLE);
+        getView().setVisibility(View.GONE);
         try {
             ((MapsActivity) getActivity()).detachSelectedShowingSketch();
         } catch (Exception e){
@@ -101,7 +101,7 @@ public class SketchShowFragment extends Fragment {
     }
 
     public void onClickAddInterest() {
-        getView().setVisibility(View.INVISIBLE);
+        getView().setVisibility(View.GONE);
         ((MapsActivity)getActivity()).addSelectedToMyInterest();
     }
 

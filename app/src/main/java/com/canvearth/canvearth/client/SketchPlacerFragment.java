@@ -42,10 +42,12 @@ public class SketchPlacerFragment extends Fragment {
 
         View view = binding.getRoot();
         if (getArguments() == null) {
-            binding.confirmContainer.setVisibility(View.INVISIBLE);
+            binding.sketchPlacerTopBar.setVisibility(View.GONE);
+            binding.sketchPlacerBottomBar.setVisibility(View.GONE);
             return view;
         }
-        binding.confirmContainer.setVisibility(View.VISIBLE);
+        binding.sketchPlacerTopBar.setVisibility(View.VISIBLE);
+        binding.sketchPlacerBottomBar.setVisibility(View.VISIBLE);
         Photo photo = getArguments().getParcelable(KEY_PHOTO);
         binding.setSketchPhoto(photo);
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
@@ -53,7 +55,6 @@ public class SketchPlacerFragment extends Fragment {
         Glide.with(view).load(photo.getUri()).into(sketchPlacerView);
         sketchPlacerView.show();
 
-        binding.cancelButton.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -67,13 +68,10 @@ public class SketchPlacerFragment extends Fragment {
         rect.set((int)sketchPlacerView.matrixValues[Matrix.MTRANS_X], (int)sketchPlacerView.matrixValues[Matrix.MTRANS_Y],
                 (int)(rect.width() * sketchPlacerView.matrixValues[Matrix.MSCALE_X]), (int)(rect.height() * sketchPlacerView.matrixValues[Matrix.MSCALE_Y]));
 
-        EditText editText = binding.sketchName;
-        String sketchName = editText.getText().toString();
-        ((MapsActivity) getActivity()).addSketchConfirm(rect, sketchName, binding.getSketchPhoto());
+        ((MapsActivity) getActivity()).addSketchConfirm(rect, "", binding.getSketchPhoto());
     }
 
     public void onClickCancelButton() {
-        binding.cancelButton.setVisibility(View.INVISIBLE);
         ((MapsActivity) getActivity()).addSketchCancel();
     }
 }

@@ -81,7 +81,7 @@ public class MySketchFragment extends Fragment {
     }
 
     public void onClickHide() {
-        getView().setVisibility(View.INVISIBLE);
+        getView().setVisibility(View.GONE);
         ((MapsActivity)getActivity()).showAllComponents();
     }
 

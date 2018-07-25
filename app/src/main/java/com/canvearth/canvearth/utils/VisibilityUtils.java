@@ -7,7 +7,7 @@ public class VisibilityUtils {
         int visibility = view.getVisibility();
 
         if (visibility == View.VISIBLE) {
-            view.setVisibility(View.INVISIBLE);
+            view.setVisibility(View.GONE);
         } else {
             view.setVisibility(View.VISIBLE);
         }
