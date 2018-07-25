@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.utils.Constants;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -69,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (user != null) {
             Intent intent = new MapsActivityIntent(user);
+            UserInformation.getInstance().applyToken(user);
             startActivity(intent);
         }
 
@@ -107,7 +109,10 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "signInWithCredential:success");
 
                         // TODO: Isn't this always NonNull?
-                        Intent intent = new MapsActivityIntent(auth.getCurrentUser());
+
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Intent intent = new MapsActivityIntent(user);
+                        UserInformation.getInstance().applyToken(user);
                         startActivity(intent);
                     } else {
                         Log.w(TAG, "signInWithCredential:failure", task.getException());

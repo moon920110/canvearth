@@ -129,6 +129,7 @@ public class MapsActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, mapFragment));
+
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
         findViewById(R.id.my_sketch).setVisibility(View.GONE);
 

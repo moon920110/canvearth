@@ -44,14 +44,15 @@ public class UserInformation {
 
     public void applyToken(FirebaseUser user) {
         Log.d(TAG, "Applied Token");
-        user.getIdToken(false).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d(TAG, "Applied Token Succeed");
-                mGetTokenResult = task.getResult();
-                tokenApplyLatch.countDown();
-            } else {
-                throw new RuntimeException("Could not get token");
-            }
-        });
+        if (!Configs.TESTING)
+            user.getIdToken(false).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Applied Token Succeed");
+                    mGetTokenResult = task.getResult();
+                    tokenApplyLatch.countDown();
+                } else {
+                    throw new RuntimeException("Could not get token");
+                }
+            });
     }
 }
