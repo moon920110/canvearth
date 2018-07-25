@@ -18,20 +18,30 @@ xmlns:tools="http://schemas.android.com/tools">
         android:id="@+id/sketchShowProgressBarForMyInterest"
         android:progressDrawable="@drawable/circular_progress_bar"
         android:layout_gravity="center" />
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/mysketch_list"
-        android:name="com.canvearth.canvearth.MySketchFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_margin="16dp"
-        tools:context=".SketchShowFragment"
-        tools:listitem="@layout/fragment_sketchshow" />
-    <Button
-        android:id="@+id/hide_button"
+    <FrameLayout
+        android:id="@+id/mysketch_list_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hide_button">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mysketch_list"
+            android:name="com.canvearth.canvearth.MySketchFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            tools:context=".SketchShowFragment"
+            tools:listitem="@layout/fragment_sketchshow" />
+    </FrameLayout>
+    <Button
+        android:id="@+id/hide_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/mysketch_list_frame"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         android:onClick="@{(view)->handler.onClickHide()}"
-        android:text="Hide"/>
+        android:background="@drawable/cancel"/>
 </android.support.constraint.ConstraintLayout>
 </layout>
