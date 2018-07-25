@@ -332,7 +332,7 @@ public class MapsActivity extends AppCompatActivity
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
         } else {
-            ScreenUtils.showToast(this, "You have to allow permissions!");
+            ScreenUtils.showToast(this, "Allow permissions and click again please!");
         }
     }
 
