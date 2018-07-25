@@ -3,6 +3,7 @@ package com.canvearth.canvearth.client;
 
 import android.app.Fragment;
 import android.databinding.DataBindingUtil;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -49,8 +50,8 @@ public class SketchPlacerFragment extends Fragment {
         sketchPlacerView = view.findViewById(R.id.sketch_placer);
 
         Glide.with(view).load(photo.getUri()).into(sketchPlacerView);
+        sketchPlacerView.show();
 
-        sketchPlacerView.setVisibility(View.VISIBLE);
         binding.cancelButton.setVisibility(View.VISIBLE);
         return view;
     }
