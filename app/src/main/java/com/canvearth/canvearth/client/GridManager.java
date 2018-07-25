@@ -144,8 +144,14 @@ public class GridManager {
     public static void fillPixel(double lat, double lng, int gridZoom, int color) {
         Pixel pixel = PixelUtils.latlng2pix(lat, lng, gridZoom);
 
-        pixels.get(pixel.data.getFirebaseId()).fill(color, isVisible);
-        FBPixelManager.getInstance().writePixelAsync(pixel.data, new PixelColor(color));
+        Pixel existingPixel = pixels.get(pixel.data.getFirebaseId());
+
+        if (existingPixel != null) {
+            existingPixel.fill(color, isVisible);
+            FBPixelManager.getInstance().writePixelAsync(pixel.data, new PixelColor(color));
+        } else {
+            return ;
+        }
     }
 
     public static void changePixelColor(String firebaseId, int color) {
