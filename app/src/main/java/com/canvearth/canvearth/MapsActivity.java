@@ -297,9 +297,9 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void onClickShowSketch() {
-        if (map.getCameraPosition().zoom < 16){
+        if (map.getCameraPosition().zoom < Constants.REGISTRATION_CAM_ZOOM_LEVEL){
             requestLocationUpdate();
-            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(mLocation, 16);
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(mLocation, Constants.REGISTRATION_CAM_ZOOM_LEVEL);
             map.animateCamera(update, new GoogleMap.CancelableCallback() {
                 @Override
                 public void onFinish() {
@@ -338,14 +338,14 @@ public class MapsActivity extends AppCompatActivity
         };
         final int requestCodePermission = 2000;
         if (PermissionUtils.checkSelfPermissions(this, permissions)) {
-            map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
+            map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_CAM_ZOOM_LEVEL));
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
             return;
         }
         PermissionUtils.requestPermission(this, requestCodePermission, permissions[0], false);
         if (PermissionUtils.checkSelfPermissions(this, permissions)) {
-            map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL));
+            map.animateCamera(CameraUpdateFactory.zoomTo(Constants.REGISTRATION_CAM_ZOOM_LEVEL));
             final Intent intent = SelectPhotoActivity.createIntent(this);
             startActivityForResult(intent, REQUEST_SELECT_PHOTO);
         } else {
@@ -363,7 +363,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onSketchShowFragmentInteraction(Sketch sketch) {
-        CameraUpdateFactory.zoomTo(Constants.REGISTRATION_ZOOM_LEVEL);
+        CameraUpdateFactory.zoomTo(Constants.REGISTRATION_CAM_ZOOM_LEVEL);
 
         Glide.with(this).asBitmap().load(sketch.photo.getUri())
                 .into(new SimpleTarget<Bitmap>() {
