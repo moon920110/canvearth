@@ -115,7 +115,7 @@ public class GridManager {
         } else if (gridZoom >= Constants.BITMAP_SHOW_MIN_GRID_ZOOM_LEVEL) {
             cleanup();
             BitmapDrawer.getInstance().drawBitmap(
-                    Math.min(gridZoom + Constants.GRID_BITMAP_ZOOM_DIFF, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL),
+                    Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL,
                     map.getCameraPosition(),
                     activity
             );
