@@ -1,11 +1,14 @@
 package com.canvearth.canvearth.pixel;
 
 import android.graphics.Point;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.client.Palette;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
+import com.canvearth.canvearth.utils.ScreenUtils;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
