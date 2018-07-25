@@ -21,18 +21,17 @@ public class OnMapClickListenerImpl implements GoogleMap.OnMapClickListener {
     }
 
     public void onMapClick(LatLng point) {
-//        VisibilityHandler.handleMainButtons(activity);
-//        if (Configs.TESTING) {
-//            int gridZoom = PixelUtils.getGridZoom(Math.round(map.getCameraPosition().zoom));
-//
-//            if (gridZoom == Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL) {
-//                GridManager.fillPixel(
-//                        point.latitude,
-//                        point.longitude,
-//                        gridZoom,
-//                        Palette.getInstance().getColor()
-//                );
-//            }
-//        }
+        if (Configs.TESTING) {
+            int gridZoom = PixelUtils.getGridZoom(Math.round(map.getCameraPosition().zoom));
+
+            if (gridZoom == Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL) {
+                GridManager.fillPixel(
+                        point.latitude,
+                        point.longitude,
+                        gridZoom,
+                        Palette.getInstance().getColor()
+                );
+            }
+        }
     }
 }

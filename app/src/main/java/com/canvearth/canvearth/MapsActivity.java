@@ -48,6 +48,7 @@ import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.canvearth.canvearth.server.RegisteredSketch;
 import com.canvearth.canvearth.server.SketchRegisterManager;
 import com.canvearth.canvearth.sketch.Sketch;
+import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.canvearth.canvearth.utils.PixelUtils;
@@ -640,8 +641,10 @@ public class MapsActivity extends AppCompatActivity
         Button brushButton = findViewById(R.id.brushButton);
 
         brushButton.setOnClickListener(view -> {
-            requestLocationUpdate();
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
+            if (!Configs.TESTING) {
+                requestLocationUpdate();
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
+            }
             VisibilityUtils.toggleViewVisibility(paletteGridView);
         });
 
