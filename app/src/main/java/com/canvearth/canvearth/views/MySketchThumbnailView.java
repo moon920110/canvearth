@@ -36,7 +36,7 @@ public class MySketchThumbnailView extends AppCompatImageView {
         final int canvasHeight = canvas.getHeight();
 
         MapsActivity parentActivity = ((MapsActivity) getContext());
-        parentActivity.requestLocationUpate();
+        parentActivity.requestLocationUpdate();
         if (parentActivity.isInSeeingSketch()) {
             double xFraction = parentActivity.getXFractionInSeeingSketch();
             double yFraction = parentActivity.getYFractionInSeeingSketch();

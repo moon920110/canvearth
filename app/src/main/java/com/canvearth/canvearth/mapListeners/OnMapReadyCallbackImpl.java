@@ -9,7 +9,6 @@ import android.widget.ToggleButton;
 
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
-import com.canvearth.canvearth.client.VisibilityHandler;
 import com.canvearth.canvearth.client.GridManager;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
@@ -40,7 +39,8 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         activity.locationReady();
-        activity.requestLocationUpate();
+        activity.requestLocationUpdate();
+
         MapsActivity.Map = googleMap;
 
         try {
@@ -60,35 +60,20 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(false);
         googleMap.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context, activity));
-        googleMap.setOnCameraMoveListener(new OnCameraMoveListenerImpl(activity));
         googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context));
         googleMap.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, googleMap));
         googleMap.setMaxZoomPreference(Constants.GRID_SHOW_MAX_CAM_ZOOM_LEVEL);
         googleMap.setOnMapClickListener(new OnMapClickListenerImpl(activity, googleMap));
         PermissionUtils.enableMyLocation(context, activity);
 
-        VisibilityHandler.init();
 
         ToggleButton gridVisibilityButton = activity.findViewById(R.id.grid_visibility);
-        gridVisibilityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                GridManager.toggleVisibility();
-            }
-        });
-
-        OnMainButtonsClickListenerImpl mainButtons = new OnMainButtonsClickListenerImpl(context, activity);
-        setMainButtons(mainButtons);
-
-        // TODO: calling this once when map ready for now, should be moved to OnMapClickListenerImpl
-        VisibilityHandler.handleMainButtons(activity);
+        Button menuButton = activity.findViewById(R.id.showMenuButton);
+        gridVisibilityButton.setOnClickListener(view -> GridManager.toggleVisibility());
+        menuButton.setVisibility(View.VISIBLE);
+        gridVisibilityButton.setVisibility(View.VISIBLE);
     }
 
-    private void setMainButtons(OnMainButtonsClickListenerImpl mainButtons) {
-        Button menu = activity.findViewById(R.id.showMenuButton);
-        menu.setOnClickListener(mainButtons);
-        Button brushButton = activity.findViewById(R.id.brushButton);
-        brushButton.setOnClickListener(mainButtons);
-    }
 }

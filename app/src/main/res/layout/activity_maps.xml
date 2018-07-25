@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="mapsActivityHandler"
             type="com.canvearth.canvearth.MapsActivity" />
@@ -25,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".SketchShowFragment"
-            tools:layout="@layout/activity_maps"/>
+            tools:layout="@layout/activity_maps" />
 
         <fragment
             android:id="@+id/sketch_view"
@@ -43,11 +44,6 @@
             android:layout_gravity="end"
             tools:layout="@layout/activity_maps" />
 
-        <!--<com.github.pengrad.mapscaleview.MapScaleView-->
-            <!--android:id="@+id/scaleView"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="bottom|end"/>-->
 
         <FrameLayout
             android:id="@+id/all_components"
@@ -56,29 +52,29 @@
 
             <GridView
                 android:id="@+id/palette"
-                android:background="@drawable/rounded"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:columnWidth="40dp"
-                android:numColumns="5"
-                android:verticalSpacing="5dp"
-                android:horizontalSpacing="5dp"
-                android:stretchMode="columnWidth"
                 android:layout_gravity="center"
-                android:visibility="invisible"/>
+                android:background="@drawable/rounded"
+                android:columnWidth="40dp"
+                android:horizontalSpacing="5dp"
+                android:numColumns="5"
+                android:padding="10dp"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="5dp"
+                android:visibility="invisible" />
 
             <ToggleButton
                 android:id="@+id/grid_visibility"
                 android:layout_width="41dp"
                 android:layout_height="41dp"
                 android:layout_gravity="top|right"
-                android:layout_marginTop="55dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginTop="55dp"
                 android:background="@drawable/grid_visible_icon_selector"
-                android:visibility="invisible"
                 android:textOff=""
-                android:textOn="" />
+                android:textOn=""
+                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/brushColor"
@@ -101,94 +97,42 @@
                 android:layout_width="41dp"
                 android:layout_height="41dp"
                 android:layout_gravity="start|top"
-                android:visibility="invisible"
-                android:background="@drawable/menu"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:background="@drawable/menu"
+                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/addSketchButton"
                 android:layout_width="49dp"
                 android:layout_height="49dp"
                 android:layout_gravity="start|bottom"
-                android:background="@drawable/add_sketch"
-                android:layout_marginLeft="10dp"
                 android:layout_marginBottom="12dp"
-                android:visibility="invisible"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}" />
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/add_sketch"
+                android:onClick="@{(view) -> mapsActivityHandler.onClickAddSketch()}"
+                android:visibility="invisible" />
 
             <LinearLayout
                 android:id="@+id/mysketch_thumbnail_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="20dp"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
                 <com.canvearth.canvearth.views.MySketchThumbnailView
                     android:id="@+id/mysketch_thumbnail"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content" />
+
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="@{(view) -> mapsActivityHandler.onClickHideInterestThumbnail()}"
-                    android:text="Hide"/>
+                    android:text="Hide" />
             </LinearLayout>
         </FrameLayout>
-        <LinearLayout
-            android:id="@+id/menuLayout"
-            android:layout_width="200dp"
-            android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:background="@color/white"
-            android:visibility="invisible">
-            <Button
-                android:id="@+id/menuCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickMenuCancel()}"
-                android:text="Back"/>
-            <ImageView
-                android:id="@+id/userPhotoImageView"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/fb_user_profilePic"
-                android:visibility="visible" />
-
-            <Button
-                android:id="@+id/shareButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickShare()}"
-                android:text="Share" />
-
-            <Button
-                android:id="@+id/myPageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickMyPage()}"
-                android:text="MY" />
-
-            <Button
-                android:id="@+id/showSketchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickShowSketch()}"
-                android:text="SHOW" />
-
-            <Button
-                android:id="@+id/logout_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:onClick="@{(view) -> mapsActivityHandler.onClickLogout()}"
-                android:text="Logout" />
-        </LinearLayout>
     </FrameLayout>
 </layout>
