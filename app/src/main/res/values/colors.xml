@@ -8,26 +8,57 @@
     <color name="refresh">#0CAE7E</color>
 
     <!--palette-->
-    <color name="palette0">#FF0000</color>
-    <color name="palette1">#EB1460</color>
-    <color name="palette2">#FF5505</color>
-    <color name="palette3">#FF9800</color>
-    <color name="palette4">#FFC100</color>
-    <color name="palette5">#FFEC16</color>
-    <color name="palette6">#CCDD1E</color>
-    <color name="palette7">#88C440</color>
-    <color name="palette8">#46AF4A</color>
-    <color name="palette9">#009687</color>
-    <color name="palette10">#00BBD5</color>
-    <color name="palette11">#00A6F6</color>
-    <color name="palette12">#1093F5</color>
-    <color name="palette13">#3D4DB7</color>
-    <color name="palette14">#9C1AB1</color>
-    <color name="palette15">#6633B9</color>
-    <color name="palette16">#7A5547</color>
-    <color name="palette17">#9D9D9D</color>
-    <color name="palette18">#5E7C8B</color>
-    <color name="palette19">#00000000</color>
+    <!--<color name="palette0">#FF0000</color>-->
+    <!--<color name="palette1">#FF5500</color>-->
+    <!--<color name="palette2">#FF9800</color>-->
+    <!--<color name="palette3">#FFC100</color>-->
+    <!--<color name="palette4">#FFEC16</color>-->
+    <!--<color name="palette5">#CCDD1E</color>-->
+    <!--<color name="palette6">#88C440</color>-->
+    <!--<color name="palette7">#46AF4A</color>-->
+    <!--<color name="palette8">#009687</color>-->
+    <!--<color name="palette9">#00BBD5</color>-->
+    <!--<color name="palette10">#00A6F6</color>-->
+    <!--<color name="palette11">#1093F5</color>-->
+    <!--<color name="palette12">#3D4DB7</color>-->
+    <!--<color name="palette13">#6633B9</color>-->
+    <!--<color name="palette14">#9C1AB1</color>-->
+    <!--<color name="palette15">#EB1460</color>-->
+    <!--<color name="palette16">#7A5547</color>-->
+    <!--<color name="palette17">#5E7C8B</color>-->
+    <!--<color name="palette18">#FFFFFF</color>-->
+    <!--<color name="palette19">#000000</color>-->
+    <!--<color name="palette20">#B0B0B0</color>-->
+    <!--<color name="palette21">#808080</color>-->
+    <!--<color name="palette22">#404040</color>-->
+    <!--<color name="palette23">#00000000</color>-->
+
+    <!--palette - little transparent-->
+    <color name="palette0">#C0FFFFFF</color>
+    <color name="palette1">#C0B0B0B0</color>
+    <color name="palette2">#C0808080</color>
+    <color name="palette3">#C0404040</color>
+    <color name="palette4">#C0000000</color>
+    <color name="palette5">#C0FF0000</color>
+    <color name="palette6">#C0FF5500</color>
+    <color name="palette7">#C0FF9800</color>
+    <color name="palette8">#C0FFC100</color>
+    <color name="palette9">#C0FFEC16</color>
+    <color name="palette10">#C0CCDD1E</color>
+    <color name="palette11">#C088C440</color>
+    <color name="palette12">#C046AF4A</color>
+    <color name="palette13">#C000FF00</color>
+    <color name="palette14">#C0009687</color>
+    <color name="palette15">#C000BBD5</color>
+    <color name="palette16">#C000A6F6</color>
+    <color name="palette17">#C01093F5</color>
+    <color name="palette18">#C00000FF</color>
+    <color name="palette19">#C03D4DB7</color>
+    <color name="palette20">#C06633B9</color>
+    <color name="palette21">#C09C1AB1</color>
+    <color name="palette22">#C0EB1460</color>
+    <color name="palette23">#C07A5547</color>
+    <color name="palette24">#00000000</color>
 
     <!-- Material DEFAULT colors -->
     <color name="material_drawer_primary">#2196F3</color>

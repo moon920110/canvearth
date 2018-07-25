@@ -37,7 +37,11 @@ public class PaletteAdapter extends BaseAdapter {
 
             int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, mContext.getResources().getDisplayMetrics());
             textView.setLayoutParams(new ViewGroup.LayoutParams(width, width));
-            textView.setBackgroundResource(paletteColors[position]);
+            if (position == paletteColors.length - 1) {
+                textView.setBackgroundResource(R.drawable.color_transparent);
+            } else {
+                textView.setBackgroundResource(paletteColors[position]);
+            }
         } else {
             textView = (TextView) convertView;
         }
@@ -50,6 +54,7 @@ public class PaletteAdapter extends BaseAdapter {
             R.color.palette0, R.color.palette1, R.color.palette2, R.color.palette3, R.color.palette4,
             R.color.palette5, R.color.palette6, R.color.palette7, R.color.palette8, R.color.palette9,
             R.color.palette10, R.color.palette11, R.color.palette12, R.color.palette13, R.color.palette14,
-            R.color.palette15, R.color.palette16, R.color.palette17, R.color.palette18, R.color.palette19
+            R.color.palette15, R.color.palette16, R.color.palette17, R.color.palette18, R.color.palette19,
+            R.color.palette20, R.color.palette21, R.color.palette22, R.color.palette23, R.color.palette24
     };
 }
