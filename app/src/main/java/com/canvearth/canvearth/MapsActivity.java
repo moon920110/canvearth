@@ -116,6 +116,7 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         PACKAGE_NAME = this.getPackageName();
         contentResolver = this.getContentResolver();
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_maps);
         binding.setMapsActivityHandler(this);
 
@@ -129,6 +130,7 @@ public class MapsActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(new OnMapReadyCallbackImpl(this, this, mapFragment));
+
 
         findViewById(R.id.sketch_view).setVisibility(View.GONE);
         findViewById(R.id.my_sketch).setVisibility(View.GONE);
@@ -158,6 +160,7 @@ public class MapsActivity extends AppCompatActivity
             mDisposableMySketch.dispose();
             mDisposableMySketch = null;
         }
+
     }
 
     @Override
@@ -222,22 +225,23 @@ public class MapsActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            return;
-        }
 
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Enable the my location layer if the permission has been granted.
-            PermissionUtils.enableMyLocation(this, this);
-        } else {
-            // Display the missing permission error dialog when the fragments resume.
-            mPermissionDenied = true;
-        }
-
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            return;
-        }
+//        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+//            return;
+//        }
+//
+//        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
+//                Manifest.permission.ACCESS_FINE_LOCATION)) {
+//            // Enable the my location layer if the permission has been granted.
+//            PermissionUtils.enableMyLocation(this, this);
+//        } else {
+//            // Display the missing permission error dialog when the fragments resume.
+//            mPermissionDenied = true;
+//        }
+//
+//        if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//            return;
+//        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.canvearth.canvearth;
 
+import android.Manifest;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Path;
@@ -12,6 +13,7 @@ import android.view.View;
 
 import com.canvearth.canvearth.authorization.UserInformation;
 import com.canvearth.canvearth.utils.Constants;
+import com.canvearth.canvearth.utils.PermissionUtils;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -49,6 +51,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String[] permissions = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        };
+
+        PermissionUtils.requestPermission(this, 1, permissions[0], false);
+        PermissionUtils.requestPermission(this, 2, permissions[1], false);
+        PermissionUtils.requestPermission(this, 3, permissions[2], false);
 
         ActivityLoginBinding m_b = DataBindingUtil.setContentView(this, R.layout.activity_login);
         m_b.setSplash(new SplashForegroundView(this));
