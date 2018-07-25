@@ -10,6 +10,7 @@ import android.widget.ToggleButton;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.client.GridManager;
+import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PermissionUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,7 +67,6 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         map.getUiSettings().setTiltGesturesEnabled(false);
         map.getUiSettings().setRotateGesturesEnabled(false);
         map.getUiSettings().setZoomControlsEnabled(false);
-        map.getUiSettings().setZoomGesturesEnabled(false);
         map.setOnCameraIdleListener(new OnCameraIdleListenerImpl(context, activity));
         map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListenerImpl(context));
         map.setOnMyLocationClickListener(new OnMyLocationClickListenerImpl(context, map));
@@ -101,7 +101,12 @@ public class OnMapReadyCallbackImpl implements OnMapReadyCallback {
         });
 
         activity.requestLocationUpdate();
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(activity.mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
+
+        if (Configs.TESTING) {
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.481222, -122.170964), 20));
+        } else {
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(activity.mLocation, Constants.LEAF_PIXEL_GRID_ZOOM_LEVEL));
+        }
     }
 
 }

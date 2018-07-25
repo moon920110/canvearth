@@ -7,6 +7,7 @@ import android.widget.Button;
 import com.canvearth.canvearth.MapsActivity;
 import com.canvearth.canvearth.R;
 import com.canvearth.canvearth.client.GridManager;
+import com.canvearth.canvearth.utils.Configs;
 import com.canvearth.canvearth.utils.Constants;
 import com.canvearth.canvearth.utils.PixelUtils;
 import com.canvearth.canvearth.utils.ScreenUtils;
@@ -27,8 +28,10 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
     public void onCameraIdle() {
         CameraPosition cameraPosition = MapsActivity.map.getCameraPosition();
         int gridZoom = PixelUtils.getGridZoom(Math.round(cameraPosition.zoom));
-        ScreenUtils.showToast(context, "zoom: " + Float.toString(cameraPosition.zoom) + "\n" +
-                "grid zoom: " + gridZoom);
+        if (Configs.TESTING) {
+            ScreenUtils.showToast(context, "zoom: " + Float.toString(cameraPosition.zoom) + "\n" +
+                    "grid zoom: " + gridZoom);
+        }
 
         if (cameraPosition.zoom < Constants.REGISTRATION_CAM_ZOOM_LEVEL) {
             Button addSketchButton = activity.findViewById(R.id.addSketchButton);
