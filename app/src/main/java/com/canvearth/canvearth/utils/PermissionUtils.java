@@ -44,7 +44,7 @@ public abstract class PermissionUtils {
      */
     public static void requestPermission(AppCompatActivity activity, int requestId,
                                          String permission, boolean finishActivity) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
             // Display a dialog with rationale.
             PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity)
                     .show(activity.getSupportFragmentManager(), "dialog");
@@ -80,7 +80,7 @@ public abstract class PermissionUtils {
                 return grantResults[i] == PackageManager.PERMISSION_GRANTED;
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class PermissionUtils {
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
             PermissionUtils.requestPermission(activity, LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+                    Manifest.permission.ACCESS_FINE_LOCATION, false);
         } else if (MapsActivity.Map != null) {
             // Access to the location has been granted to the app.
             MapsActivity.Map.setMyLocationEnabled(true);
