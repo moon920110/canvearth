@@ -28,7 +28,7 @@
                 android:layout_height="60dp"
                 android:orientation="horizontal"
                 android:gravity="right|center_vertical"
-                android:background="#fcfcfc">
+                android:background="@color/bar">
 
                 <Button
                     android:id="@+id/cancel_button"
@@ -78,7 +78,7 @@
                 android:layout_height="60dp"
                 android:orientation="horizontal"
                 android:gravity="right|center_vertical"
-                android:background="#fcfcfc">
+                android:background="@color/bar">
 
                 <Button
                     android:id="@+id/confirm_button"

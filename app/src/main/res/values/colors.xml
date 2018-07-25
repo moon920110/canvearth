@@ -5,7 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="thumbnailPlaceholder">#EAEAEA</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
     <color name="refresh">#0CAE7E</color>
+    <color name="bar">#FCFCFC</color>
 
     <!--palette-->
     <!--<color name="palette0">#FF0000</color>-->
