@@ -49,7 +49,7 @@ public class SketchPlacerView extends AppCompatImageView implements OnScaleGestu
     private Matrix matrix = new Matrix();
     private Matrix startMatrix = new Matrix();
 
-    private float[] matrixValues = new float[9];
+    public float[] matrixValues = new float[9];
     private float[] startValues = null;
 
     private float minScale = MIN_SCALE;

@@ -268,7 +268,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void addSketchConfirm(Rect bound, String sketchName, Photo photo) {
-        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.REGISTRATION_ZOOM_LEVEL);
+        PixelDataSquare pixelDataSquare = PixelUtils.getPixelDataSquareFromBound(Map, bound, Constants.REGISTRATION_GRID_ZOOM_LEVEL);
         SketchRegisterManager.getInstance().registerSketchAsync(photo.getUri(), sketchName, pixelDataSquare, (obj) -> {
             Log.i(TAG, "Add Sketch Finished");
         });
@@ -522,13 +522,13 @@ public class MapsActivity extends AppCompatActivity
         Projection projection = Map.getProjection();
         LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
         PixelData northeastPixelData = PixelUtils.latlng2pix(
-                bounds.northeast, Constants.REGISTRATION_ZOOM_LEVEL).data;
+                bounds.northeast, Constants.REGISTRATION_GRID_ZOOM_LEVEL).data;
         PixelData southwestPixelData = PixelUtils.latlng2pix(
-                bounds.southwest, Constants.REGISTRATION_ZOOM_LEVEL).data;
+                bounds.southwest, Constants.REGISTRATION_GRID_ZOOM_LEVEL).data;
         ArrayList<PixelData> pixelDatas = new ArrayList<>();
         for (int y = northeastPixelData.y; y <= southwestPixelData.y; y++) {
             for (int x = southwestPixelData.x; x <= northeastPixelData.x; x++) {
-                pixelDatas.add(new PixelData(x, y, Constants.REGISTRATION_ZOOM_LEVEL));
+                pixelDatas.add(new PixelData(x, y, Constants.REGISTRATION_GRID_ZOOM_LEVEL));
             }
         }
 
