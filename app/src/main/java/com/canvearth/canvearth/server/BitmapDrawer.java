@@ -61,7 +61,6 @@ public class BitmapDrawer {
     private static final BitmapDrawer ourInstance = new BitmapDrawer();
     private Disposable drawBitmapDisposable = null;
     private Queue<GroundOverlay> groundOverlays = new LinkedList<>();
-    private String recentBitmapId = "";
 
     public static BitmapDrawer getInstance() {
         return ourInstance;
@@ -71,147 +70,129 @@ public class BitmapDrawer {
     }
 
     public Disposable drawBitmap(int showingZoomLevel, CameraPosition currentPosition, Activity activity) {
-        String bitmapId = Integer.toString(showingZoomLevel) + currentPosition.target.toString();
 
+        if (drawBitmapDisposable != null && !drawBitmapDisposable.isDisposed()) {
+            drawBitmapDisposable.dispose();
+        }
+        while (!groundOverlays.isEmpty()) {
+            groundOverlays.poll().remove();
+        }
 
-        if (bitmapId.equals(recentBitmapId)) {
-            return new Disposable() {
-                @Override
-                public void dispose() {
-                    return;
-                }
+        final Consumer<Pair<LatLngBounds, Uri>> drawBitmap = new Consumer<Pair<LatLngBounds, Uri>>() {
+            @Override
+            public void accept(Pair<LatLngBounds, Uri> param) throws Exception {
+                Glide.with(activity).asBitmap().load(param.second)
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
 
-                @Override
-                public boolean isDisposed() {
-                    return false;
-                }
-            };
-        } else {
-            recentBitmapId = bitmapId;
+                                // To prevent anti-alias
+                                resource = Bitmap.createScaledBitmap(resource,
+                                        resource.getWidth() * MathUtils.intPow(2, 7 - Constants.BITMAP_CACHE_RESOLUTION_FACTOR),
+                                        resource.getHeight() * MathUtils.intPow(2, 7 - Constants.BITMAP_CACHE_RESOLUTION_FACTOR), false);
 
-            if (drawBitmapDisposable != null && !drawBitmapDisposable.isDisposed()) {
-                drawBitmapDisposable.dispose();
+                                BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(resource);
+                                GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+                                groundOverlayOptions.positionFromBounds(param.first);
+                                groundOverlayOptions.image(bitmapDescriptor);
+                                GroundOverlay groundOverlay = MapsActivity.Map.addGroundOverlay(groundOverlayOptions);
+                                groundOverlays.add(groundOverlay);
+                            }
+                        });
             }
-            while (!groundOverlays.isEmpty()) {
-                groundOverlays.poll().remove();
+        };
+
+        final io.reactivex.functions.Function<PixelData, Observable<PixelData>> getExistPixel
+                = new io.reactivex.functions.Function<PixelData, Observable<PixelData>>() {
+            @Override
+            public Observable<PixelData> apply(final PixelData pixelData) {
+                return Observable.create(new ObservableOnSubscribe<PixelData>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<PixelData> emitter) throws Exception {
+                        DatabaseUtils
+                                .getBitmapExistReference().child(pixelData.getFirebaseId())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        Boolean exist = dataSnapshot.getValue(Boolean.class);
+                                        if (exist != null) {
+                                            emitter.onNext(pixelData);
+                                        }
+                                        emitter.onComplete();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        emitter.onComplete();
+                                    }
+                                });
+                    }
+                });
             }
+        };
 
-            final Consumer<Pair<LatLngBounds, Uri>> drawBitmap = new Consumer<Pair<LatLngBounds, Uri>>() {
-                @Override
-                public void accept(Pair<LatLngBounds, Uri> param) throws Exception {
-                    Glide.with(activity).asBitmap().load(param.second)
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+        final io.reactivex.functions.Function<PixelData, Observable<Pair<LatLngBounds, Uri>>> getBitmapUri
+                = new io.reactivex.functions.Function<PixelData, Observable<Pair<LatLngBounds, Uri>>>() {
+            @Override
+            public Observable<Pair<LatLngBounds, Uri>> apply(final PixelData pixelData) {
+                return Observable.create(new ObservableOnSubscribe<Pair<LatLngBounds, Uri>>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Pair<LatLngBounds, Uri>> emitter) throws Exception {
+                        LatLngBounds latLngBounds = PixelUtils.pixdata2bbox(pixelData).toLatLngBounds();
+                        DatabaseUtils
+                                .getBitmapReference(pixelData.getFirebaseId())
+                                .getDownloadUrl()
+                                .addOnSuccessListener((Uri uri) -> {
+                                    emitter.onNext(new Pair<>(latLngBounds, uri));
+                                    Log.i(TAG, "exist " + pixelData.getFirebaseId());
+                                    emitter.onComplete();
+                                })
+                                .addOnFailureListener((Exception e) -> {
+                                    Log.i(TAG, "Not exist " + pixelData.getFirebaseId());
+                                    emitter.onComplete();
+                                });
+                    }
+                });
+            }
+        };
 
-                                    // To prevent anti-alias
-                                    resource = Bitmap.createScaledBitmap(resource,
-                                            resource.getWidth() * MathUtils.intPow(2, 7 - Constants.BITMAP_CACHE_RESOLUTION_FACTOR),
-                                            resource.getHeight() * MathUtils.intPow(2, 7 - Constants.BITMAP_CACHE_RESOLUTION_FACTOR), false);
+        final Projection projection = MapsActivity.Map.getProjection();
+        final LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
+        final int bitmapTargetZoomLevel = showingZoomLevel - Constants.BITMAP_CACHE_RESOLUTION_FACTOR;
+        final double pixSideLen = PixelUtils.latlng2bbox(currentPosition.target, bitmapTargetZoomLevel).getSideLength();
 
-                                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(resource);
-                                    GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
-                                    groundOverlayOptions.positionFromBounds(param.first);
-                                    groundOverlayOptions.image(bitmapDescriptor);
-                                    GroundOverlay groundOverlay = MapsActivity.Map.addGroundOverlay(groundOverlayOptions);
-                                    groundOverlays.add(groundOverlay);
-                                }
-                            });
-                }
-            };
+        drawBitmapDisposable = Observable.create((ObservableEmitter<PixelData> emitter) -> {
 
-            final io.reactivex.functions.Function<PixelData, Observable<PixelData>> getExistPixel
-                    = new io.reactivex.functions.Function<PixelData, Observable<PixelData>>() {
-                @Override
-                public Observable<PixelData> apply(final PixelData pixelData) {
-                    return Observable.create(new ObservableOnSubscribe<PixelData>() {
-                        @Override
-                        public void subscribe(ObservableEmitter<PixelData> emitter) throws Exception {
-                            DatabaseUtils
-                                    .getBitmapExistReference().child(pixelData.getFirebaseId())
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            Boolean exist = dataSnapshot.getValue(Boolean.class);
-                                            if (exist != null) {
-                                                emitter.onNext(pixelData);
-                                            }
-                                            emitter.onComplete();
-                                        }
+            double minY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.southwest.latitude) / pixSideLen) - 5 * (pixSideLen / 2);
+            double minX = -180 + pixSideLen * (int) (SphericalMercator.scaleLongitude(bounds.southwest.longitude) / pixSideLen) - 5 * (pixSideLen / 2);
+            double maxY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.northeast.latitude) / pixSideLen) + 5 * (pixSideLen / 2);
+            double maxX = -180 + pixSideLen * (int) (SphericalMercator.scaleLongitude(bounds.northeast.longitude) / pixSideLen) + 5 * (pixSideLen / 2);
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                                            emitter.onComplete();
-                                        }
-                                    });
-                        }
-                    });
-                }
-            };
-
-            final io.reactivex.functions.Function<PixelData, Observable<Pair<LatLngBounds, Uri>>> getBitmapUri
-                    = new io.reactivex.functions.Function<PixelData, Observable<Pair<LatLngBounds, Uri>>>() {
-                @Override
-                public Observable<Pair<LatLngBounds, Uri>> apply(final PixelData pixelData) {
-                    return Observable.create(new ObservableOnSubscribe<Pair<LatLngBounds, Uri>>() {
-                        @Override
-                        public void subscribe(ObservableEmitter<Pair<LatLngBounds, Uri>> emitter) throws Exception {
-                            LatLngBounds latLngBounds = PixelUtils.pixdata2bbox(pixelData).toLatLngBounds();
-                            DatabaseUtils
-                                    .getBitmapReference(pixelData.getFirebaseId())
-                                    .getDownloadUrl()
-                                    .addOnSuccessListener((Uri uri) -> {
-                                        emitter.onNext(new Pair<>(latLngBounds, uri));
-                                        Log.i(TAG, "exist " + pixelData.getFirebaseId());
-                                        emitter.onComplete();
-                                    })
-                                    .addOnFailureListener((Exception e) -> {
-                                        Log.i(TAG, "Not exist " + pixelData.getFirebaseId());
-                                        emitter.onComplete();
-                                    });
-                        }
-                    });
-                }
-            };
-
-            final Projection projection = MapsActivity.Map.getProjection();
-            final LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
-            final int bitmapTargetZoomLevel = showingZoomLevel - Constants.BITMAP_CACHE_RESOLUTION_FACTOR;
-            final double pixSideLen = PixelUtils.latlng2bbox(currentPosition.target, bitmapTargetZoomLevel).getSideLength();
-
-            drawBitmapDisposable = Observable.create((ObservableEmitter<PixelData> emitter) -> {
-
-                double minY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.southwest.latitude) / pixSideLen) - 5 * (pixSideLen / 2);
-                double minX = -180 + pixSideLen * (int) (SphericalMercator.scaleLongitude(bounds.southwest.longitude) / pixSideLen) - 5 * (pixSideLen / 2);
-                double maxY = -180 + pixSideLen * (int) (SphericalMercator.scaleLatitude(bounds.northeast.latitude) / pixSideLen) + 5 * (pixSideLen / 2);
-                double maxX = -180 + pixSideLen * (int) (SphericalMercator.scaleLongitude(bounds.northeast.longitude) / pixSideLen) + 5 * (pixSideLen / 2);
-
-                for (double y = minY; y < maxY; y += pixSideLen) {
-                    if (minX <= maxX) {
-                        for (double x = minX; x < maxX; x += pixSideLen) {
-                            Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, bitmapTargetZoomLevel);
-                            emitter.onNext(pixel.data);
-                        }
-                    } else {
-                        for (double x = -180; x < minX; x += pixSideLen) {
-                            Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, bitmapTargetZoomLevel);
-                            emitter.onNext(pixel.data);
-                        }
-                        for (double x = maxX; x < 180; x += pixSideLen) {
-                            Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, bitmapTargetZoomLevel);
-                            emitter.onNext(pixel.data);
-                        }
+            for (double y = minY; y < maxY; y += pixSideLen) {
+                if (minX <= maxX) {
+                    for (double x = minX; x < maxX; x += pixSideLen) {
+                        Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, bitmapTargetZoomLevel);
+                        emitter.onNext(pixel.data);
+                    }
+                } else {
+                    for (double x = -180; x < minX; x += pixSideLen) {
+                        Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, bitmapTargetZoomLevel);
+                        emitter.onNext(pixel.data);
+                    }
+                    for (double x = maxX; x < 180; x += pixSideLen) {
+                        Pixel pixel = PixelUtils.latlng2pix(SphericalMercator.toLatitude(y), x, bitmapTargetZoomLevel);
+                        emitter.onNext(pixel.data);
                     }
                 }
-                emitter.onComplete();
-            })
-                    .flatMap(getExistPixel)
-                    .flatMap(getBitmapUri)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(drawBitmap);
+            }
+            emitter.onComplete();
+        })
+                .flatMap(getExistPixel)
+                .flatMap(getBitmapUri)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(drawBitmap);
 
-            return drawBitmapDisposable;
-        }
+        return drawBitmapDisposable;
     }
 }
