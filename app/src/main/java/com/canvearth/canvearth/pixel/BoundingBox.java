@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.canvearth.canvearth.utils.Constants;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 public class BoundingBox {
@@ -11,6 +12,13 @@ public class BoundingBox {
     public double south; // latitude
     public double east; // longitude
     public double west; // longitude
+
+    public LatLngBounds toLatLngBounds() {
+        LatLng southwest = new LatLng(south, west);
+        LatLng northeast = new LatLng(north, east);
+
+        return new LatLngBounds(southwest, northeast);
+    }
 
     public double getSideLength() {
         return Math.abs(east - west);

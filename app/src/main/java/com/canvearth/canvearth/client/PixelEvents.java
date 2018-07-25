@@ -8,7 +8,7 @@ public class PixelEvents {
     // or watching pixel data are changed, this function will be called.
     public static void watchingPixelChanged(PixelData pixelData, FBPixel fbPixel) {
         if (fbPixel != null) {
-            GridManager.changePixelColor(pixelData.getFirebaseId(), fbPixel.pixelColor.getIntColor());
+            GridManager.changePixelColor(pixelData.getFirebaseId(), fbPixel.pixelColor.convertIntColor());
         }
     }
 }

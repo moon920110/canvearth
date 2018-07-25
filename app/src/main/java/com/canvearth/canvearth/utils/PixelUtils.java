@@ -10,6 +10,7 @@ import com.canvearth.canvearth.pixel.PixelDataSquare;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import junit.framework.Assert;
 
@@ -35,7 +36,6 @@ public class PixelUtils {
 
         return new Pixel(xtile, ytile, zoom);
     }
-
 
     public static BoundingBox pix2bbox(Pixel pixel) {
         return pixdata2bbox(pixel.data);
@@ -84,7 +84,7 @@ public class PixelUtils {
         }
         int zoom = pixelData.zoom - level;
         int x = pixelData.x / MathUtils.intPow(2, level);
-        int y = pixelData.x / MathUtils.intPow(2, level);
+        int y = pixelData.y / MathUtils.intPow(2, level);
         return new PixelData(x, y, zoom);
     }
 

@@ -336,7 +336,6 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-
     public void showAllComponents() {
         findViewById(R.id.all_components).setVisibility(View.VISIBLE);
     }
