@@ -29,6 +29,10 @@ public class OnCameraIdleListenerImpl implements GoogleMap.OnCameraIdleListener 
     public void onCameraIdle() {
         CameraPosition cameraPosition = MapsActivity.Map.getCameraPosition();
         int gridZoom = PixelUtils.getGridZoom(Math.round(cameraPosition.zoom));
+        // TODO @Kunwoo - please see and fix this
+        if (gridZoom == 19) {
+            BitmapDrawer.getInstance().drawBitmap(20, MapsActivity.Map.getCameraPosition(), activity);
+        }
         ScreenUtils.showToast(context, "zoom: " + Float.toString(cameraPosition.zoom) + "\n" +
                 "grid zoom: " + gridZoom);
 
