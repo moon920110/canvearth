@@ -293,7 +293,6 @@ public class MapsActivity extends AppCompatActivity
 
     public void onClickStarredSketches() {
         MySketchFragment fragment = (MySketchFragment) getFragmentManager().findFragmentById(R.id.my_sketch);
-        findViewById(R.id.mysketch_list_frame).setVisibility(View.VISIBLE);
         processMySketches(fragment);
         findViewById(R.id.my_sketch).setVisibility(View.VISIBLE);
         hideAllComponents();

@@ -92,7 +92,11 @@ public class SketchShowFragment extends Fragment {
 
     public void onClickHide() {
         getView().setVisibility(View.INVISIBLE);
-        ((MapsActivity)getActivity()).detachSelectedShowingSketch();
+        try {
+            ((MapsActivity) getActivity()).detachSelectedShowingSketch();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         ((MapsActivity)getActivity()).showAllComponents();
     }
 
