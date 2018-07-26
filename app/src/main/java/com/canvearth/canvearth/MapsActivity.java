@@ -424,7 +424,7 @@ public class MapsActivity extends AppCompatActivity
         LatLngBounds bounds = mSeeingMySketch.pixelDataSquare.getLatLngBounds();
         double bottomLat = bounds.southwest.latitude;
         double topLat = bounds.northeast.latitude;
-        return (mLocation.latitude - bottomLat) / (topLat - bottomLat);
+        return (mLocation.latitude - topLat) / (bottomLat - topLat);
     }
 
     private void addNavigationDrawer() {
