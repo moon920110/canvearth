@@ -1,7 +1,7 @@
-# Canvearth
+# [Canvearth](https://youtu.be/HnYddc8wHc8)
 ## inspiration
-What if **everyone on earth** could draw on the same canvas, the earth itself? 
-What would they draw? Would they collaborate or try to sabotage others' drawings?
+What if **everyone on earth** could draw on the same canvas, **the earth itself?**  
+What would they draw? Would they collaborate or try to sabotage others' drawings?  
 Would it bring **new kind of interactions?**
 
 We wanted to find out the answer to these questions with **Canvearth**.
