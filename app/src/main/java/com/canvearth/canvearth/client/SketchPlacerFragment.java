@@ -64,10 +64,10 @@ public class SketchPlacerFragment extends Fragment {
     }
 
     public void onClickConfirmButton() {
-        Rect rect = sketchPlacerView.getDrawable().getBounds();
-        rect.set((int)sketchPlacerView.matrixValues[Matrix.MTRANS_X], (int)sketchPlacerView.matrixValues[Matrix.MTRANS_Y],
-                (int)(rect.width() * sketchPlacerView.matrixValues[Matrix.MSCALE_X]), (int)(rect.height() * sketchPlacerView.matrixValues[Matrix.MSCALE_Y]));
-
+        RectF rectf = sketchPlacerView.getBounds();
+//        Rect rect = new Rect((int)sketchPlacerView.matrixValues[Matrix.MTRANS_X], (int)sketchPlacerView.matrixValues[Matrix.MTRANS_Y],
+//                (int)(rectf.width() * sketchPlacerView.matrixValues[Matrix.MSCALE_X]), (int)(rectf.height() * sketchPlacerView.matrixValues[Matrix.MSCALE_Y]));
+        Rect rect = new Rect((int)rectf.left, (int)rectf.top, (int)rectf.right, (int)rectf.bottom);
         ((MapsActivity) getActivity()).addSketchConfirm(rect, "", binding.getSketchPhoto());
     }
 
